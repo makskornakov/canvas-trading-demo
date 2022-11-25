@@ -1,9 +1,4 @@
-export const drawFunction = (ctx: CanvasRenderingContext2D) => {
-  ctx.fillStyle = 'red';
-  ctx.fillRect(0, 0, 100, 100);
-};
-
-interface candleToDraw {
+export interface CandleToDraw {
   open: number;
   high: number;
   low: number;
@@ -17,12 +12,19 @@ interface candleToDraw {
       lips: number;
     };
   };
+  trade?: {
+    tradeID: number;
+    tradeType: 'long' | 'short';
+    buyPrice: number;
+    sellPrice: number;
+    isThisCandleStart: boolean;
+    isThisCandleEnd: boolean;
+  };
 }
-class CandleCanvas {
+export class CandleCanvas {
   width: number;
   height: number;
   candlesShown: number;
-  candlesToDraw: candleToDraw[] = [];
   min: number;
   max: number;
   gap: number;
@@ -32,13 +34,14 @@ class CandleCanvas {
     width: number,
     height: number,
     candlesShown: number,
-    candlesToDraw: candleToDraw[]
+    candlesToDraw: CandleToDraw[]
   ) {
     this.width = width;
     this.height = height;
     this.candlesShown = candlesShown;
 
-    const minMax = this.minMaxCalc(candlesToDraw);
+    const forMinMax = candlesToDraw.slice(-candlesShown);
+    const minMax = this.minMaxCalc(forMinMax);
     this.min = minMax.min;
     this.max = minMax.max;
 
@@ -47,11 +50,12 @@ class CandleCanvas {
     this.candleWidth = gapAndWidth.candleWidth;
   }
   private getGapAndCandleWidth() {
-    const gap = this.width / this.candlesShown / 10;
-    const candleWidth = (this.width / this.candlesShown - gap) / 2;
+    const gap = this.width / this.candlesShown / 5;
+    const candleWidth =
+      (this.width - (this.candlesShown - 1) * gap) / this.candlesShown;
     return { gap, candleWidth };
   }
-  private minMaxCalc(candles: candleToDraw[]) {
+  private minMaxCalc(candles: CandleToDraw[]) {
     const min = Math.min(...candles.map((candle) => candle.low));
     const max = Math.max(...candles.map((candle) => candle.high));
     return { min, max };
@@ -69,7 +73,7 @@ interface CandleMountPoints {
   };
 }
 
-class Candle2D {
+export class Candle2D {
   open: number;
   close: number;
   low: number;
@@ -114,3 +118,47 @@ class Candle2D {
     };
   }
 }
+
+export const getDrawingArray = function (candlesArray: CandleToDraw[]) {
+  const canvas = new CandleCanvas(600, 400, 70, candlesArray);
+  const sliced = candlesArray.slice(-canvas.candlesShown);
+  const candles2D = sliced.map((candle) => {
+    return new Candle2D(
+      candle.open,
+      candle.close,
+      candle.low,
+      candle.high,
+      canvas
+    );
+  });
+  return { canvas, candles2D };
+};
+export const drawFunction = (
+  ctx: CanvasRenderingContext2D,
+  candlesArray: Candle2D[],
+  canvas: CandleCanvas
+) => {
+  candlesArray.forEach((candle, index) => {
+    const x = index * (canvas.candleWidth + canvas.gap);
+    const candleIsRed = candle.open < candle.close;
+    const y = candleIsRed ? candle.open : candle.close;
+    // draw candle
+    ctx.beginPath();
+    ctx.rect(
+      x,
+      y,
+      canvas.candleWidth,
+      candleIsRed ? candle.close - candle.open : candle.open - candle.close
+    );
+    ctx.fillStyle = candleIsRed ? 'red' : 'green';
+    ctx.fill();
+    ctx.closePath();
+    // draw wick
+    ctx.beginPath();
+    ctx.moveTo(x + canvas.candleWidth / 2, candle.high);
+    ctx.lineTo(x + canvas.candleWidth / 2, candle.low);
+    ctx.strokeStyle = candleIsRed ? 'red' : 'green';
+    ctx.stroke();
+    ctx.closePath();
+  });
+};

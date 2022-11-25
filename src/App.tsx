@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Canvas from './Canvas';
-import { drawFunction } from './draw';
+import { CandleToDraw, drawFunction, getDrawingArray } from './draw';
+import exampleArray from './output';
 
 function App() {
+  const drawingCandles = exampleArray.map((candle) => candle as CandleToDraw);
+  const result = getDrawingArray(drawingCandles);
+  const canvas = result.canvas;
+  const candles = result.candles2D;
+  console.log(candles, canvas);
+
   return (
     <>
       <div
@@ -16,7 +23,13 @@ function App() {
           width: '800px',
         }}
       >
-        <Canvas draw={drawFunction} width={600} height={400}></Canvas>
+        <Canvas
+          draw={drawFunction}
+          width={600}
+          height={400}
+          candlesArray={candles}
+          canvas={canvas}
+        ></Canvas>
       </div>
     </>
   );
