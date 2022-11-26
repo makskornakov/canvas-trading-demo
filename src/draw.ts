@@ -3,15 +3,7 @@ export interface CandleToDraw {
   high: number;
   low: number;
   close: number;
-  indicators: {
-    revBar: 'buy' | 'sell';
-    fractal: 'up' | 'down';
-    alligator: {
-      jaw: number;
-      teeth: number;
-      lips: number;
-    };
-  };
+  indicators: Indicators;
   trade?: {
     tradeID: number;
     tradeType: 'long' | 'short';
@@ -19,6 +11,15 @@ export interface CandleToDraw {
     sellPrice: number;
     isThisCandleStart: boolean;
     isThisCandleEnd: boolean;
+  };
+}
+interface Indicators {
+  revBar: 'buy' | 'sell';
+  fractal: 'up' | 'down';
+  alligator: {
+    jaw: number;
+    teeth: number;
+    lips: number;
   };
 }
 export class CandleCanvas {
@@ -71,6 +72,7 @@ export class CandleCanvas {
         candle.close,
         candle.low,
         candle.high,
+        candle.indicators,
         this
       );
     });
@@ -79,23 +81,101 @@ export class CandleCanvas {
 }
 class MountedIndicator {
   type: 'revBar' | 'fractal';
-  // positive is up for fractal and buy for revBar
-  positive: boolean;
-  constructor(type: 'revBar' | 'fractal', positive: boolean) {
+  // positive means
+  aboveCandle: boolean;
+  yPos: number;
+  constructor(type: 'revBar' | 'fractal', above: boolean, yPos: number) {
     this.type = type;
-    this.positive = positive;
+    this.aboveCandle = above;
+    this.yPos = yPos;
   }
 }
 
-interface CandleMountPoints {
+class CandleMountPoints {
   above: {
-    first: number;
-    second: number;
+    first: MountedIndicator | null;
+    second: MountedIndicator | null;
   };
   below: {
-    first: number;
-    second: number;
+    first: MountedIndicator | null;
+    second: MountedIndicator | null;
   };
+  constructor(
+    canvasWidth: number,
+    candleIndicators: Indicators,
+    low: number,
+    high: number
+  ) {
+    this.above = {
+      first: null,
+      second: null,
+    };
+    this.below = {
+      first: null,
+      second: null,
+    };
+    this.mountIndicators(canvasWidth, candleIndicators, low, high);
+  }
+  private mountIndicators(
+    canvasWidth: number,
+    indicators: Indicators,
+    low: number,
+    high: number
+  ) {
+    // mount revBar
+    if (indicators.revBar === 'sell') {
+      this.mountUp('revBar', canvasWidth, high);
+    } else if (indicators.revBar === 'buy') {
+      this.mountDown('revBar', canvasWidth, low);
+    }
+    // mount fractal
+    if (indicators.fractal === 'up') {
+      this.mountUp('fractal', canvasWidth, high);
+    } else if (indicators.fractal === 'down') {
+      this.mountDown('fractal', canvasWidth, low);
+    }
+  }
+
+  private mountUp(
+    type: 'fractal' | 'revBar',
+    canvasWidth: number,
+    high: number
+  ) {
+    const yGap = canvasWidth * 1.5;
+    if (this.above.first === null) {
+      this.above.first = {
+        type,
+        aboveCandle: true,
+        yPos: high + yGap,
+      };
+    } else if (this.above.second === null) {
+      this.above.second = {
+        type,
+        aboveCandle: true,
+        yPos: high + yGap * 3,
+      };
+    }
+  }
+  private mountDown(
+    type: 'fractal' | 'revBar',
+    canvasWidth: number,
+    low: number
+  ) {
+    const yGap = canvasWidth * 1.5;
+    if (this.below.first === null) {
+      this.below.first = {
+        type,
+        aboveCandle: false,
+        yPos: low - yGap,
+      };
+    } else if (this.below.second === null) {
+      this.below.second = {
+        type,
+        aboveCandle: false,
+        yPos: low - yGap * 3,
+      };
+    }
+  }
 }
 
 export class Candle2D {
@@ -110,13 +190,19 @@ export class Candle2D {
     originalClose: number,
     originalLow: number,
     originalHigh: number,
+    originalIndicators: Indicators,
     candleCanvas: CandleCanvas
   ) {
     this.open = this.getPoint(originalOpen, candleCanvas);
     this.close = this.getPoint(originalClose, candleCanvas);
     this.low = this.getPoint(originalLow, candleCanvas);
     this.high = this.getPoint(originalHigh, candleCanvas);
-    this.mountPoints = this.getMountPoints(candleCanvas);
+    this.mountPoints = new CandleMountPoints(
+      candleCanvas.width,
+      originalIndicators,
+      this.low,
+      this.high
+    );
   }
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
@@ -129,22 +215,6 @@ export class Candle2D {
       gapSpace;
     return point;
   };
-
-  private getMountPoints(candleCanvas: CandleCanvas): CandleMountPoints {
-    const yGap = candleCanvas.candleWidth * 1.5;
-    const above = {
-      first: this.high + yGap,
-      second: this.high + yGap * 3,
-    };
-    const below = {
-      first: this.low - yGap,
-      second: this.low - yGap * 3,
-    };
-    return {
-      above,
-      below,
-    };
-  }
 }
 
 export const drawFunction = (
