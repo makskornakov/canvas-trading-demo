@@ -12,7 +12,7 @@ function App() {
     <>
       <div
         style={{
-          margin: '0 auto',
+          margin: '50px auto',
           display: 'flex',
           outline: '1px solid black',
           justifyContent: 'center',
