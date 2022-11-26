@@ -77,6 +77,15 @@ export class CandleCanvas {
     return candles2D;
   }
 }
+class MountedIndicator {
+  type: 'revBar' | 'fractal';
+  // positive is up for fractal and buy for revBar
+  positive: boolean;
+  constructor(type: 'revBar' | 'fractal', positive: boolean) {
+    this.type = type;
+    this.positive = positive;
+  }
+}
 
 interface CandleMountPoints {
   above: {
@@ -111,10 +120,13 @@ export class Candle2D {
   }
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
+    const gapSpace = candleCanvas.candleWidth * 4.5;
+
     const point =
       ((candleCanvas.max - originalPoint) /
         (candleCanvas.max - candleCanvas.min)) *
-      candleCanvas.height;
+        (candleCanvas.height - gapSpace * 2) +
+      gapSpace;
     return point;
   };
 
