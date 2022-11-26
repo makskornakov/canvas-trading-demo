@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Candle2D, CandleCanvas, CandleToDraw } from './draw';
+import { Candle2D, CandleCanvas } from './draw';
 
 type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
@@ -11,7 +11,6 @@ type CanvasProps = React.DetailedHTMLProps<
     canvas: CandleCanvas
   ) => void;
 } & {
-  candlesArray: Candle2D[];
   canvas: CandleCanvas;
 };
 
@@ -24,8 +23,8 @@ const Canvas: React.FC<CanvasProps> = ({ draw, ...props }) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    draw(ctx, props.candlesArray, props.canvas);
-  }, [draw, props.candlesArray, props.canvas]);
+    draw(ctx, props.canvas.candleArray, props.canvas);
+  }, [draw, props.canvas.candleArray, props.canvas]);
 
   return (
     <canvas

@@ -29,6 +29,7 @@ export class CandleCanvas {
   max: number;
   gap: number;
   candleWidth: number;
+  candleArray: Candle2D[];
 
   constructor(
     width: number,
@@ -48,6 +49,8 @@ export class CandleCanvas {
     const gapAndWidth = this.getGapAndCandleWidth();
     this.gap = gapAndWidth.gap;
     this.candleWidth = gapAndWidth.candleWidth;
+
+    this.candleArray = this.getDrawingArray(candlesToDraw);
   }
   private getGapAndCandleWidth() {
     const gap = this.width / this.candlesShown / 5;
@@ -59,6 +62,19 @@ export class CandleCanvas {
     const min = Math.min(...candles.map((candle) => candle.low));
     const max = Math.max(...candles.map((candle) => candle.high));
     return { min, max };
+  }
+  private getDrawingArray(candlesArray: CandleToDraw[]) {
+    const sliced = candlesArray.slice(-this.candlesShown);
+    const candles2D = sliced.map((candle) => {
+      return new Candle2D(
+        candle.open,
+        candle.close,
+        candle.low,
+        candle.high,
+        this
+      );
+    });
+    return candles2D;
   }
 }
 
@@ -119,20 +135,6 @@ export class Candle2D {
   }
 }
 
-export const getDrawingArray = function (candlesArray: CandleToDraw[]) {
-  const canvas = new CandleCanvas(600, 400, 70, candlesArray);
-  const sliced = candlesArray.slice(-canvas.candlesShown);
-  const candles2D = sliced.map((candle) => {
-    return new Candle2D(
-      candle.open,
-      candle.close,
-      candle.low,
-      candle.high,
-      canvas
-    );
-  });
-  return { canvas, candles2D };
-};
 export const drawFunction = (
   ctx: CanvasRenderingContext2D,
   candlesArray: Candle2D[],
