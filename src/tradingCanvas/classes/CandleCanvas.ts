@@ -1,33 +1,41 @@
-import { CandleToDraw } from '../types';
+import { CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
 export class CandleCanvas {
   width: number;
   height: number;
-  candlesShown: number;
   min: number;
   max: number;
   gap: number;
   candleWidth: number;
   candleArray: Candle2D[];
   alligatorArray: {
-    jaw: { x: number; y: number }[];
-    lips: { x: number; y: number }[];
-    teeth: { x: number; y: number }[];
+    jaw: Vector2[];
+    lips: Vector2[];
+    teeth: Vector2[];
   };
 
   constructor(
     width: number,
     height: number,
-    candlesShown: number,
+    public candlesShown: number,
+    public candleShift: number,
     candlesToDraw: CandleToDraw[]
   ) {
     this.width = width * 3;
     this.height = height * 3;
-    this.candlesShown = candlesShown;
 
-    const forMinMax = candlesToDraw.slice(-candlesShown);
-    const minMax = this.minMaxCalc(forMinMax);
+    const shiftedMinMax = candlesToDraw.slice(
+      0,
+      candlesToDraw.length - this.candleShift
+    );
+
+    const zoomedMinMax = shiftedMinMax.slice(
+      shiftedMinMax.length - this.candlesShown,
+      shiftedMinMax.length
+    );
+
+    const minMax = this.minMaxCalc(zoomedMinMax);
     this.min = minMax.min;
     this.max = minMax.max;
 
@@ -56,7 +64,16 @@ export class CandleCanvas {
     return { min, max };
   }
   private getDrawingArray(candlesArray: CandleToDraw[]) {
-    const sliced = candlesArray.slice(-this.candlesShown);
+    const shifted = candlesArray.slice(
+      0,
+      candlesArray.length - this.candleShift
+    );
+
+    const sliced = shifted.slice(
+      shifted.length - this.candlesShown,
+      shifted.length
+    );
+
     const candles2D = sliced.map((candle) => {
       return new Candle2D(
         candle.open,
@@ -70,9 +87,9 @@ export class CandleCanvas {
     return candles2D;
   }
   private getAlligatorArray(candles: Candle2D[]) {
-    const jaw: { x: number; y: number }[] = [];
-    const teeth: { x: number; y: number }[] = [];
-    const lips: { x: number; y: number }[] = [];
+    const jaw: Vector2[] = [];
+    const teeth: Vector2[] = [];
+    const lips: Vector2[] = [];
     candles.forEach((candle, index) => {
       const x = index * (this.candleWidth + this.gap) + this.candleWidth / 2;
       if (candle.alligator.jaw !== 0) jaw.push({ x, y: candle.alligator.jaw });

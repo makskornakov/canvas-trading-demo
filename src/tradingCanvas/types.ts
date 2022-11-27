@@ -22,3 +22,7 @@ export interface Indicators {
     lips: number;
   };
 }
+export type Vector2 = {
+  x: number;
+  y: number;
+};

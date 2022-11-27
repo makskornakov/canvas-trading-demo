@@ -20,6 +20,7 @@ function App() {
         height={400}
         candleArray={exampleArray.map((candle) => candle as CandleToDraw)}
         candlesShown={100}
+        shift={0}
       ></Canvas>
     </div>
   );
