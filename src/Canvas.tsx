@@ -1,29 +1,34 @@
 import React, { useEffect, useRef } from 'react';
-import { Candle2D, CandleCanvas } from './draw';
+import { CandleCanvas, CandleToDraw, drawFunction } from './draw';
 
 type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
   HTMLCanvasElement
 > & {
-  draw: (
-    ctx: CanvasRenderingContext2D,
-    candlesArray: Candle2D[],
-    canvas: CandleCanvas
-  ) => void;
-} & {
-  canvas: CandleCanvas;
+  candleArray: CandleToDraw[];
+  candlesShown: number;
 };
 
-const Canvas: React.FC<CanvasProps> = ({ draw, ...props }) => {
+const Canvas: React.FC<CanvasProps> = ({ ...props }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   useEffect(() => {
+    const drawingCandles = props.candleArray.map(
+      (candle) => candle as CandleToDraw
+    );
+    const propsCanvas = new CandleCanvas(
+      Number(props.width),
+      Number(props.height),
+      props.candlesShown,
+      drawingCandles
+    );
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    draw(ctx, props.canvas.candleArray, props.canvas);
-  }, [draw, props.canvas.candleArray, props.canvas]);
+    drawFunction(ctx, propsCanvas.candleArray, propsCanvas);
+  }, [props.candleArray, props.candlesShown, props.height, props.width]);
 
   return (
     <canvas
