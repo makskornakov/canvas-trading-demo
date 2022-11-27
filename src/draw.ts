@@ -319,15 +319,11 @@ function drawFractal(
   candleWidth: number
 ) {
   ctx.beginPath();
-  if (type === 'up') {
-    ctx.moveTo(x - candleWidth / 2, y);
-    ctx.lineTo(x + candleWidth / 2, y - candleWidth * 1.5);
-    ctx.lineTo(x + candleWidth * 1.5, y);
-  } else {
-    ctx.moveTo(x - candleWidth / 2, y);
-    ctx.lineTo(x + candleWidth / 2, y + candleWidth * 1.5);
-    ctx.lineTo(x + candleWidth * 1.5, y);
-  }
+  ctx.moveTo(x - candleWidth / 2, y);
+
+  const toY = type === 'up' ? y - candleWidth * 1.5 : y + candleWidth * 1.5;
+  ctx.lineTo(x + candleWidth / 2, toY);
+  ctx.lineTo(x + candleWidth * 1.5, y);
 
   ctx.fillStyle = type === 'up' ? 'green' : 'red';
   ctx.fill();
