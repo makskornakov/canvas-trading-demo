@@ -235,6 +235,7 @@ export const drawFunction = (
     const x = index * (canvas.candleWidth + canvas.gap);
     const candleIsRed = candle.open < candle.close;
     const y = candleIsRed ? candle.open : candle.close;
+
     // draw candle
     ctx.beginPath();
     ctx.rect(
@@ -246,6 +247,7 @@ export const drawFunction = (
     ctx.fillStyle = candleIsRed ? 'red' : 'green';
     ctx.fill();
     ctx.closePath();
+
     // draw wick
     ctx.beginPath();
     ctx.moveTo(x + canvas.candleWidth / 2, candle.high);
@@ -253,15 +255,9 @@ export const drawFunction = (
     ctx.strokeStyle = candleIsRed ? 'red' : 'green';
     ctx.stroke();
     ctx.closePath();
+
     // draw indicators
     drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
-    // ctx.beginPath();
-    // // ctx.moveTo(x, candle.high);
-    // // draw red circle
-    // ctx.arc(x, candle.high + 10, 5, 0, 2 * Math.PI);
-    // ctx.fillStyle = 'red';
-    // ctx.fill();
-    // ctx.closePath();
   });
 };
 function drawMountedIndicators(
