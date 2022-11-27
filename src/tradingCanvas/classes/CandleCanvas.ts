@@ -1,0 +1,87 @@
+import { CandleToDraw } from '../types';
+import { Candle2D } from './CandleClasses';
+
+export class CandleCanvas {
+  width: number;
+  height: number;
+  candlesShown: number;
+  min: number;
+  max: number;
+  gap: number;
+  candleWidth: number;
+  candleArray: Candle2D[];
+  alligatorArray: {
+    jaw: { x: number; y: number }[];
+    teeth: { x: number; y: number }[];
+    lips: { x: number; y: number }[];
+  };
+
+  constructor(
+    width: number,
+    height: number,
+    candlesShown: number,
+    candlesToDraw: CandleToDraw[]
+  ) {
+    this.width = width * 3;
+    this.height = height * 3;
+    this.candlesShown = candlesShown;
+
+    const forMinMax = candlesToDraw.slice(-candlesShown);
+    const minMax = this.minMaxCalc(forMinMax);
+    this.min = minMax.min;
+    this.max = minMax.max;
+
+    const gapAndWidth = this.getGapAndCandleWidth();
+    this.gap = gapAndWidth.gap;
+    this.candleWidth = gapAndWidth.candleWidth;
+
+    this.candleArray = this.getDrawingArray(candlesToDraw);
+    this.alligatorArray = this.getAlligatorArray(this.candleArray);
+  }
+  private getGapAndCandleWidth() {
+    const gap = this.width / this.candlesShown / 5;
+    const candleWidth =
+      (this.width - (this.candlesShown - 1) * gap) / this.candlesShown;
+    return { gap, candleWidth };
+  }
+  private minMaxCalc(candles: CandleToDraw[]) {
+    // not if value is 0
+    const min = Math.min(
+      ...candles.map((candle) => (candle.low !== 0 ? candle.low : Infinity)) // if candle.low is 0, wont be used
+    );
+    const max = Math.max(
+      ...candles.map((candle) => (candle.high !== 0 ? candle.high : -Infinity)) // if candle.high is 0, wont be used
+    );
+
+    return { min, max };
+  }
+  private getDrawingArray(candlesArray: CandleToDraw[]) {
+    const sliced = candlesArray.slice(-this.candlesShown);
+    const candles2D = sliced.map((candle) => {
+      return new Candle2D(
+        candle.open,
+        candle.close,
+        candle.low,
+        candle.high,
+        candle.indicators,
+        this
+      );
+    });
+    return candles2D;
+  }
+  private getAlligatorArray(candles: Candle2D[]) {
+    const jaw: { x: number; y: number }[] = [];
+    const teeth: { x: number; y: number }[] = [];
+    const lips: { x: number; y: number }[] = [];
+    candles.forEach((candle, index) => {
+      const x = index * (this.candleWidth + this.gap) + this.candleWidth / 2;
+      if (candle.alligator.jaw !== 0) jaw.push({ x, y: candle.alligator.jaw });
+
+      if (candle.alligator.teeth !== 0)
+        teeth.push({ x, y: candle.alligator.teeth });
+      if (candle.alligator.lips !== 0)
+        lips.push({ x, y: candle.alligator.lips });
+    });
+    return { jaw, teeth, lips };
+  }
+}

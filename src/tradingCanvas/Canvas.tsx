@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { CandleCanvas, CandleToDraw, drawFunction } from './draw';
+import { CandleCanvas } from './classes/CandleCanvas';
+import { drawFunction } from './draw';
+import { CandleToDraw } from './types';
 
 type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,

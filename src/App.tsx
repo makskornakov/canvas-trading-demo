@@ -1,6 +1,6 @@
-import Canvas from './Canvas';
-import { CandleToDraw } from './draw';
+import Canvas from './tradingCanvas/Canvas';
 import exampleArray from './output';
+import { CandleToDraw } from './tradingCanvas/types';
 
 function App() {
   return (
