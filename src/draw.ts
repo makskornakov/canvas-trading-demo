@@ -261,6 +261,8 @@ export const drawFunction = (
 
     // draw wick
     ctx.beginPath();
+    // line thickness
+    ctx.lineWidth = canvas.candleWidth / 6;
     ctx.moveTo(x + canvas.candleWidth / 2, candle.high);
     ctx.lineTo(x + canvas.candleWidth / 2, candle.low);
     ctx.strokeStyle = candleIsRed ? 'red' : 'green';
