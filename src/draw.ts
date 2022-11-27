@@ -31,6 +31,11 @@ export class CandleCanvas {
   gap: number;
   candleWidth: number;
   candleArray: Candle2D[];
+  alligatorArray: {
+    jaw: { x: number; y: number }[];
+    teeth: { x: number; y: number }[];
+    lips: { x: number; y: number }[];
+  };
 
   constructor(
     width: number,
@@ -52,6 +57,7 @@ export class CandleCanvas {
     this.candleWidth = gapAndWidth.candleWidth;
 
     this.candleArray = this.getDrawingArray(candlesToDraw);
+    this.alligatorArray = this.getAlligatorArray(this.candleArray);
   }
   private getGapAndCandleWidth() {
     const gap = this.width / this.candlesShown / 5;
@@ -83,6 +89,21 @@ export class CandleCanvas {
       );
     });
     return candles2D;
+  }
+  private getAlligatorArray(candles: Candle2D[]) {
+    const jaw: { x: number; y: number }[] = [];
+    const teeth: { x: number; y: number }[] = [];
+    const lips: { x: number; y: number }[] = [];
+    candles.forEach((candle, index) => {
+      const x = index * (this.candleWidth + this.gap) + this.candleWidth / 2;
+      if (candle.alligator.jaw !== 0) jaw.push({ x, y: candle.alligator.jaw });
+
+      if (candle.alligator.teeth !== 0)
+        teeth.push({ x, y: candle.alligator.teeth });
+      if (candle.alligator.lips !== 0)
+        lips.push({ x, y: candle.alligator.lips });
+    });
+    return { jaw, teeth, lips };
   }
 }
 class MountedIndicator {
@@ -197,6 +218,7 @@ export class Candle2D {
   high: number;
   noDraw: boolean;
   mountPoints: CandleMountPoints;
+  alligator: Indicators['alligator'];
 
   constructor(
     originalOpen: number,
@@ -219,6 +241,10 @@ export class Candle2D {
     this.open === 0 || this.close === 0 || this.low === 0 || this.high === 0
       ? (this.noDraw = true)
       : (this.noDraw = false);
+    this.alligator = this.getAlligatorPoints(
+      originalIndicators.alligator,
+      candleCanvas
+    );
   }
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
@@ -230,6 +256,18 @@ export class Candle2D {
         (candleCanvas.height - gapSpace * 2) +
       gapSpace;
     return point;
+  };
+  private getAlligatorPoints = (
+    alligator: Indicators['alligator'],
+    candleCanvas: CandleCanvas
+  ) => {
+    const keys = Object.keys(alligator) as Array<keyof Indicators['alligator']>;
+    const points = {} as Indicators['alligator'];
+    keys.forEach((key) => {
+      points[key] =
+        alligator[key] !== 0 ? this.getPoint(alligator[key], candleCanvas) : 0;
+    });
+    return points;
   };
 }
 
@@ -272,7 +310,48 @@ export const drawFunction = (
     // draw indicators
     drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
   });
+
+  // draw alligator
+  drawCurveLine(
+    ctx,
+    canvas.alligatorArray.jaw,
+    'blue',
+    canvas.candleWidth / 10
+  );
+  drawCurveLine(
+    ctx,
+    canvas.alligatorArray.teeth,
+    'red',
+    canvas.candleWidth / 10
+  );
+  drawCurveLine(
+    ctx,
+    canvas.alligatorArray.lips,
+    'green',
+    canvas.candleWidth / 10
+  );
 };
+function drawCurveLine(
+  ctx: CanvasRenderingContext2D,
+  points: { x: number; y: number }[],
+  color: string,
+  lineWidth: number
+) {
+  // ctx.moveTo(0, candlesArray[0].alligator.jaw);
+  ctx.beginPath();
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = color;
+  for (const point of points) {
+    const xMid = (point.x + point.x) / 2;
+    const yMid = (point.y + point.y) / 2;
+    const cpX1 = (xMid + point.x) / 2;
+    const cpX2 = (xMid + point.x) / 2;
+    ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
+    ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+  }
+  ctx.stroke();
+  ctx.closePath();
+}
 function drawMountedIndicators(
   ctx: CanvasRenderingContext2D,
   candle: Candle2D,
