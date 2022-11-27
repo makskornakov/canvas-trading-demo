@@ -146,7 +146,7 @@ class CandleMountPoints {
     candleWidth: number,
     high: number
   ) {
-    const yGap = candleWidth * 1.5;
+    const yGap = candleWidth;
     if (this.above.first === null) {
       this.above.first = {
         type,
@@ -157,7 +157,7 @@ class CandleMountPoints {
       this.above.second = {
         type,
         value,
-        yPos: high - yGap * 3,
+        yPos: high - yGap * 2,
       };
     }
   }
@@ -167,7 +167,7 @@ class CandleMountPoints {
     candleWidth: number,
     low: number
   ) {
-    const yGap = candleWidth * 1.5;
+    const yGap = candleWidth;
     if (this.below.first === null) {
       this.below.first = {
         type,
@@ -178,7 +178,7 @@ class CandleMountPoints {
       this.below.second = {
         type,
         value,
-        yPos: low + yGap * 3,
+        yPos: low + yGap * 2,
       };
     }
   }
@@ -286,6 +286,14 @@ function drawMountedIndicators(
           indicator.value as 'buy' | 'sell',
           candleWidth
         );
+      } else if (indicator.type === 'fractal') {
+        drawFractal(
+          ctx,
+          x,
+          indicator.yPos,
+          indicator.value as 'up' | 'down',
+          candleWidth
+        );
       }
     }
   });
@@ -298,8 +306,30 @@ function drawRevBar(
   candleWidth: number
 ) {
   ctx.beginPath();
-  ctx.arc(x + candleWidth / 2, y, candleWidth / 2, 0, 2 * Math.PI);
+  ctx.arc(x + candleWidth / 2, y, candleWidth / 3, 0, 2 * Math.PI);
   ctx.fillStyle = type === 'buy' ? 'green' : 'red';
+  ctx.fill();
+  ctx.closePath();
+}
+function drawFractal(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  type: 'up' | 'down',
+  candleWidth: number
+) {
+  ctx.beginPath();
+  if (type === 'up') {
+    ctx.moveTo(x - candleWidth / 2, y);
+    ctx.lineTo(x + candleWidth / 2, y - candleWidth * 1.5);
+    ctx.lineTo(x + candleWidth * 1.5, y);
+  } else {
+    ctx.moveTo(x - candleWidth / 2, y);
+    ctx.lineTo(x + candleWidth / 2, y + candleWidth * 1.5);
+    ctx.lineTo(x + candleWidth * 1.5, y);
+  }
+
+  ctx.fillStyle = type === 'up' ? 'green' : 'red';
   ctx.fill();
   ctx.closePath();
 }
