@@ -62,10 +62,10 @@ export class CandleCanvas {
   private minMaxCalc(candles: CandleToDraw[]) {
     // not if value is 0
     const min = Math.min(
-      ...candles.map((candle) => (candle.low !== 0 ? candle.low : Infinity)) // if candle.low is 0, use min
+      ...candles.map((candle) => (candle.low !== 0 ? candle.low : Infinity)) // if candle.low is 0, wont be used
     );
     const max = Math.max(
-      ...candles.map((candle) => (candle.high !== 0 ? candle.high : -Infinity)) // if candle.high is 0, use max
+      ...candles.map((candle) => (candle.high !== 0 ? candle.high : -Infinity)) // if candle.high is 0, wont be used
     );
 
     return { min, max };

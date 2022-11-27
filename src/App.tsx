@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import Canvas from './Canvas';
 import { CandleCanvas, CandleToDraw, drawFunction } from './draw';
 import exampleArray from './output';
@@ -6,7 +5,7 @@ import exampleArray from './output';
 function App() {
   const drawingCandles = exampleArray.map((candle) => candle as CandleToDraw);
   console.log(exampleArray.length);
-  const canvas = new CandleCanvas(600, 400, 90, drawingCandles);
+  const canvas = new CandleCanvas(600, 400, 100, drawingCandles);
   console.log(canvas);
 
   return (
