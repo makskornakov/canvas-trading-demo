@@ -25,17 +25,17 @@ export class CandleCanvas {
     this.width = width * 3;
     this.height = height * 3;
 
-    const shiftedMinMax = candlesToDraw.slice(
+    const shiftedCandleArray = candlesToDraw.slice(
       0,
       candlesToDraw.length - this.candleShift
     );
 
-    const zoomedMinMax = shiftedMinMax.slice(
-      shiftedMinMax.length - this.candlesShown,
-      shiftedMinMax.length
+    const zoomedCandleArray = shiftedCandleArray.slice(
+      shiftedCandleArray.length - this.candlesShown,
+      shiftedCandleArray.length
     );
 
-    const minMax = this.minMaxCalc(zoomedMinMax);
+    const minMax = this.minMaxCalc(zoomedCandleArray);
     this.min = minMax.min;
     this.max = minMax.max;
 
@@ -43,7 +43,7 @@ export class CandleCanvas {
     this.gap = gapAndWidth.gap;
     this.candleWidth = gapAndWidth.candleWidth;
 
-    this.candleArray = this.getDrawingArray(candlesToDraw);
+    this.candleArray = this.getDrawingArray(zoomedCandleArray);
     this.alligatorArray = this.getAlligatorArray(this.candleArray);
   }
   private getGapAndCandleWidth() {
@@ -63,18 +63,13 @@ export class CandleCanvas {
 
     return { min, max };
   }
-  private getDrawingArray(candlesArray: CandleToDraw[]) {
-    const shifted = candlesArray.slice(
-      0,
-      candlesArray.length - this.candleShift
-    );
+  private getDrawingArray(slicedArray: CandleToDraw[]) {
+    // const slicedArray = shifted.slice(
+    //   shifted.length - this.candlesShown,
+    //   shifted.length
+    // );
 
-    const sliced = shifted.slice(
-      shifted.length - this.candlesShown,
-      shifted.length
-    );
-
-    const candles2D = sliced.map((candle) => {
+    const candles2D = slicedArray.map((candle) => {
       return new Candle2D(
         candle.open,
         candle.close,
