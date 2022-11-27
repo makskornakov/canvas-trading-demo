@@ -60,8 +60,14 @@ export class CandleCanvas {
     return { gap, candleWidth };
   }
   private minMaxCalc(candles: CandleToDraw[]) {
-    const min = Math.min(...candles.map((candle) => candle.low));
-    const max = Math.max(...candles.map((candle) => candle.high));
+    // not if value is 0
+    const min = Math.min(
+      ...candles.map((candle) => (candle.low !== 0 ? candle.low : Infinity)) // if candle.low is 0, use min
+    );
+    const max = Math.max(
+      ...candles.map((candle) => (candle.high !== 0 ? candle.high : -Infinity)) // if candle.high is 0, use max
+    );
+
     return { min, max };
   }
   private getDrawingArray(candlesArray: CandleToDraw[]) {
@@ -189,6 +195,7 @@ export class Candle2D {
   close: number;
   low: number;
   high: number;
+  noDraw: boolean;
   mountPoints: CandleMountPoints;
 
   constructor(
@@ -209,6 +216,9 @@ export class Candle2D {
       this.low,
       this.high
     );
+    this.open === 0 || this.close === 0 || this.low === 0 || this.high === 0
+      ? (this.noDraw = true)
+      : (this.noDraw = false);
   }
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
@@ -232,6 +242,7 @@ export const drawFunction = (
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   candlesArray.forEach((candle, index) => {
+    if (candle.noDraw) return;
     const x = index * (canvas.candleWidth + canvas.gap);
     const candleIsRed = candle.open < candle.close;
     const y = candleIsRed ? candle.open : candle.close;
