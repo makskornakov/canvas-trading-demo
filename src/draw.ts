@@ -81,13 +81,17 @@ export class CandleCanvas {
 }
 class MountedIndicator {
   type: 'revBar' | 'fractal';
+  value: 'buy' | 'sell' | 'up' | 'down';
   // positive means
-  aboveCandle: boolean;
   yPos: number;
-  constructor(type: 'revBar' | 'fractal', above: boolean, yPos: number) {
+  constructor(
+    type: 'revBar' | 'fractal',
+    value: 'buy' | 'sell' | 'up' | 'down',
+    yPos: number
+  ) {
     this.type = type;
-    this.aboveCandle = above;
     this.yPos = yPos;
+    this.value = value;
   }
 }
 
@@ -101,7 +105,7 @@ class CandleMountPoints {
     second: MountedIndicator | null;
   };
   constructor(
-    canvasWidth: number,
+    candleWidth: number,
     candleIndicators: Indicators,
     low: number,
     high: number
@@ -114,65 +118,67 @@ class CandleMountPoints {
       first: null,
       second: null,
     };
-    this.mountIndicators(canvasWidth, candleIndicators, low, high);
+    this.mountIndicators(candleWidth, candleIndicators, low, high);
   }
   private mountIndicators(
-    canvasWidth: number,
+    candleWidth: number,
     indicators: Indicators,
     low: number,
     high: number
   ) {
     // mount revBar
     if (indicators.revBar === 'sell') {
-      this.mountUp('revBar', canvasWidth, high);
+      this.mountUp('revBar', 'sell', candleWidth, high);
     } else if (indicators.revBar === 'buy') {
-      this.mountDown('revBar', canvasWidth, low);
+      this.mountDown('revBar', 'buy', candleWidth, low);
     }
     // mount fractal
     if (indicators.fractal === 'up') {
-      this.mountUp('fractal', canvasWidth, high);
+      this.mountUp('fractal', 'up', candleWidth, high);
     } else if (indicators.fractal === 'down') {
-      this.mountDown('fractal', canvasWidth, low);
+      this.mountDown('fractal', 'down', candleWidth, low);
     }
   }
 
   private mountUp(
     type: 'fractal' | 'revBar',
-    canvasWidth: number,
+    value: 'buy' | 'sell' | 'up' | 'down',
+    candleWidth: number,
     high: number
   ) {
-    const yGap = canvasWidth * 1.5;
+    const yGap = candleWidth * 1.5;
     if (this.above.first === null) {
       this.above.first = {
         type,
-        aboveCandle: true,
-        yPos: high + yGap,
+        value,
+        yPos: high - yGap,
       };
     } else if (this.above.second === null) {
       this.above.second = {
         type,
-        aboveCandle: true,
-        yPos: high + yGap * 3,
+        value,
+        yPos: high - yGap * 3,
       };
     }
   }
   private mountDown(
     type: 'fractal' | 'revBar',
-    canvasWidth: number,
+    value: 'buy' | 'sell' | 'up' | 'down',
+    candleWidth: number,
     low: number
   ) {
-    const yGap = canvasWidth * 1.5;
+    const yGap = candleWidth * 1.5;
     if (this.below.first === null) {
       this.below.first = {
         type,
-        aboveCandle: false,
-        yPos: low - yGap,
+        value,
+        yPos: low + yGap,
       };
     } else if (this.below.second === null) {
       this.below.second = {
         type,
-        aboveCandle: false,
-        yPos: low - yGap * 3,
+        value,
+        yPos: low + yGap * 3,
       };
     }
   }
@@ -198,7 +204,7 @@ export class Candle2D {
     this.low = this.getPoint(originalLow, candleCanvas);
     this.high = this.getPoint(originalHigh, candleCanvas);
     this.mountPoints = new CandleMountPoints(
-      candleCanvas.width,
+      candleCanvas.candleWidth,
       originalIndicators,
       this.low,
       this.high
@@ -222,6 +228,9 @@ export const drawFunction = (
   candlesArray: Candle2D[],
   canvas: CandleCanvas
 ) => {
+  // clear ctx
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   candlesArray.forEach((candle, index) => {
     const x = index * (canvas.candleWidth + canvas.gap);
     const candleIsRed = candle.open < candle.close;
@@ -244,5 +253,53 @@ export const drawFunction = (
     ctx.strokeStyle = candleIsRed ? 'red' : 'green';
     ctx.stroke();
     ctx.closePath();
+    // draw indicators
+    drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
+    // ctx.beginPath();
+    // // ctx.moveTo(x, candle.high);
+    // // draw red circle
+    // ctx.arc(x, candle.high + 10, 5, 0, 2 * Math.PI);
+    // ctx.fillStyle = 'red';
+    // ctx.fill();
+    // ctx.closePath();
   });
 };
+function drawMountedIndicators(
+  ctx: CanvasRenderingContext2D,
+  candle: Candle2D,
+  x: number,
+  candleWidth: number
+) {
+  const arr = [
+    candle.mountPoints.above.first,
+    candle.mountPoints.above.second,
+    candle.mountPoints.below.first,
+    candle.mountPoints.below.second,
+  ];
+  arr.forEach((indicator, i) => {
+    if (indicator !== null) {
+      if (indicator.type === 'revBar') {
+        drawRevBar(
+          ctx,
+          x,
+          indicator.yPos,
+          indicator.value as 'buy' | 'sell',
+          candleWidth
+        );
+      }
+    }
+  });
+}
+function drawRevBar(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  type: 'buy' | 'sell',
+  candleWidth: number
+) {
+  ctx.beginPath();
+  ctx.arc(x + candleWidth / 2, y, candleWidth / 2, 0, 2 * Math.PI);
+  ctx.fillStyle = type === 'buy' ? 'green' : 'red';
+  ctx.fill();
+  ctx.closePath();
+}
