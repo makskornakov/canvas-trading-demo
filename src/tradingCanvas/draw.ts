@@ -1,6 +1,12 @@
 import { CandleCanvas } from './classes/CandleCanvas';
 import { Candle2D } from './classes/CandleClasses';
 
+const alligatorColors = {
+  jaw: 'blue',
+  teeth: 'red',
+  lips: 'green',
+};
+
 export const drawFunction = (
   ctx: CanvasRenderingContext2D,
   candlesArray: Candle2D[],
@@ -42,35 +48,29 @@ export const drawFunction = (
   });
 
   // draw alligator
-  drawCurveLine(
-    ctx,
-    canvas.alligatorArray.jaw,
-    'blue',
-    canvas.candleWidth / 10
-  );
-  drawCurveLine(
-    ctx,
-    canvas.alligatorArray.teeth,
-    'red',
-    canvas.candleWidth / 10
-  );
-  drawCurveLine(
-    ctx,
-    canvas.alligatorArray.lips,
-    'green',
-    canvas.candleWidth / 10
-  );
+  const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
+    keyof typeof canvas.alligatorArray
+  >;
+  alligatorKeys.forEach((key) => {
+    drawCurveLine(
+      ctx,
+      canvas.alligatorArray[key],
+      alligatorColors[key],
+      canvas.candleWidth / 10
+    );
+  });
 };
+
 function drawCurveLine(
   ctx: CanvasRenderingContext2D,
   points: { x: number; y: number }[],
   color: string,
   lineWidth: number
 ) {
-  // ctx.moveTo(0, candlesArray[0].alligator.jaw);
   ctx.beginPath();
   ctx.lineWidth = lineWidth;
   ctx.strokeStyle = color;
+
   for (const point of points) {
     const xMid = (point.x + point.x) / 2;
     const yMid = (point.y + point.y) / 2;
@@ -79,9 +79,11 @@ function drawCurveLine(
     ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
     ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
   }
+
   ctx.stroke();
   ctx.closePath();
 }
+
 function drawMountedIndicators(
   ctx: CanvasRenderingContext2D,
   candle: Candle2D,
@@ -94,6 +96,7 @@ function drawMountedIndicators(
     candle.mountPoints.below.first,
     candle.mountPoints.below.second,
   ];
+
   arr.forEach((indicator, i) => {
     if (indicator !== null) {
       if (indicator.type === 'revBar') {
@@ -116,6 +119,7 @@ function drawMountedIndicators(
     }
   });
 }
+
 function drawRevBar(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -129,6 +133,7 @@ function drawRevBar(
   ctx.fill();
   ctx.closePath();
 }
+
 function drawFractal(
   ctx: CanvasRenderingContext2D,
   x: number,

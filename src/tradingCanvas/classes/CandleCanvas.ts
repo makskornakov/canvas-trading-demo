@@ -12,8 +12,8 @@ export class CandleCanvas {
   candleArray: Candle2D[];
   alligatorArray: {
     jaw: { x: number; y: number }[];
-    teeth: { x: number; y: number }[];
     lips: { x: number; y: number }[];
+    teeth: { x: number; y: number }[];
   };
 
   constructor(
