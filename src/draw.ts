@@ -38,8 +38,8 @@ export class CandleCanvas {
     candlesShown: number,
     candlesToDraw: CandleToDraw[]
   ) {
-    this.width = width;
-    this.height = height;
+    this.width = width * 3;
+    this.height = height * 3;
     this.candlesShown = candlesShown;
 
     const forMinMax = candlesToDraw.slice(-candlesShown);
