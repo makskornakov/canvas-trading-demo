@@ -13,7 +13,7 @@ function App() {
           width={800}
           height={400}
           candleArray={exampleArray as CandleToDraw[]}
-          candlesShown={150}
+          candlesShown={160}
           shift={0}
         ></Canvas>
         <Canvas
