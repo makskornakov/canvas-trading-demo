@@ -18,7 +18,7 @@ function App() {
       <Canvas
         width={600}
         height={350}
-        candleArray={exampleArray.map((candle) => candle as CandleToDraw)}
+        candleArray={exampleArray as CandleToDraw[]}
         candlesShown={100}
         shift={0}
       ></Canvas>

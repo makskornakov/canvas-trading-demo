@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Wrap } from './canvas.styled';
+import { AlligatorCanvas, MainCanvas, Wrap } from './canvas.styled';
 
 import { CandleCanvas } from './classes/CandleCanvas';
 import { drawAo, drawFunction } from './draw';
@@ -83,26 +83,16 @@ const Canvas: React.FC<CanvasProps> = ({
   ]);
 
   return (
-    <Wrap>
-      <canvas
+    <Wrap width={Number(props.width)}>
+      <MainCanvas
         {...props}
-        style={{
-          outline: '0.5px solid red',
-          width: props.width,
-          height: props.height,
-        }}
         width={Number(props.width) * 3}
         height={Number(props.height) * 3}
         ref={canvasRef}
       />
-      <canvas
+      <AlligatorCanvas
         width={Number(props.width) * 3}
         height={(Number(props.height) * 3) / 5}
-        style={{
-          width: props.width,
-          height: `${Number(props.height) / 5}`,
-          outline: '0.5px solid black',
-        }}
         ref={aoCanvasRef}
       />
     </Wrap>
