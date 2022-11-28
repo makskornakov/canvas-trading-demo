@@ -8,8 +8,6 @@ export function scrollZoom(
   setShift: (shift: number) => void,
   setCandlesShown: (candlesShown: number) => void
 ) {
-  //   console.log(movement);
-  //   maxCandles = maxCandles - 1;
   if (movement.y !== 0) {
     if (
       (candlesShown > 19 || (candlesShown === 20 && movement.y > 0)) &&
