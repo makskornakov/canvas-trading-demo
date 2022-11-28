@@ -1,10 +1,7 @@
-import { WheelEvent } from 'react';
+import { Vector2 } from './types';
 
 export function scrollZoom(
-  movement: {
-    x: number;
-    y: number;
-  },
+  movement: Vector2,
   shift: number,
   candlesShown: number,
   maxCandles: number,
