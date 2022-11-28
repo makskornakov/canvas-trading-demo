@@ -1,11 +1,10 @@
-import { CandleToDraw, Vector2 } from '../types';
+import { CandleToDraw, Indicators, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
 export class CandleCanvas {
   width: number;
   height: number;
-  min: number;
-  max: number;
+  minMax: { min: number; max: number; aoMin: number; aoMax: number };
   gap: number;
   candleWidth: number;
   candleArray: Candle2D[];
@@ -14,6 +13,7 @@ export class CandleCanvas {
     lips: Vector2[];
     teeth: Vector2[];
   };
+  aoArray: Indicators['ao'][];
 
   constructor(
     width: number,
@@ -36,8 +36,7 @@ export class CandleCanvas {
     );
 
     const minMax = this.minMaxCalc(zoomedCandleArray);
-    this.min = minMax.min;
-    this.max = minMax.max;
+    this.minMax = minMax;
 
     const gapAndWidth = this.getGapAndCandleWidth();
     this.gap = gapAndWidth.gap;
@@ -45,6 +44,7 @@ export class CandleCanvas {
 
     this.candleArray = this.getDrawingArray(zoomedCandleArray);
     this.alligatorArray = this.getAlligatorArray(this.candleArray);
+    this.aoArray = this.getAOArray(zoomedCandleArray, minMax);
   }
   private getGapAndCandleWidth() {
     const gap = this.width / this.candlesShown / 5;
@@ -60,8 +60,26 @@ export class CandleCanvas {
     const max = Math.max(
       ...candles.map((candle) => (candle.high !== 0 ? candle.high : -Infinity)) // if candle.high is 0, wont be used
     );
-
-    return { min, max };
+    const aoMin = Math.min(
+      ...candles.map((candle) =>
+        candle.indicators.ao.value !== 0 ? candle.indicators.ao.value : Infinity
+      ) // if candle.low is 0, wont be used
+    );
+    const aoMax = Math.max(
+      ...candles.map((candle) =>
+        candle.indicators.ao.value !== 0
+          ? candle.indicators.ao.value
+          : -Infinity
+      ) // if candle.high is 0, wont be used
+    );
+    console.log('aoMin', aoMin);
+    console.log('aoMax', aoMax);
+    return {
+      min,
+      max,
+      aoMin: aoMin < 0 ? aoMin : -aoMax,
+      aoMax: aoMax > 0 ? aoMax : -aoMin,
+    };
   }
   private getDrawingArray(slicedArray: CandleToDraw[]) {
     const candles2D = slicedArray.map((candle) => {
@@ -90,5 +108,21 @@ export class CandleCanvas {
         lips.push({ x, y: candle.alligator.lips });
     });
     return { jaw, teeth, lips };
+  }
+  private getAOArray(
+    candles: CandleToDraw[],
+    minMax: { min: number; max: number; aoMin: number; aoMax: number }
+  ) {
+    const aoArray: Indicators['ao'][] = [];
+    candles.forEach((candle, index) => {
+      const minMaxRange = minMax.aoMax - minMax.aoMin;
+      const newValue = candle.indicators.ao.value / minMaxRange;
+
+      aoArray.push({
+        value: newValue,
+        vertexValue: candle.indicators.ao.vertexValue,
+      });
+    });
+    return aoArray;
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { CandleCanvas } from './classes/CandleCanvas';
-import { drawFunction } from './draw';
+import { drawAo, drawFunction } from './draw';
 import { scrollZoom } from './functions';
 import { CandleToDraw } from './types';
 
@@ -31,6 +31,7 @@ const Canvas: React.FC<CanvasProps> = ({
   ...props
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const aoCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const [width, setWidth] = usePropState(props.width);
   const [height, setHeight] = usePropState(props.height);
@@ -49,7 +50,8 @@ const Canvas: React.FC<CanvasProps> = ({
     );
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const aoCanvas = aoCanvasRef.current;
+    if (!canvas || !aoCanvas) return;
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -65,22 +67,49 @@ const Canvas: React.FC<CanvasProps> = ({
     });
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    drawFunction(ctx, propsCanvas.candleArray, propsCanvas);
-  }, [width, candlesShown, candleArray, shift, height]);
+    const aoCtx = aoCanvas.getContext('2d');
+    if (!ctx || !aoCtx) return;
+    drawFunction(ctx, propsCanvas);
+    drawAo(aoCtx, propsCanvas);
+  }, [
+    width,
+    candlesShown,
+    candleArray,
+    shift,
+    height,
+    setShift,
+    setCandlesShown,
+  ]);
 
   return (
-    <canvas
-      {...props}
+    <div
       style={{
-        outline: '1px solid red',
-        width: props.width,
-        height: props.height,
+        display: 'flex',
+        flexDirection: 'column',
       }}
-      width={Number(props.width) * 3}
-      height={Number(props.height) * 3}
-      ref={canvasRef}
-    />
+    >
+      <canvas
+        {...props}
+        style={{
+          outline: '0.5px solid red',
+          width: props.width,
+          height: props.height,
+        }}
+        width={Number(props.width) * 3}
+        height={Number(props.height) * 3}
+        ref={canvasRef}
+      />
+      <canvas
+        width={Number(props.width) * 3}
+        height={(Number(props.height) * 3) / 5}
+        style={{
+          width: props.width,
+          height: `${Number(props.height) / 5}`,
+          outline: '0.5px solid black',
+        }}
+        ref={aoCanvasRef}
+      />
+    </div>
   );
 };
 

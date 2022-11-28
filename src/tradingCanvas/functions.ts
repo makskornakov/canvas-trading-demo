@@ -14,7 +14,6 @@ export function scrollZoom(
       (candlesShown < maxCandles - shift ||
         (candlesShown === maxCandles - shift && movement.y < 0))
     ) {
-      // add
       const newCandlesShown = Math.max(
         Math.min(candlesShown + Math.round(movement.y / 5), maxCandles - shift),
         20
@@ -28,7 +27,6 @@ export function scrollZoom(
       (shift < maxCandles - candlesShown ||
         (shift === maxCandles - candlesShown + 1 && movement.x > 0))
     ) {
-      // add
       const newShift = Math.max(
         Math.min(shift - Math.round(movement.x / 5), maxCandles - candlesShown),
         0

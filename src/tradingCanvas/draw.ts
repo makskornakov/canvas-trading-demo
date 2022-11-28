@@ -1,21 +1,48 @@
 import { CandleCanvas } from './classes/CandleCanvas';
 import { Candle2D } from './classes/CandleClasses';
+import { Indicators } from './types';
 
 const alligatorColors = {
   jaw: 'blue',
   teeth: 'red',
   lips: 'green',
 };
+export function drawAo(
+  ctx: CanvasRenderingContext2D,
+  candleCanvas: CandleCanvas
+) {
+  //clear canvas
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  const midLine = candleCanvas.height / 10;
+  candleCanvas.aoArray.forEach((ao, i) => {
+    const positive = ao.value > candleCanvas.aoArray[i - 1]?.value;
+    const aboveLine = ao.value > 0;
+
+    const x = i * (candleCanvas.candleWidth + candleCanvas.gap);
+    const y = aboveLine ? midLine - (ao.value / 2) * (midLine * 2) : midLine;
+
+    ctx.fillStyle = positive ? 'green' : 'red';
+    ctx.beginPath();
+
+    ctx.fillRect(
+      x,
+      y,
+      candleCanvas.candleWidth,
+      (Math.abs(ao.value) / 2) * (midLine * 2)
+    );
+    ctx.closePath();
+  });
+}
 
 export const drawFunction = (
   ctx: CanvasRenderingContext2D,
-  candlesArray: Candle2D[],
   canvas: CandleCanvas
 ) => {
   // clear ctx
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  candlesArray.forEach((candle, index) => {
+  canvas.candleArray.forEach((candle, index) => {
     if (candle.noDraw) return;
     const x = index * (canvas.candleWidth + canvas.gap);
     const candleIsRed = candle.open < candle.close;

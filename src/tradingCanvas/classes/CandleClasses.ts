@@ -146,8 +146,8 @@ export class Candle2D {
     const gapSpace = candleCanvas.candleWidth * 4.5;
 
     const point =
-      ((candleCanvas.max - originalPoint) /
-        (candleCanvas.max - candleCanvas.min)) *
+      ((candleCanvas.minMax.max - originalPoint) /
+        (candleCanvas.minMax.max - candleCanvas.minMax.min)) *
         (candleCanvas.height - gapSpace * 2) +
       gapSpace;
     return point;

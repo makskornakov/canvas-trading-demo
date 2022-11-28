@@ -21,6 +21,7 @@ export interface Indicators {
     teeth: number;
     lips: number;
   };
+  ao: { value: number; vertexValue: number };
 }
 export type Vector2 = {
   x: number;
