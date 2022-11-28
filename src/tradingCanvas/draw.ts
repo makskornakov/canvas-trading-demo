@@ -11,7 +11,7 @@ export function drawCursor(
 ) {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.beginPath();
-  ctx.lineWidth = 0.5;
+  ctx.lineWidth = 0.7;
   ctx.moveTo(0, cursor.y * canvasSettings.scaleForQuality);
   ctx.lineTo(
     canvasWidth * canvasSettings.scaleForQuality,
@@ -23,7 +23,7 @@ export function drawCursor(
     canvasHeight * canvasSettings.scaleForQuality
   );
   ctx.strokeStyle = 'white';
-  ctx.globalAlpha = 0.7;
+  ctx.globalAlpha = 0.8;
   ctx.stroke();
   ctx.closePath();
 }

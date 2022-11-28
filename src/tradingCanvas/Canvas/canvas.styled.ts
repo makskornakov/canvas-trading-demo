@@ -6,7 +6,7 @@ export const Wrap = styled.div<{
   height: number;
 }>`
   width: ${(props) => props.width}px;
-  height: ${(props) => props.height + props.height / 5}px;
+  height: ${(props) => props.height + props.height / 5 + 5}px;
   margin: 0 auto;
   outline: 0.5px solid gray;
 `;
