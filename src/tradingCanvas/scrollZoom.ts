@@ -1,7 +1,7 @@
 import { canvasSettings } from './config';
 import { Vector2 } from './types';
 
-export function scrollZoom(
+function scrollZoom(
   movement: Vector2,
   shift: number,
   candlesShown: number,
@@ -71,3 +71,4 @@ function xMovement(
   }
   return shift;
 }
+export default scrollZoom;

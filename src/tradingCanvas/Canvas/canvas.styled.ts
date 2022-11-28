@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { canvasSettings } from './config';
+import { canvasSettings } from '../config';
 
 export const Wrap = styled.div<{
   width: number;

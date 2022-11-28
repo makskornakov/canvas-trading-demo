@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlligatorCanvas, MainCanvas, Wrap } from './canvas.styled';
 
-import { CandleCanvas } from './classes/CandleCanvas';
-import { canvasSettings } from './config';
-import { drawAo, drawFunction } from './draw';
-import { scrollZoom } from './functions';
-import { CandleToDraw } from './types';
+import { CandleCanvas } from '../classes/CandleCanvas';
+import { canvasSettings } from '../config';
+import { drawAo, drawFunction } from '../draw';
+import scrollZoom from '../scrollZoom';
+import { CandleToDraw } from '../types';
 
 type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
