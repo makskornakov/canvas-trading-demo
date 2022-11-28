@@ -1,12 +1,7 @@
 import { CandleCanvas } from './classes/CandleCanvas';
 import { Candle2D } from './classes/CandleClasses';
-import { Indicators } from './types';
+import { alligatorLinesSettings, candleColors } from './config';
 
-const alligatorColors = {
-  jaw: 'blue',
-  teeth: 'red',
-  lips: 'green',
-};
 export function drawAo(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas
@@ -22,7 +17,7 @@ export function drawAo(
     const x = i * (candleCanvas.candleWidth + candleCanvas.gap);
     const y = aboveLine ? midLine - (ao.value / 2) * (midLine * 2) : midLine;
 
-    ctx.fillStyle = positive ? 'green' : 'red';
+    ctx.fillStyle = positive ? candleColors.green : candleColors.red;
     ctx.beginPath();
 
     ctx.fillRect(
@@ -56,7 +51,7 @@ export const drawFunction = (
       canvas.candleWidth,
       candleIsRed ? candle.close - candle.open : candle.open - candle.close
     );
-    ctx.fillStyle = candleIsRed ? 'red' : 'green';
+    ctx.fillStyle = candleIsRed ? candleColors.red : candleColors.green;
     ctx.fill();
     ctx.closePath();
 
@@ -66,7 +61,7 @@ export const drawFunction = (
     ctx.lineWidth = canvas.candleWidth / 6;
     ctx.moveTo(x + canvas.candleWidth / 2, candle.high);
     ctx.lineTo(x + canvas.candleWidth / 2, candle.low);
-    ctx.strokeStyle = candleIsRed ? 'red' : 'green';
+    ctx.strokeStyle = candleIsRed ? candleColors.red : candleColors.green;
     ctx.stroke();
     ctx.closePath();
 
@@ -82,8 +77,8 @@ export const drawFunction = (
     drawCurveLine(
       ctx,
       canvas.alligatorArray[key],
-      alligatorColors[key],
-      canvas.candleWidth / 10
+      alligatorLinesSettings[key],
+      canvas.candleWidth / alligatorLinesSettings.lineWeight
     );
   });
 };
@@ -156,7 +151,7 @@ function drawRevBar(
 ) {
   ctx.beginPath();
   ctx.arc(x + candleWidth / 2, y, candleWidth / 3, 0, 2 * Math.PI);
-  ctx.fillStyle = type === 'buy' ? 'green' : 'red';
+  ctx.fillStyle = type === 'buy' ? candleColors.green : candleColors.red;
   ctx.fill();
   ctx.closePath();
 }
@@ -175,7 +170,7 @@ function drawFractal(
   ctx.lineTo(x + candleWidth / 2, toY);
   ctx.lineTo(x + candleWidth * 1.5, y);
 
-  ctx.fillStyle = type === 'up' ? 'green' : 'red';
+  ctx.fillStyle = type === 'up' ? candleColors.green : candleColors.red;
   ctx.fill();
   ctx.closePath();
 }

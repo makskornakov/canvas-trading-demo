@@ -6,12 +6,12 @@ export const Wrap = styled.div<{
   width: ${(props) => props.width}px;
   height: auto;
   margin: 0 auto;
-  outline: 1px solid blue;
+  outline: 0.5px solid white;
 `;
 const canvasStyles = css`
-  outline: 0.5px solid red;
   margin: 0 auto;
   padding: 0;
+  background: transparent;
 `;
 export const MainCanvas = styled.canvas<{
   width: number;
@@ -25,7 +25,7 @@ export const AlligatorCanvas = styled.canvas<{
   width: number;
   height: number;
 }>`
-  ${canvasStyles}
+  ${canvasStyles};
   width: ${(props) => props.width / 3}px;
   height: ${(props) => props.height / 3}px;
 `;
