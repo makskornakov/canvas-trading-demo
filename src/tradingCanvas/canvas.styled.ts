@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { canvasSettings } from './config';
 
 export const Wrap = styled.div<{
   width: number;
@@ -18,14 +19,14 @@ export const MainCanvas = styled.canvas<{
   height: number;
 }>`
   ${canvasStyles}
-  width: ${(props) => props.width / 3}px;
-  height: ${(props) => props.height / 3}px;
+  width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
+  height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
 `;
 export const AlligatorCanvas = styled.canvas<{
   width: number;
   height: number;
 }>`
   ${canvasStyles};
-  width: ${(props) => props.width / 3}px;
-  height: ${(props) => props.height / 3}px;
+  width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
+  height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
 `;

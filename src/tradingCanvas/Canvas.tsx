@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AlligatorCanvas, MainCanvas, Wrap } from './canvas.styled';
 
 import { CandleCanvas } from './classes/CandleCanvas';
+import { canvasSettings } from './config';
 import { drawAo, drawFunction } from './draw';
 import { scrollZoom } from './functions';
 import { CandleToDraw } from './types';
@@ -86,13 +87,13 @@ const Canvas: React.FC<CanvasProps> = ({
     <Wrap width={Number(props.width)}>
       <MainCanvas
         {...props}
-        width={Number(props.width) * 3}
-        height={Number(props.height) * 3}
+        width={Number(props.width) * canvasSettings.scaleForQuality}
+        height={Number(props.height) * canvasSettings.scaleForQuality}
         ref={canvasRef}
       />
       <AlligatorCanvas
-        width={Number(props.width) * 3}
-        height={(Number(props.height) * 3) / 5}
+        width={Number(props.width) * canvasSettings.scaleForQuality}
+        height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}
         ref={aoCanvasRef}
       />
     </Wrap>

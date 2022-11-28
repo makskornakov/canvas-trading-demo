@@ -1,4 +1,4 @@
-import { scrollStrength } from './config';
+import { canvasSettings } from './config';
 import { Vector2 } from './types';
 
 export function scrollZoom(
@@ -34,7 +34,7 @@ function yMovement(
     ) {
       const newCandlesShown = Math.max(
         Math.min(
-          candlesShown + Math.round(movement.y * scrollStrength),
+          candlesShown + Math.round(movement.y * canvasSettings.zoomStrength),
           maxCandles - shift
         ),
         20
@@ -60,7 +60,7 @@ function xMovement(
     ) {
       const newShift = Math.max(
         Math.min(
-          shift - Math.round(movement.x * scrollStrength),
+          shift - Math.round(movement.x * canvasSettings.shiftStrength),
           maxCandles - candlesShown
         ),
         0

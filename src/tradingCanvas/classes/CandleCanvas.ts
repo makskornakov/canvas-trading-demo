@@ -1,3 +1,4 @@
+import { canvasSettings } from '../config';
 import { CandleToDraw, Indicators, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
@@ -22,8 +23,8 @@ export class CandleCanvas {
     public candleShift: number,
     candlesToDraw: CandleToDraw[]
   ) {
-    this.width = width * 3;
-    this.height = height * 3;
+    this.width = width * canvasSettings.scaleForQuality;
+    this.height = height * canvasSettings.scaleForQuality;
 
     const shiftedCandleArray = candlesToDraw.slice(
       0,

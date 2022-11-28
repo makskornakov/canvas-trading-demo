@@ -8,4 +8,9 @@ export const alligatorLinesSettings = {
   lips: 'rgba(76, 175, 80, 0.8)',
   lineWeight: 5,
 };
-export const scrollStrength = 0.13;
+export const canvasSettings = {
+  zoomStrength: 0.12,
+  shiftStrength: 0.1,
+  minCandlesShown: 30,
+  scaleForQuality: 2,
+};
