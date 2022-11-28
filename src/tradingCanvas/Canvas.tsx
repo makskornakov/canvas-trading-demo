@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Wrap } from './canvas.styled';
 
 import { CandleCanvas } from './classes/CandleCanvas';
 import { drawAo, drawFunction } from './draw';
@@ -54,7 +55,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!canvas || !aoCanvas) return;
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
-      e.stopPropagation();
+      // e.stopPropagation(); // makes it laggy
       scrollZoom(
         { x: e.deltaX, y: e.deltaY },
         shift,
@@ -82,12 +83,7 @@ const Canvas: React.FC<CanvasProps> = ({
   ]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <Wrap>
       <canvas
         {...props}
         style={{
@@ -109,7 +105,7 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
         ref={aoCanvasRef}
       />
-    </div>
+    </Wrap>
   );
 };
 
