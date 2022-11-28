@@ -7,7 +7,7 @@ export const Wrap = styled.div<{
   width: ${(props) => props.width}px;
   height: auto;
   margin: 0 auto;
-  outline: 0.5px solid white;
+  outline: 0.5px solid gray;
 `;
 const canvasStyles = css`
   margin: 0 auto;

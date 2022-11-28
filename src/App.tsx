@@ -1,28 +1,30 @@
 import Canvas from './tradingCanvas/Canvas';
 import exampleArray from './output';
 import { CandleToDraw } from './tradingCanvas/types';
+import { Description, Header, Wrap } from './app.styled';
 
 function App() {
   return (
-    <div
-      style={{
-        margin: '50px auto',
-        display: 'flex',
-        outline: '1px solid black',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '600px',
-        width: '800px',
-      }}
-    >
-      <Canvas
-        width={600}
-        height={350}
-        candleArray={exampleArray as CandleToDraw[]}
-        candlesShown={100}
-        shift={0}
-      ></Canvas>
-    </div>
+    <>
+      <Header>Trading Canvases</Header>
+      <Description>Resizable canvas with Zoom/Scroll functionality</Description>
+      <Wrap>
+        <Canvas
+          width={800}
+          height={400}
+          candleArray={exampleArray as CandleToDraw[]}
+          candlesShown={150}
+          shift={0}
+        ></Canvas>
+        <Canvas
+          width={350}
+          height={300}
+          candleArray={exampleArray as CandleToDraw[]}
+          candlesShown={40}
+          shift={0}
+        ></Canvas>
+      </Wrap>
+    </>
   );
 }
 
