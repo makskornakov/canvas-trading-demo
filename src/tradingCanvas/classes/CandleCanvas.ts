@@ -64,11 +64,6 @@ export class CandleCanvas {
     return { min, max };
   }
   private getDrawingArray(slicedArray: CandleToDraw[]) {
-    // const slicedArray = shifted.slice(
-    //   shifted.length - this.candlesShown,
-    //   shifted.length
-    // );
-
     const candles2D = slicedArray.map((candle) => {
       return new Candle2D(
         candle.open,

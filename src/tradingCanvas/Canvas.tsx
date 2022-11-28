@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { CandleCanvas } from './classes/CandleCanvas';
 import { drawFunction } from './draw';
+import { scrollZoom } from './functions';
 import { CandleToDraw } from './types';
 
 type CanvasProps = React.DetailedHTMLProps<
@@ -37,21 +38,6 @@ const Canvas: React.FC<CanvasProps> = ({
   const [candleArray, setCandleArray] = usePropState(candleArrayProp);
   const [shift, setShift] = usePropState(shiftProp);
 
-  props.onClick = () => {
-    // setCandlesShown(candlesShown + 10);
-    setShift(shift + 10);
-  };
-  props.onContextMenu = () => {
-    // setCandlesShown(candlesShown + 10);
-    setShift(shift - 10);
-  };
-  props.onWheel = (e) => {
-    e.preventDefault();
-    if (Math.abs(e.deltaY) > 0) {
-      setCandlesShown(candlesShown + e.deltaY);
-    }
-  };
-
   useEffect(() => {
     const drawingCandles = candleArray.map((candle) => candle as CandleToDraw);
     const propsCanvas = new CandleCanvas(
@@ -64,6 +50,19 @@ const Canvas: React.FC<CanvasProps> = ({
 
     const canvas = canvasRef.current;
     if (!canvas) return;
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      scrollZoom(
+        { x: e.deltaX, y: e.deltaY },
+        shift,
+        candlesShown,
+        drawingCandles.length,
+        setShift,
+        setCandlesShown
+      );
+      return false;
+    });
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -81,7 +80,6 @@ const Canvas: React.FC<CanvasProps> = ({
       width={Number(props.width) * 3}
       height={Number(props.height) * 3}
       ref={canvasRef}
-      onClick={props.onClick}
     />
   );
 };
