@@ -144,7 +144,6 @@ export class Candle2D {
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
     const gapSpace = candleCanvas.candleWidth * 4.5;
-
     const point =
       ((candleCanvas.minMax.max - originalPoint) /
         (candleCanvas.minMax.max - candleCanvas.minMax.min)) *
@@ -152,6 +151,7 @@ export class Candle2D {
       gapSpace;
     return point;
   };
+
   private getAlligatorPoints = (
     alligator: Indicators['alligator'],
     candleCanvas: CandleCanvas

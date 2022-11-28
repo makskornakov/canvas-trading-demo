@@ -126,4 +126,22 @@ export class CandleCanvas {
     });
     return aoArray;
   }
+  public getDisplayedPrice(y: number) {
+    const minMaxRange = this.minMax.max - this.minMax.min;
+    const gapSpace = this.candleWidth * 4.5;
+
+    // % that both gaps take in relation to useful space on the canvas
+    // value that is taken by gaps (in relation to minMaxRange)
+    const gapInPrice = minMaxRange * (gapSpace / (this.height - gapSpace * 2));
+
+    // imagine that our minMax takes all the Y space to calculate the price
+    // imagine value that is exactly on the top edge on the canvas - correct % multiplied by newMinMaxRange
+    const price =
+      this.minMax.max +
+      gapInPrice -
+      (minMaxRange + gapInPrice * 2) *
+        (y / (this.height / canvasSettings.scaleForQuality));
+
+    return Math.round(price * 1000) / 1000;
+  }
 }

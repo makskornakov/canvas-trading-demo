@@ -1,7 +1,32 @@
 import { CandleCanvas } from './classes/CandleCanvas';
 import { Candle2D } from './classes/CandleClasses';
-import { alligatorLinesSettings, candleColors } from './config';
+import { alligatorLinesSettings, candleColors, canvasSettings } from './config';
+import { Vector2 } from './types';
 
+export function drawCursor(
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
+  cursor: Vector2
+) {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  ctx.beginPath();
+  ctx.lineWidth = 0.5;
+  ctx.moveTo(0, cursor.y * canvasSettings.scaleForQuality);
+  ctx.lineTo(
+    canvasWidth * canvasSettings.scaleForQuality,
+    cursor.y * canvasSettings.scaleForQuality
+  );
+  ctx.moveTo(cursor.x * canvasSettings.scaleForQuality, 0);
+  ctx.lineTo(
+    cursor.x * canvasSettings.scaleForQuality,
+    canvasHeight * canvasSettings.scaleForQuality
+  );
+  ctx.strokeStyle = 'white';
+  ctx.globalAlpha = 0.7;
+  ctx.stroke();
+  ctx.closePath();
+}
 export function drawAo(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas
