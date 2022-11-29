@@ -88,13 +88,15 @@ export function displayTrade(
     const angle = Math.atan2(end.y - start.y, end.x - start.x);
     ctx.beginPath();
     ctx.moveTo(end.x, end.y);
+    const size =
+      candleCanvas.candleWidth + Math.sqrt(candleCanvas.candleWidth) * 3;
     ctx.lineTo(
-      end.x - 15 * Math.cos(angle - Math.PI / 6),
-      end.y - 15 * Math.sin(angle - Math.PI / 6)
+      end.x - size * Math.cos(angle - Math.PI / 6),
+      end.y - size * Math.sin(angle - Math.PI / 6)
     );
     ctx.lineTo(
-      end.x - 15 * Math.cos(angle + Math.PI / 6),
-      end.y - 15 * Math.sin(angle + Math.PI / 6)
+      end.x - size * Math.cos(angle + Math.PI / 6),
+      end.y - size * Math.sin(angle + Math.PI / 6)
     );
     ctx.lineTo(end.x, end.y);
     ctx.fillStyle = 'white';

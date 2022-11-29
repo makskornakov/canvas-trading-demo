@@ -108,6 +108,7 @@ export function rect(
   ctx.globalAlpha = opacity;
   ctx.fill();
   ctx.closePath();
+  ctx.globalAlpha = 1;
 }
 export function line(
   ctx: CanvasRenderingContext2D,
@@ -128,6 +129,7 @@ export function line(
   ctx.stroke();
   ctx.closePath();
   ctx.setLineDash([]);
+  ctx.globalAlpha = 1;
 }
 export function roundedRect(
   ctx: CanvasRenderingContext2D,
