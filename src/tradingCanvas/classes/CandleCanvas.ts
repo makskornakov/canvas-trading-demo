@@ -79,8 +79,6 @@ export class CandleCanvas {
           : -Infinity
       ) // if candle.high is 0, wont be used
     );
-    console.log('aoMin', aoMin);
-    console.log('aoMax', aoMax);
     return {
       min,
       max,

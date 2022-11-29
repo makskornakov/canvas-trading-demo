@@ -47,14 +47,47 @@ export const AlligatorCanvas = styled.canvas<{
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
 `;
 export const PriceLabel = styled.p<{
-  size: number;
+  height: number;
   cursor: Vector2;
 }>`
+  pointer-events: none;
   position: absolute;
   margin: 0;
-  top: ${(props) => Math.max(props.cursor.y, props.size / 50)}px;
-  right: ${(props) => props.size / 50}px;
+  top: ${(props) => {
+    const above = props.cursor.y < props.height / 2;
+
+    const minimumTopPosition = props.height / 50;
+
+    return Math.max(
+      props.cursor.y - (above ? 0 : props.height / 16),
+      minimumTopPosition
+    );
+  }}px;
+  right: ${(props) => props.height / 50}px;
   color: gray;
-  font-size: ${(props) => props.size / 20}px;
+  font-size: ${(props) => props.height / 25}px;
+  font-weight: 200;
+`;
+export const DateLabel = styled.p<{
+  height: number;
+  width: number;
+  cursor: Vector2;
+}>`
+  pointer-events: none;
+  position: absolute;
+  margin: 0;
+  ${(props) => {
+    const isOnTheRight = props.cursor.x < props.width / 2;
+    const side = isOnTheRight ? 'left' : 'right';
+
+    const minimumSidePosition = props.width / 50;
+    const offset = isOnTheRight ? props.cursor.x : props.width - props.cursor.x;
+    return css`
+      ${side}: ${Math.max(offset + props.height / 40, minimumSidePosition)}px;
+    `;
+  }}
+  bottom: ${(props) => props.height / 5 + props.height / 40}px;
+  color: gray;
+  font-size: ${(props) => props.height / 30}px;
   font-weight: 200;
 `;

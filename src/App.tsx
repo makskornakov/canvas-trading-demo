@@ -2,8 +2,12 @@ import Canvas from './tradingCanvas/Canvas/Canvas';
 import exampleArray from './output';
 import { CandleToDraw } from './tradingCanvas/types';
 import { Description, Header, Wrap } from './app.styled';
+import { useState } from 'react';
 
 function App() {
+  const [selectedTrade, setSelectedTrade] = useState<number | undefined>(
+    undefined
+  );
   return (
     <>
       <Header>Trading Canvases</Header>
@@ -24,9 +28,16 @@ function App() {
           candlesShown={40}
           shift={0}
           allTradesShown={false}
-          shownTrade={3}
+          shownTrade={selectedTrade}
         ></Canvas>
       </Wrap>
+      <button
+        onClick={() => {
+          setSelectedTrade((prev) => (prev === undefined ? 0 : prev + 1));
+        }}
+      >
+        Next trade
+      </button>
     </>
   );
 }

@@ -2,6 +2,8 @@ import { Candle2D } from './classes/CandleClasses';
 
 export interface CandleToDraw {
   open: number;
+  openTime: string | Date;
+  closeTime: string | Date;
   high: number;
   low: number;
   close: number;
@@ -10,8 +12,8 @@ export interface CandleToDraw {
 }
 export type MountedIndicatorType = 'fractal' | 'revBar';
 export type IndicatorValue = 'buy' | 'sell' | 'up' | 'down';
-export interface FoundCandle {
-  candle: Candle2D | false;
+export interface FoundCandle<T extends Candle2D | CandleToDraw = Candle2D> {
+  candle: T | false;
   index: number;
   innerIndex: number;
 }

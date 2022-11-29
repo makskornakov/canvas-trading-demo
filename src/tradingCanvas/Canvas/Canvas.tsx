@@ -4,6 +4,7 @@ import {
   CursorCanvas,
   MainCanvas,
   PriceLabel,
+  DateLabel,
   Wrap,
 } from './canvas.styled';
 
@@ -12,6 +13,7 @@ import { canvasSettings } from '../config';
 import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw/draw';
 import scrollZoom from '../scrollZoom';
 import { CandleToDraw } from '../types';
+import { findCandleWithTrade } from '../draw/drawFunctions';
 
 type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
@@ -53,8 +55,9 @@ const Canvas: React.FC<CanvasProps> = ({
     props.allTradesShown
   );
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
-  const [displayedPrice, setDisplayedPrice] = useState(0);
-  const [cursor, setCursor] = useState({ x: 0, y: 0 });
+  const [displayedPrice, setDisplayedPrice] = useState<number>();
+  const [displayedDate, setDisplayedDate] = useState<string>();
+  const [cursor, setCursor] = useState({ x: -5, y: -5 });
 
   // main useEffect
   useEffect(() => {
@@ -83,7 +86,7 @@ const Canvas: React.FC<CanvasProps> = ({
         setCandlesShown
       );
       return false; // Why does it return false?
-    }
+    };
     // scroll zoom EventListener
     canvas.addEventListener('wheel', scrollZoomEventListener);
 
@@ -91,14 +94,36 @@ const Canvas: React.FC<CanvasProps> = ({
       const rect = canvas.getBoundingClientRect();
       setDisplayedPrice(propsCanvas.getDisplayedPrice(e.clientY - rect.top));
       setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+
+      const shiftedCandleArray = drawingCandles.slice(
+        0,
+        drawingCandles.length - shift
+      );
+
+      const zoomedCandleArray = shiftedCandleArray.slice(
+        shiftedCandleArray.length - candlesShown,
+        shiftedCandleArray.length
+      );
+
+      const xPosInPcnt = (e.clientX - rect.left) / rect.width;
+
+      const index = Math.floor(xPosInPcnt * zoomedCandleArray.length);
+
+      const candle = zoomedCandleArray[index];
+      console.log(candle);
+      if (candle) {
+        setDisplayedDate(new Date(candle.openTime).toLocaleString());
+      }
     };
     // cursor EventListeners
     canvas.addEventListener('mousemove', cursorMoveEventListener);
 
-    const cursorOutEventListener = (e: MouseEvent) => {
+    const cursorOutEventListener = () => {
       // reset cursor
       setCursor({ x: -5, y: -5 });
-    }
+      setDisplayedPrice(undefined);
+      setDisplayedDate(undefined);
+    };
     canvas.addEventListener('mouseleave', cursorOutEventListener);
 
     const ctx = canvas.getContext('2d');
@@ -128,7 +153,7 @@ const Canvas: React.FC<CanvasProps> = ({
       canvas.removeEventListener('wheel', scrollZoomEventListener);
       canvas.removeEventListener('mousemove', cursorMoveEventListener);
       canvas.removeEventListener('mouseleave', cursorOutEventListener);
-    }
+    };
   }, [
     width,
     candlesShown,
@@ -150,13 +175,47 @@ const Canvas: React.FC<CanvasProps> = ({
     drawCursor(cursorCtx, canvas.width, canvas.height, cursor);
   }, [width, height, cursor, candlesShown]);
 
+  // useEffect for to shift graph when shownTrade changes
+  useEffect(() => {
+    if (shownTrade === undefined) return;
+    const startCandle = findCandleWithTrade(candleArray, shownTrade);
+    const endCandle = findCandleWithTrade(candleArray, shownTrade, true);
+    if (!startCandle.candle || !endCandle.candle) return;
+
+    const newShift = Math.min(
+      Math.max(
+        candleArray.length - candleArray.indexOf(endCandle.candle) - 10,
+        0
+      ),
+      candleArray.length - 40
+    );
+
+    const newCandlesShown =
+      candleArray.indexOf(endCandle.candle) -
+      candleArray.indexOf(startCandle.candle) +
+      20;
+
+    setShift(newShift);
+    setCandlesShown(newCandlesShown);
+    console.log('would shift now');
+  }, [candleArray, setCandlesShown, setShift, shownTrade]);
+
   return (
     <Wrap
       width={Number(props.width)}
       height={Number(props.height)}
       style={{ position: 'relative' }}
     >
-      <PriceLabel size={Number(props.height)} cursor={cursor}>{displayedPrice}</PriceLabel>
+      <PriceLabel height={Number(props.height)} cursor={cursor}>
+        {displayedPrice}
+      </PriceLabel>
+      <DateLabel
+        width={Number(props.width)}
+        height={Number(props.height)}
+        cursor={cursor}
+      >
+        {displayedDate}
+      </DateLabel>
       <MainCanvas
         {...props}
         width={Number(props.width) * canvasSettings.scaleForQuality}

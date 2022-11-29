@@ -1,6 +1,6 @@
 import { Candle2D } from '../classes/CandleClasses';
 import { candleColors } from '../config';
-import { FoundCandle, Vector2 } from '../types';
+import { CandleToDraw, FoundCandle, Vector2 } from '../types';
 
 export function drawCurveLine(
   ctx: CanvasRenderingContext2D,
@@ -155,18 +155,18 @@ export function roundedRect(
   ctx.closePath();
 }
 
-export function findCandleWithTrade(
-  candles: Candle2D[],
+export function findCandleWithTrade<T extends Candle2D | CandleToDraw>(
+  candles: T[],
   id: number,
   end: boolean = false
-): FoundCandle {
-  const foundObj: FoundCandle = {
+): FoundCandle<T> {
+  const foundObj: FoundCandle<T> = {
     candle: false,
     index: 0,
     innerIndex: 0,
   };
   candles.forEach((candle, index) => {
-    candle.trades.forEach((candleTrade, innerIndex) => {
+    candle.trades?.forEach((candleTrade, innerIndex) => {
       const rightType = !end
         ? candleTrade.isThisCandleStart && !candleTrade.isThisCandleEnd
         : !candleTrade.isThisCandleStart && candleTrade.isThisCandleEnd;

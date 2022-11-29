@@ -21,7 +21,6 @@ export function displayTrade(
   candleCanvas: CandleCanvas,
   tradeID: number
 ) {
-  // console.log(candleCanvas.candleArray);
   const startCandle = findCandleWithTrade(candleCanvas.candleArray, tradeID);
   const endCandle = findCandleWithTrade(
     candleCanvas.candleArray,
@@ -94,7 +93,8 @@ export function drawCursor(
     { x: cursor.x * canvasSettings.scaleForQuality, y: canvasHeight },
     'white',
     0.7,
-    0.8
+    0.8,
+    [15 - canvasHeight / 100, 15 - canvasHeight / 100]
   );
   line(
     ctx,
@@ -102,7 +102,8 @@ export function drawCursor(
     { x: canvasWidth, y: cursor.y * canvasSettings.scaleForQuality },
     'white',
     0.7,
-    0.8
+    0.8,
+    [15 - canvasHeight / 100, 15 - canvasHeight / 100]
   );
 }
 export function drawAo(
