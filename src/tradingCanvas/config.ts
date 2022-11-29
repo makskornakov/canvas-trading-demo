@@ -5,8 +5,8 @@ export const candleColors = {
 export const tradeColors = {
   positiveArrow: '#6bc800',
   negativeArrow: '#ff0037',
-  positiveRect: 'rgba(50, 255, 30, 0.4)',
-  negativeRect: ' rgba(255, 0, 55, 0.4)',
+  positiveRect: 'rgba(50, 255, 30, 0.35)',
+  negativeRect: ' rgba(255, 0, 55, 0.35)',
 };
 
 export const alligatorLinesSettings = {
