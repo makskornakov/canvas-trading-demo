@@ -90,7 +90,8 @@ export class CandleCanvas {
         candle.low,
         candle.high,
         candle.indicators,
-        this
+        this,
+        candle.trades ? candle.trades : []
       );
     });
     return candles2D;

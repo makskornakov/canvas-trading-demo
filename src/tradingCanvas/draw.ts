@@ -1,8 +1,140 @@
 import { CandleCanvas } from './classes/CandleCanvas';
 import { Candle2D } from './classes/CandleClasses';
-import { alligatorLinesSettings, candleColors, canvasSettings } from './config';
+import {
+  alligatorLinesSettings,
+  candleColors,
+  canvasSettings,
+  tradeColors,
+} from './config';
 import { Vector2 } from './types';
+interface FoundCandle {
+  candle: Candle2D | false;
+  index: number;
+  innerIndex: number;
+}
+function findCandleWithTrade(
+  candles: Candle2D[],
+  id: number,
+  end: boolean = false
+): FoundCandle {
+  const foundObj: FoundCandle = {
+    candle: false,
+    index: 0,
+    innerIndex: 0,
+  };
+  candles.forEach((candle, index) => {
+    candle.trades.forEach((candleTrade, innerIndex) => {
+      const rightType = !end
+        ? candleTrade.isThisCandleStart && !candleTrade.isThisCandleEnd
+        : !candleTrade.isThisCandleStart && candleTrade.isThisCandleEnd;
+      if (candleTrade.tradeID === id && rightType) {
+        foundObj.candle = candle;
+        foundObj.index = index;
+        foundObj.innerIndex = innerIndex;
+        return foundObj;
+      }
+    });
+  });
+  return foundObj;
+}
 
+export function displayTrade(
+  ctx: CanvasRenderingContext2D,
+  candleCanvas: CandleCanvas,
+  tradeID: number
+) {
+  // console.log(candleCanvas.candleArray);
+  const startCandle = findCandleWithTrade(candleCanvas.candleArray, tradeID);
+  const endCandle = findCandleWithTrade(
+    candleCanvas.candleArray,
+    tradeID,
+    true
+  );
+  // draw line from buy to sell
+  if (startCandle.candle && endCandle.candle) {
+    const start = {
+      x:
+        startCandle.index * (candleCanvas.candleWidth + candleCanvas.gap) +
+        candleCanvas.candleWidth / 2,
+      y: startCandle.candle.trades[startCandle.innerIndex].buyPrice,
+    };
+    const end = {
+      x:
+        endCandle.index * (candleCanvas.candleWidth + candleCanvas.gap) +
+        candleCanvas.candleWidth / 2,
+      y: endCandle.candle.trades[endCandle.innerIndex].sellPrice,
+    };
+    const isProfit =
+      endCandle.candle.trades[endCandle.innerIndex].tradeType === 'long'
+        ? end.y > start.y
+        : end.y < start.y;
+    // draw filled rect behind the line
+    const rectWidth = end.x - start.x;
+    const rectHeight = Math.abs(end.y - start.y);
+
+    roundedRect(
+      ctx,
+      start.x,
+      Math.min(start.y, end.y),
+      rectWidth,
+      rectHeight,
+      10,
+      isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
+    );
+
+    ctx.beginPath();
+    // line with arrow head
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'white';
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.setLineDash([]);
+
+    // arrow head
+    const angle = Math.atan2(end.y - start.y, end.x - start.x);
+    ctx.beginPath();
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(
+      end.x - 15 * Math.cos(angle - Math.PI / 6),
+      end.y - 15 * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.lineTo(
+      end.x - 15 * Math.cos(angle + Math.PI / 6),
+      end.y - 15 * Math.sin(angle + Math.PI / 6)
+    );
+    ctx.lineTo(end.x, end.y);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.closePath();
+  }
+}
+function roundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+  fillColor: string = 'white'
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+  ctx.closePath();
+}
 export function drawCursor(
   ctx: CanvasRenderingContext2D,
   canvasWidth: number,

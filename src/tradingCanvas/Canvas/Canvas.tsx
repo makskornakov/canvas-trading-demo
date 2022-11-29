@@ -9,7 +9,7 @@ import {
 
 import { CandleCanvas } from '../classes/CandleCanvas';
 import { canvasSettings } from '../config';
-import { drawAo, drawCursor, drawFunction } from '../draw';
+import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw';
 import scrollZoom from '../scrollZoom';
 import { CandleToDraw } from '../types';
 
@@ -86,7 +86,7 @@ const Canvas: React.FC<CanvasProps> = ({
       setCursor({ x, y });
     });
     canvas.onmouseleave = () => {
-      setCursor({ x: 0, y: 0 });
+      setCursor({ x: -2, y: -2 });
     };
 
     const ctx = canvas.getContext('2d');
@@ -95,6 +95,11 @@ const Canvas: React.FC<CanvasProps> = ({
 
     drawFunction(ctx, propsCanvas);
     drawAo(aoCtx, propsCanvas);
+    displayTrade(ctx, propsCanvas, 0);
+    // displayTrade(ctx, propsCanvas, 1);
+    // displayTrade(ctx, propsCanvas, 2);
+    // displayTrade(ctx, propsCanvas, 3);
+    displayTrade(ctx, propsCanvas, 4);
   }, [
     width,
     candlesShown,

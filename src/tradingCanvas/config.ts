@@ -2,6 +2,13 @@ export const candleColors = {
   red: '#ff0037',
   green: '#6bc800',
 };
+export const tradeColors = {
+  positiveArrow: '#6bc800',
+  negativeArrow: '#ff0037',
+  positiveRect: 'rgba(50, 255, 30, 0.4)',
+  negativeRect: ' rgba(255, 0, 55, 0.4)',
+};
+
 export const alligatorLinesSettings = {
   jaw: 'rgba(25, 118, 210, 0.8)',
   teeth: 'rgba(226, 56, 52, 0.8)',

@@ -4,14 +4,15 @@ export interface CandleToDraw {
   low: number;
   close: number;
   indicators: Indicators;
-  trade?: {
-    tradeID: number;
-    tradeType: 'long' | 'short';
-    buyPrice: number;
-    sellPrice: number;
-    isThisCandleStart: boolean;
-    isThisCandleEnd: boolean;
-  };
+  trades?: AssignedTrade[];
+}
+export interface AssignedTrade {
+  tradeID: number;
+  tradeType: 'long' | 'short';
+  buyPrice: number;
+  sellPrice: number;
+  isThisCandleStart: boolean;
+  isThisCandleEnd: boolean;
 }
 export interface Indicators {
   revBar: 'buy' | 'sell';

@@ -1,4 +1,4 @@
-import { Indicators } from '../types';
+import { AssignedTrade, Indicators } from '../types';
 import { CandleCanvas } from './CandleCanvas';
 
 export class MountedIndicator {
@@ -114,6 +114,7 @@ export class Candle2D {
   noDraw: boolean;
   mountPoints: CandleMountPoints;
   alligator: Indicators['alligator'];
+  trades: AssignedTrade[];
 
   constructor(
     originalOpen: number,
@@ -121,7 +122,8 @@ export class Candle2D {
     originalLow: number,
     originalHigh: number,
     originalIndicators: Indicators,
-    candleCanvas: CandleCanvas
+    candleCanvas: CandleCanvas,
+    originalTrades: AssignedTrade[]
   ) {
     this.open = this.getPoint(originalOpen, candleCanvas);
     this.close = this.getPoint(originalClose, candleCanvas);
@@ -140,6 +142,18 @@ export class Candle2D {
       originalIndicators.alligator,
       candleCanvas
     );
+
+    this.trades = [] as AssignedTrade[];
+    originalTrades.forEach((trade) => {
+      const tradeCopy = { ...trade };
+      if (tradeCopy.isThisCandleStart) {
+        tradeCopy.buyPrice = this.getPoint(tradeCopy.buyPrice, candleCanvas);
+      }
+      if (tradeCopy.isThisCandleEnd) {
+        tradeCopy.sellPrice = this.getPoint(tradeCopy.sellPrice, candleCanvas);
+      }
+      this.trades.push(tradeCopy);
+    });
   }
   // private arrow function with original point as an argument
   private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {

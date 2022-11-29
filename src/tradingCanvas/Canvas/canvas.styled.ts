@@ -14,6 +14,7 @@ const canvasStyles = css`
   margin: 0 auto;
   padding: 0;
   background: transparent;
+  cursor: crosshair;
 `;
 export const MainCanvas = styled.canvas<{
   width: number;
