@@ -20,6 +20,8 @@ type CanvasProps = React.DetailedHTMLProps<
   candleArray: CandleToDraw[];
   candlesShown: number;
   shift: number;
+  allTradesShown: boolean;
+  shownTrade?: number;
 };
 
 function usePropState<T>(prop: T) {
@@ -47,6 +49,10 @@ const Canvas: React.FC<CanvasProps> = ({
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp);
   const [candleArray, setCandleArray] = usePropState(candleArrayProp);
   const [shift, setShift] = usePropState(shiftProp);
+  const [allTradesShown, setAllTradesShown] = usePropState(
+    props.allTradesShown
+  );
+  const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
   const [displayedPrice, setDisplayedPrice] = useState(0);
 
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
@@ -94,12 +100,22 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!ctx || !aoCtx) return;
 
     drawFunction(ctx, propsCanvas);
+    if (allTradesShown) {
+      let max = shownTrade ? shownTrade : 0;
+      drawingCandles.forEach((candle) => {
+        candle.trades?.forEach((trade) => {
+          if (trade.tradeID > max) max = trade.tradeID;
+        });
+      });
+      for (let i = 0; i <= max; i++) {
+        console.log('drawing trade', i);
+        displayTrade(ctx, propsCanvas, i);
+      }
+    } else if (shownTrade !== undefined) {
+      displayTrade(ctx, propsCanvas, shownTrade);
+    }
+
     drawAo(aoCtx, propsCanvas);
-    displayTrade(ctx, propsCanvas, 0);
-    // displayTrade(ctx, propsCanvas, 1);
-    // displayTrade(ctx, propsCanvas, 2);
-    // displayTrade(ctx, propsCanvas, 3);
-    displayTrade(ctx, propsCanvas, 4);
   }, [
     width,
     candlesShown,
@@ -108,12 +124,13 @@ const Canvas: React.FC<CanvasProps> = ({
     height,
     setShift,
     setCandlesShown,
+    allTradesShown,
+    shownTrade,
   ]);
 
   // useEffect for cursor
   useEffect(() => {
     const canvas = cursorRef.current;
-    // const aoCanvas = aoCanvasRef.current;
     if (!canvas) return;
     const cursorCtx = canvas.getContext('2d');
     if (!cursorCtx) return;

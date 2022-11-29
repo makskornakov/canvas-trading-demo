@@ -15,6 +15,7 @@ function App() {
           candleArray={exampleArray as CandleToDraw[]}
           candlesShown={160}
           shift={0}
+          allTradesShown={true}
         ></Canvas>
         <Canvas
           width={350}
@@ -22,6 +23,8 @@ function App() {
           candleArray={exampleArray as CandleToDraw[]}
           candlesShown={40}
           shift={0}
+          allTradesShown={false}
+          shownTrade={3}
         ></Canvas>
       </Wrap>
     </>
