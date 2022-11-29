@@ -79,7 +79,7 @@ export function displayTrade(
       isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
     );
 
-    line(ctx, start, end, 'white', 3, 0.8, [
+    line(ctx, start, end, 'white', Math.sqrt(candleCanvas.candleWidth), 0.8, [
       candleCanvas.candleWidth,
       candleCanvas.candleWidth,
     ]);

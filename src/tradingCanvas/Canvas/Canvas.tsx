@@ -53,10 +53,10 @@ const Canvas: React.FC<CanvasProps> = ({
     props.allTradesShown
   );
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
-
   const [displayedPrice, setDisplayedPrice] = useState(0);
-
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
+
+  // main useEffect
   useEffect(() => {
     const drawingCandles = candleArray.map((candle) => candle as CandleToDraw);
     const propsCanvas = new CandleCanvas(
@@ -71,6 +71,7 @@ const Canvas: React.FC<CanvasProps> = ({
     const aoCanvas = aoCanvasRef.current;
     if (!canvas || !aoCanvas) return;
 
+    // scroll zoom EventListener
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
       // e.stopPropagation(); // makes it laggy
@@ -85,15 +86,14 @@ const Canvas: React.FC<CanvasProps> = ({
       return false;
     });
 
+    // cursor EventListeners
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      setDisplayedPrice(propsCanvas.getDisplayedPrice(y));
-      setCursor({ x, y });
+      setDisplayedPrice(propsCanvas.getDisplayedPrice(e.clientY - rect.top));
+      setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top });
     });
     canvas.onmouseleave = () => {
-      setCursor({ x: -2, y: -2 });
+      setCursor({ x: -5, y: -5 });
     };
 
     const ctx = canvas.getContext('2d');
@@ -101,6 +101,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!ctx || !aoCtx) return;
 
     drawFunction(ctx, propsCanvas);
+
     if (allTradesShown) {
       let max = shownTrade ? shownTrade : 0;
       drawingCandles.forEach((candle) => {
@@ -109,7 +110,6 @@ const Canvas: React.FC<CanvasProps> = ({
         });
       });
       for (let i = 0; i <= max; i++) {
-        console.log('drawing trade', i);
         displayTrade(ctx, propsCanvas, i);
       }
     } else if (shownTrade !== undefined) {
