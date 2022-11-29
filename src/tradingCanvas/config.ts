@@ -13,7 +13,7 @@ export const alligatorLinesSettings = {
   jaw: 'rgba(25, 118, 210, 0.8)',
   teeth: 'rgba(226, 56, 52, 0.8)',
   lips: 'rgba(76, 175, 80, 0.8)',
-  lineWeight: 5,
+  lineWeight: 0.6,
 };
 export const canvasSettings = {
   zoomStrength: 0.12,

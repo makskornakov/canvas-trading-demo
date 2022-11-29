@@ -1,5 +1,5 @@
 import { CandleCanvas } from '../classes/CandleCanvas';
-import { Candle2D } from '../classes/CandleClasses';
+
 import {
   alligatorLinesSettings,
   candleColors,
@@ -12,34 +12,9 @@ import {
   rect,
   drawMountedIndicators,
   drawCurveLine,
+  findCandleWithTrade,
 } from './drawFunctions';
-import { FoundCandle, Vector2 } from '../types';
-
-export function findCandleWithTrade(
-  candles: Candle2D[],
-  id: number,
-  end: boolean = false
-): FoundCandle {
-  const foundObj: FoundCandle = {
-    candle: false,
-    index: 0,
-    innerIndex: 0,
-  };
-  candles.forEach((candle, index) => {
-    candle.trades.forEach((candleTrade, innerIndex) => {
-      const rightType = !end
-        ? candleTrade.isThisCandleStart && !candleTrade.isThisCandleEnd
-        : !candleTrade.isThisCandleStart && candleTrade.isThisCandleEnd;
-      if (candleTrade.tradeID === id && rightType) {
-        foundObj.candle = candle;
-        foundObj.index = index;
-        foundObj.innerIndex = innerIndex;
-        return foundObj;
-      }
-    });
-  });
-  return foundObj;
-}
+import { Vector2 } from '../types';
 
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
@@ -195,7 +170,7 @@ export const drawFunction = (
       ctx,
       canvas.alligatorArray[key],
       alligatorLinesSettings[key],
-      canvas.candleWidth / alligatorLinesSettings.lineWeight
+      Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight)
     );
   });
 };
