@@ -1,5 +1,5 @@
 import { canvasSettings } from '../config';
-import { CandleToDraw, Indicators, Vector2 } from '../types';
+import { CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
 interface AoCandle {
@@ -133,9 +133,7 @@ export class CandleCanvas {
 
       aoArray.push({
         x: index * (this.candleWidth + this.gap),
-        y: aboveLine
-          ? midLine - (Math.abs(newValue) / 2) * (midLine * 2)
-          : midLine,
+        y: aboveLine ? midLine - (newValue / 2) * (midLine * 2) : midLine,
         vertexValue: candle.indicators.ao.vertexValue,
         height: (Math.abs(newValue) / 2) * (midLine * 2),
       });
