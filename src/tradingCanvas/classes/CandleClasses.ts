@@ -1,16 +1,17 @@
-import { AssignedTrade, Indicators } from '../types';
+import {
+  AssignedTrade,
+  Indicators,
+  IndicatorValue,
+  MountedIndicatorType,
+} from '../types';
 import { CandleCanvas } from './CandleCanvas';
 
 export class MountedIndicator {
-  type: 'revBar' | 'fractal';
-  value: 'buy' | 'sell' | 'up' | 'down';
+  type: MountedIndicatorType;
+  value: IndicatorValue;
   // positive means
   yPos: number;
-  constructor(
-    type: 'revBar' | 'fractal',
-    value: 'buy' | 'sell' | 'up' | 'down',
-    yPos: number
-  ) {
+  constructor(type: MountedIndicatorType, value: IndicatorValue, yPos: number) {
     this.type = type;
     this.yPos = yPos;
     this.value = value;
@@ -63,8 +64,8 @@ export class CandleMountPoints {
   }
 
   private mountUp(
-    type: 'fractal' | 'revBar',
-    value: 'buy' | 'sell' | 'up' | 'down',
+    type: MountedIndicatorType,
+    value: IndicatorValue,
     candleWidth: number,
     high: number
   ) {
@@ -84,8 +85,8 @@ export class CandleMountPoints {
     }
   }
   private mountDown(
-    type: 'fractal' | 'revBar',
-    value: 'buy' | 'sell' | 'up' | 'down',
+    type: MountedIndicatorType,
+    value: IndicatorValue,
     candleWidth: number,
     low: number
   ) {

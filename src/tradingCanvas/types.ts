@@ -8,6 +8,8 @@ export interface CandleToDraw {
   indicators: Indicators;
   trades?: AssignedTrade[];
 }
+export type MountedIndicatorType = 'fractal' | 'revBar';
+export type IndicatorValue = 'buy' | 'sell' | 'up' | 'down';
 export interface FoundCandle {
   candle: Candle2D | false;
   index: number;
