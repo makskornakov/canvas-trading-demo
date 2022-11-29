@@ -156,7 +156,7 @@ const Canvas: React.FC<CanvasProps> = ({
       height={Number(props.height)}
       style={{ position: 'relative' }}
     >
-      <PriceLabel size={Number(props.height)}>{displayedPrice}</PriceLabel>
+      <PriceLabel size={Number(props.height)} cursor={cursor}>{displayedPrice}</PriceLabel>
       <MainCanvas
         {...props}
         width={Number(props.width) * canvasSettings.scaleForQuality}

@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components';
+
 import { canvasSettings } from '../config';
+import type { Vector2 } from '../types';
 
 export const Wrap = styled.div<{
   width: number;
@@ -46,10 +48,11 @@ export const AlligatorCanvas = styled.canvas<{
 `;
 export const PriceLabel = styled.p<{
   size: number;
+  cursor: Vector2;
 }>`
   position: absolute;
   margin: 0;
-  top: ${(props) => props.size / 50}px;
+  top: ${(props) => Math.max(props.cursor.y, props.size / 50)}px;
   right: ${(props) => props.size / 50}px;
   color: gray;
   font-size: ${(props) => props.size / 20}px;
