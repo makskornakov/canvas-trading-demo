@@ -115,7 +115,7 @@ export class Candle2D {
   mountPoints: CandleMountPoints;
   alligator: Indicators['alligator'];
   trades: AssignedTrade[];
-
+  xPosition: number;
   constructor(
     originalOpen: number,
     originalClose: number,
@@ -123,8 +123,10 @@ export class Candle2D {
     originalHigh: number,
     originalIndicators: Indicators,
     candleCanvas: CandleCanvas,
-    originalTrades: AssignedTrade[]
+    originalTrades: AssignedTrade[],
+    xPosition: number
   ) {
+    this.xPosition = xPosition;
     this.open = this.getPoint(originalOpen, candleCanvas);
     this.close = this.getPoint(originalClose, candleCanvas);
     this.low = this.getPoint(originalLow, candleCanvas);

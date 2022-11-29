@@ -53,15 +53,11 @@ export function displayTrade(
   // draw line from buy to sell
   if (startCandle.candle && endCandle.candle) {
     const start = {
-      x:
-        startCandle.index * (candleCanvas.candleWidth + candleCanvas.gap) +
-        candleCanvas.candleWidth / 2,
+      x: startCandle.candle.xPosition + candleCanvas.candleWidth / 2,
       y: startCandle.candle.trades[startCandle.innerIndex].buyPrice,
     };
     const end = {
-      x:
-        endCandle.index * (candleCanvas.candleWidth + candleCanvas.gap) +
-        candleCanvas.candleWidth / 2,
+      x: endCandle.candle.xPosition + candleCanvas.candleWidth / 2,
       y: endCandle.candle.trades[endCandle.innerIndex].sellPrice,
     };
     const isProfit =
@@ -165,24 +161,16 @@ export function drawAo(
 ) {
   //clear canvas
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-  const midLine = candleCanvas.height / 10;
   candleCanvas.aoArray.forEach((ao, i) => {
-    const positive = ao.value > candleCanvas.aoArray[i - 1]?.value;
-    const aboveLine = ao.value > 0;
+    const positive = ao.vertexValue > candleCanvas.aoArray[i - 1]?.vertexValue;
 
-    const x = i * (candleCanvas.candleWidth + candleCanvas.gap);
-    const y = aboveLine ? midLine - (ao.value / 2) * (midLine * 2) : midLine;
+    const x = ao.x;
+    const y = ao.y;
 
     ctx.fillStyle = positive ? candleColors.green : candleColors.red;
     ctx.beginPath();
 
-    ctx.fillRect(
-      x,
-      y,
-      candleCanvas.candleWidth,
-      (Math.abs(ao.value) / 2) * (midLine * 2)
-    );
+    ctx.fillRect(x, y, candleCanvas.candleWidth, ao.height);
     ctx.closePath();
   });
 }
@@ -194,9 +182,9 @@ export const drawFunction = (
   // clear ctx
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  canvas.candleArray.forEach((candle, index) => {
+  canvas.candleArray.forEach((candle) => {
     if (candle.noDraw) return;
-    const x = index * (canvas.candleWidth + canvas.gap);
+    const x = candle.xPosition;
     const candleIsRed = candle.open < candle.close;
     const y = candleIsRed ? candle.open : candle.close;
 
@@ -214,7 +202,6 @@ export const drawFunction = (
 
     // draw wick
     ctx.beginPath();
-    // line thickness
     ctx.lineWidth = canvas.candleWidth / 6;
     ctx.moveTo(x + canvas.candleWidth / 2, candle.high);
     ctx.lineTo(x + canvas.candleWidth / 2, candle.low);
