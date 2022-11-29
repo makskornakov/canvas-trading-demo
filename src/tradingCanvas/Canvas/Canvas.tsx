@@ -9,7 +9,7 @@ import {
 
 import { CandleCanvas } from '../classes/CandleCanvas';
 import { canvasSettings } from '../config';
-import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw';
+import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw/draw';
 import scrollZoom from '../scrollZoom';
 import { CandleToDraw } from '../types';
 
@@ -53,6 +53,7 @@ const Canvas: React.FC<CanvasProps> = ({
     props.allTradesShown
   );
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
+
   const [displayedPrice, setDisplayedPrice] = useState(0);
 
   const [cursor, setCursor] = useState({ x: 0, y: 0 });

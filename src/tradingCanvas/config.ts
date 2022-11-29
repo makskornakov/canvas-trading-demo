@@ -17,7 +17,7 @@ export const alligatorLinesSettings = {
 };
 export const canvasSettings = {
   zoomStrength: 0.12,
-  shiftStrength: 0.1,
+  shiftStrength: 0.15,
   minCandlesShown: 30,
   scaleForQuality: 2,
 };
