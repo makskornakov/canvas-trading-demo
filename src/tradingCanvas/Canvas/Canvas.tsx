@@ -71,8 +71,7 @@ const Canvas: React.FC<CanvasProps> = ({
     const aoCanvas = aoCanvasRef.current;
     if (!canvas || !aoCanvas) return;
 
-    // scroll zoom EventListener
-    canvas.addEventListener('wheel', (e) => {
+    const scrollZoomEventListener = (e: WheelEvent) => {
       e.preventDefault();
       // e.stopPropagation(); // makes it laggy
       scrollZoom(
@@ -83,18 +82,24 @@ const Canvas: React.FC<CanvasProps> = ({
         setShift,
         setCandlesShown
       );
-      return false;
-    });
+      return false; // Why does it return false?
+    }
+    // scroll zoom EventListener
+    canvas.addEventListener('wheel', scrollZoomEventListener);
 
-    // cursor EventListeners
-    canvas.addEventListener('mousemove', (e) => {
+    const cursorMoveEventListener = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       setDisplayedPrice(propsCanvas.getDisplayedPrice(e.clientY - rect.top));
       setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    });
-    canvas.onmouseleave = () => {
-      setCursor({ x: -5, y: -5 });
     };
+    // cursor EventListeners
+    canvas.addEventListener('mousemove', cursorMoveEventListener);
+
+    const cursorOutEventListener = (e: MouseEvent) => {
+      // reset cursor
+      setCursor({ x: -5, y: -5 });
+    }
+    canvas.addEventListener('mouseleave', cursorOutEventListener);
 
     const ctx = canvas.getContext('2d');
     const aoCtx = aoCanvas.getContext('2d');
@@ -117,6 +122,13 @@ const Canvas: React.FC<CanvasProps> = ({
     }
 
     drawAo(aoCtx, propsCanvas);
+
+    return () => {
+      // Cleanup. Otherwise, the events are duplicated.
+      canvas.removeEventListener('wheel', scrollZoomEventListener);
+      canvas.removeEventListener('mousemove', cursorMoveEventListener);
+      canvas.removeEventListener('mouseleave', cursorOutEventListener);
+    }
   }, [
     width,
     candlesShown,
