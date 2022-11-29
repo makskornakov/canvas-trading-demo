@@ -1,3 +1,5 @@
+import { Candle2D } from './classes/CandleClasses';
+
 export interface CandleToDraw {
   open: number;
   high: number;
@@ -5,6 +7,11 @@ export interface CandleToDraw {
   close: number;
   indicators: Indicators;
   trades?: AssignedTrade[];
+}
+export interface FoundCandle {
+  candle: Candle2D | false;
+  index: number;
+  innerIndex: number;
 }
 export interface AssignedTrade {
   tradeID: number;

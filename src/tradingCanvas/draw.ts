@@ -6,12 +6,8 @@ import {
   canvasSettings,
   tradeColors,
 } from './config';
-import { Vector2 } from './types';
-interface FoundCandle {
-  candle: Candle2D | false;
-  index: number;
-  innerIndex: number;
-}
+import { FoundCandle, Vector2 } from './types';
+
 function findCandleWithTrade(
   candles: Candle2D[],
   id: number,
