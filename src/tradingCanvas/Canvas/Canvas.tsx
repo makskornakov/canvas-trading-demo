@@ -19,7 +19,7 @@ type CanvasProps = React.DetailedHTMLProps<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
   HTMLCanvasElement
 > & {
-  candleArray: any[];
+  candleArray: CandleToDraw[];
   candlesShown: number;
   shift: number;
   allTradesShown: boolean;
@@ -49,9 +49,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [width, setWidth] = usePropState(props.width);
   const [height, setHeight] = usePropState(props.height);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp);
-  const [candleArray, setCandleArray] = usePropState(
-    candleArrayProp as CandleToDraw[]
-  );
+  const [candleArray, setCandleArray] = usePropState(candleArrayProp);
   const [shift, setShift] = usePropState(shiftProp);
   const [allTradesShown, setAllTradesShown] = usePropState(
     props.allTradesShown
