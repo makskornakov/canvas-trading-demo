@@ -1,13 +1,42 @@
 import Canvas, { CandleToDraw } from 'canvas-trading';
 
-import exampleArray from './output';
-import { Description, Header, Wrap } from './app.styled';
-import { useState } from 'react';
+import exampleArray from './output.json';
+import exampleArray2 from './output2.json';
+import {
+  Description,
+  Header,
+  Wrap,
+  ControlWrap,
+  ControlButton,
+} from './app.styled';
+import { useState, useEffect } from 'react';
+
+function findMaxTrade(candleArray: CandleToDraw[]) {
+  let max = 0;
+  candleArray.forEach((candle) => {
+    if (candle.trades) {
+      if (candle.trades[0].tradeID > max) {
+        max = candle.trades[0].tradeID;
+      }
+    }
+  });
+  return max;
+}
 
 function App() {
   const [selectedTrade, setSelectedTrade] = useState<number | undefined>(
     undefined
   );
+  const [candleArray, setCandleArray] = useState<CandleToDraw[]>(
+    exampleArray as CandleToDraw[]
+  );
+  const [maxTrade, setMaxTrade] = useState<number>(0);
+
+  useEffect(() => {
+    let max = findMaxTrade(candleArray);
+    setMaxTrade(max);
+    setSelectedTrade(undefined);
+  }, [candleArray]);
   return (
     <>
       <Header>Trading Canvases</Header>
@@ -16,7 +45,7 @@ function App() {
         <Canvas
           width={800}
           height={400}
-          candleArray={exampleArray as CandleToDraw[]}
+          candleArray={candleArray}
           candlesShown={160}
           shift={0}
           allTradesShown={true}
@@ -24,20 +53,45 @@ function App() {
         <Canvas
           width={350}
           height={300}
-          candleArray={exampleArray as CandleToDraw[]}
+          candleArray={candleArray}
           candlesShown={40}
           shift={0}
           allTradesShown={false}
           shownTrade={selectedTrade}
         ></Canvas>
       </Wrap>
-      <button
-        onClick={() => {
-          setSelectedTrade((prev) => (prev === undefined ? 0 : prev + 1));
-        }}
-      >
-        Next trade
-      </button>
+      <ControlWrap>
+        <ControlButton
+          onClick={() => {
+            setCandleArray(exampleArray as CandleToDraw[]);
+          }}
+        >
+          Example 1
+        </ControlButton>
+        <ControlButton
+          onClick={() => {
+            setCandleArray(exampleArray2 as CandleToDraw[]);
+          }}
+        >
+          Example 2
+        </ControlButton>
+        <ControlButton
+          onClick={() => {
+            // next but if max trade is reached, go to 0
+            if (selectedTrade === maxTrade) {
+              setSelectedTrade(0);
+            } else
+              setSelectedTrade(
+                selectedTrade !== undefined ? selectedTrade + 1 : 0
+              );
+          }}
+        >
+          Next trade
+        </ControlButton>
+        <label style={{ color: 'white' }}>
+          Selected trade: {selectedTrade}
+        </label>
+      </ControlWrap>
     </>
   );
 }

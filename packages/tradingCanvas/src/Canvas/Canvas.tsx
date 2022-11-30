@@ -56,49 +56,53 @@ const Canvas: React.FC<CanvasProps> = ({
   const [displayedDate, setDisplayedDate] = useState<string>();
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
 
-  const propsCanvas = useMemo(() => new CandleCanvas(
-    Number(width),
-    Number(height),
-    candlesShown,
-    shift,
-    candleArray,
-  ), [candleArray, candlesShown, height, shift, width]);
+  const propsCanvas = useMemo(
+    () =>
+      new CandleCanvas(
+        Number(width),
+        Number(height),
+        candlesShown,
+        shift,
+        candleArray
+      ),
+    [candleArray, candlesShown, height, shift, width]
+  );
 
-  const cursorFunction = useCallback((
-    position: Vector2,
-    onlyLabels: boolean = false
-  ) => {
-    if (!canvasRef.current) return;
-    if (position.x < 0 || position.y < 0) {
-      // No need to update cursor that is not present.
-      // Also, resetting cursor labels.
-      setDisplayedPrice(undefined);
-      setDisplayedDate(undefined);
-      return;
-    };
+  const cursorFunction = useCallback(
+    (position: Vector2, onlyLabels: boolean = false) => {
+      if (!canvasRef.current) return;
+      if (position.x < 0 || position.y < 0) {
+        // No need to update cursor that is not present.
+        // Also, resetting cursor labels.
+        setDisplayedPrice(undefined);
+        setDisplayedDate(undefined);
+        return;
+      }
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = onlyLabels ? position.x : position.x - rect.left;
-    const y = onlyLabels ? position.y : position.y - rect.top;
-    setDisplayedPrice(propsCanvas.getDisplayedPrice(y));
-    if (!onlyLabels) setCursor({ x, y });
+      const rect = canvasRef.current.getBoundingClientRect();
+      const x = onlyLabels ? position.x : position.x - rect.left;
+      const y = onlyLabels ? position.y : position.y - rect.top;
+      setDisplayedPrice(propsCanvas.getDisplayedPrice(y));
+      if (!onlyLabels) setCursor({ x, y });
 
-    //#region finding date for displayed date
-    const zoomedAndShifted = candleArray.slice(
-      candleArray.length - candlesShown - shift,
-      candleArray.length - shift
-    );
-    const xPosInPercent = x / rect.width;
+      //#region finding date for displayed date
+      const zoomedAndShifted = candleArray.slice(
+        candleArray.length - candlesShown - shift,
+        candleArray.length - shift
+      );
+      const xPosInPercent = x / rect.width;
 
-    const index = Math.floor(xPosInPercent * zoomedAndShifted.length);
+      const index = Math.floor(xPosInPercent * zoomedAndShifted.length);
 
-    const candle = zoomedAndShifted[index];
-    // console.log(candle);
-    if (candle) {
-      setDisplayedDate(new Date(candle.openTime).toLocaleString());
-    }
-    //#endregion
-  }, [candleArray, candlesShown, propsCanvas, shift]);
+      const candle = zoomedAndShifted[index];
+      if (candle) {
+        setDisplayedDate(new Date(candle.openTime).toLocaleString());
+      }
+      //#endregion
+    },
+    [candleArray, candlesShown, propsCanvas, shift]
+  );
+  const initialCandlesShown = useRef(candlesShownProp);
 
   // main useEffect
   useEffect(() => {
@@ -162,7 +166,19 @@ const Canvas: React.FC<CanvasProps> = ({
       canvas.removeEventListener('mousemove', cursorMoveEventListener);
       canvas.removeEventListener('mouseleave', cursorOutEventListener);
     };
-  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, allTradesShown, shownTrade, propsCanvas, cursorFunction]);
+  }, [
+    width,
+    candlesShown,
+    candleArray,
+    shift,
+    height,
+    setShift,
+    setCandlesShown,
+    allTradesShown,
+    shownTrade,
+    propsCanvas,
+    cursorFunction,
+  ]);
 
   // useEffect for cursor
   useEffect(() => {
@@ -176,7 +192,13 @@ const Canvas: React.FC<CanvasProps> = ({
 
   // useEffect for to shift graph when shownTrade changes
   useEffect(() => {
-    if (shownTrade === undefined) return;
+    if (shownTrade === undefined) {
+      // reset shift and zoom on candleArray change
+      setShift(0);
+      setCandlesShown(initialCandlesShown.current);
+
+      return;
+    }
     const startCandle = findCandleWithTrade(candleArray, shownTrade);
     const endCandle = findCandleWithTrade(candleArray, shownTrade, true);
     if (!startCandle.candle || !endCandle.candle) return;
@@ -196,7 +218,6 @@ const Canvas: React.FC<CanvasProps> = ({
 
     setShift(newShift);
     setCandlesShown(newCandlesShown);
-    console.log('would shift now');
   }, [candleArray, setCandlesShown, setShift, shownTrade]);
 
   return (
