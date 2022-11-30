@@ -1,6 +1,6 @@
-import { Candle2D } from '../classes/CandleClasses';
+import type { Candle2D } from '../classes/CandleClasses';
 import { candleColors } from '../config';
-import { CandleToDraw, FoundCandle, Vector2 } from '../types';
+import type { CandleToDraw, FoundCandle, Vector2 } from '../types';
 
 export function drawCurveLine(
   ctx: CanvasRenderingContext2D,

@@ -1,5 +1,5 @@
 import { canvasSettings } from '../config';
-import { CandleToDraw, Vector2 } from '../types';
+import type { CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
 interface AoCandle {

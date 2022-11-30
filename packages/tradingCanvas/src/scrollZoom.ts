@@ -1,5 +1,5 @@
 import { canvasSettings } from './config';
-import { Vector2 } from './types';
+import type { Vector2 } from './types';
 
 function scrollZoom(
   movement: Vector2,

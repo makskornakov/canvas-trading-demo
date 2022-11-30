@@ -1,6 +1,6 @@
-import Canvas from './tradingCanvas/Canvas/Canvas';
+import Canvas, { CandleToDraw } from 'canvas-trading';
+
 import exampleArray from './output';
-import { CandleToDraw } from './tradingCanvas/types';
 import { Description, Header, Wrap } from './app.styled';
 import { useState } from 'react';
 

@@ -1,10 +1,10 @@
-import {
+import type {
   AssignedTrade,
   Indicators,
   IndicatorValue,
   MountedIndicatorType,
 } from '../types';
-import { CandleCanvas } from './CandleCanvas';
+import type { CandleCanvas } from './CandleCanvas';
 
 export class MountedIndicator {
   type: MountedIndicatorType;

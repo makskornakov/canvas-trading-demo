@@ -1,4 +1,4 @@
-import { CandleCanvas } from '../classes/CandleCanvas';
+import type { CandleCanvas } from '../classes/CandleCanvas';
 
 import {
   alligatorLinesSettings,
@@ -14,13 +14,16 @@ import {
   drawCurveLine,
   findCandleWithTrade,
 } from './drawFunctions';
-import { Vector2 } from '../types';
+import type { FoundCandle, Vector2 } from '../types';
 
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas,
   tradeID: number
-) {
+): {
+  startCandle: FoundCandle;
+  endCandle: FoundCandle;
+} {
   const startCandle = findCandleWithTrade(candleCanvas.candleArray, tradeID);
   const endCandle = findCandleWithTrade(
     candleCanvas.candleArray,

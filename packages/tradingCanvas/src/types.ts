@@ -1,4 +1,4 @@
-import { Candle2D } from './classes/CandleClasses';
+import type { Candle2D } from './classes/CandleClasses';
 
 export interface CandleToDraw {
   open: number;

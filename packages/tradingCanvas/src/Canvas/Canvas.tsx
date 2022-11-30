@@ -15,10 +15,7 @@ import scrollZoom from '../scrollZoom';
 import type { CandleToDraw, Vector2 } from '../types';
 import { findCandleWithTrade } from '../draw/drawFunctions';
 
-type CanvasProps = React.DetailedHTMLProps<
-  React.CanvasHTMLAttributes<HTMLCanvasElement>,
-  HTMLCanvasElement
-> & {
+type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
   candlesShown: number;
   shift: number;
@@ -228,7 +225,7 @@ const Canvas: React.FC<CanvasProps> = ({
         ref={cursorRef}
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={Number(props.height) * canvasSettings.scaleForQuality}
-      ></CursorCanvas>
+      />
       <AlligatorCanvas
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}
