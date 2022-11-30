@@ -32,26 +32,21 @@ export class CandleCanvas {
     this.width = width * canvasSettings.scaleForQuality;
     this.height = height * canvasSettings.scaleForQuality;
 
-    const shiftedCandleArray = candlesToDraw.slice(
-      0,
+    const zoomedAndShifted = candlesToDraw.slice(
+      candlesToDraw.length - this.candlesShown - this.candleShift,
       candlesToDraw.length - this.candleShift
     );
 
-    const zoomedCandleArray = shiftedCandleArray.slice(
-      shiftedCandleArray.length - this.candlesShown,
-      shiftedCandleArray.length
-    );
-
-    const minMax = this.minMaxCalc(zoomedCandleArray);
+    const minMax = this.minMaxCalc(zoomedAndShifted);
     this.minMax = minMax;
 
     const gapAndWidth = this.getGapAndCandleWidth();
     this.gap = gapAndWidth.gap;
     this.candleWidth = gapAndWidth.candleWidth;
 
-    this.candleArray = this.getDrawingArray(zoomedCandleArray);
+    this.candleArray = this.getDrawingArray(zoomedAndShifted);
     this.alligatorArray = this.getAlligatorArray(this.candleArray);
-    this.aoArray = this.getAOArray(zoomedCandleArray, minMax);
+    this.aoArray = this.getAOArray(zoomedAndShifted, minMax);
   }
   private getGapAndCandleWidth() {
     const gap = this.width / this.candlesShown / 5;

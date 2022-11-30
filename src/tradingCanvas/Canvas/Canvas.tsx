@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlligatorCanvas,
   CursorCanvas,
@@ -12,7 +12,7 @@ import { CandleCanvas } from '../classes/CandleCanvas';
 import { canvasSettings } from '../config';
 import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw/draw';
 import scrollZoom from '../scrollZoom';
-import { CandleToDraw } from '../types';
+import type { CandleToDraw, Vector2 } from '../types';
 import { findCandleWithTrade } from '../draw/drawFunctions';
 
 type CanvasProps = React.DetailedHTMLProps<
@@ -59,17 +59,52 @@ const Canvas: React.FC<CanvasProps> = ({
   const [displayedDate, setDisplayedDate] = useState<string>();
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
 
+  const propsCanvas = useMemo(() => new CandleCanvas(
+    Number(width),
+    Number(height),
+    candlesShown,
+    shift,
+    candleArray,
+  ), [candleArray, candlesShown, height, shift, width]);
+
+  const cursorFunction = useCallback((
+    position: Vector2,
+    onlyLabels: boolean = false
+  ) => {
+    if (!canvasRef.current) return;
+    if (position.x < 0 || position.y < 0) {
+      // No need to update cursor that is not present.
+      // Also, resetting cursor labels.
+      setDisplayedPrice(undefined);
+      setDisplayedDate(undefined);
+      return;
+    };
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = onlyLabels ? position.x : position.x - rect.left;
+    const y = onlyLabels ? position.y : position.y - rect.top;
+    setDisplayedPrice(propsCanvas.getDisplayedPrice(y));
+    if (!onlyLabels) setCursor({ x, y });
+
+    //#region finding date for displayed date
+    const zoomedAndShifted = candleArray.slice(
+      candleArray.length - candlesShown - shift,
+      candleArray.length - shift
+    );
+    const xPosInPercent = x / rect.width;
+
+    const index = Math.floor(xPosInPercent * zoomedAndShifted.length);
+
+    const candle = zoomedAndShifted[index];
+    // console.log(candle);
+    if (candle) {
+      setDisplayedDate(new Date(candle.openTime).toLocaleString());
+    }
+    //#endregion
+  }, [candleArray, candlesShown, propsCanvas, shift]);
+
   // main useEffect
   useEffect(() => {
-    const drawingCandles = candleArray.map((candle) => candle as CandleToDraw);
-    const propsCanvas = new CandleCanvas(
-      Number(width),
-      Number(height),
-      candlesShown,
-      shift,
-      drawingCandles
-    );
-
     const canvas = canvasRef.current;
     const aoCanvas = aoCanvasRef.current;
     if (!canvas || !aoCanvas) return;
@@ -81,7 +116,7 @@ const Canvas: React.FC<CanvasProps> = ({
         { x: e.deltaX, y: e.deltaY },
         shift,
         candlesShown,
-        drawingCandles.length,
+        candleArray.length,
         setShift,
         setCandlesShown
       );
@@ -91,29 +126,7 @@ const Canvas: React.FC<CanvasProps> = ({
     canvas.addEventListener('wheel', scrollZoomEventListener);
 
     const cursorMoveEventListener = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      setDisplayedPrice(propsCanvas.getDisplayedPrice(e.clientY - rect.top));
-      setCursor({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-
-      const shiftedCandleArray = drawingCandles.slice(
-        0,
-        drawingCandles.length - shift
-      );
-
-      const zoomedCandleArray = shiftedCandleArray.slice(
-        shiftedCandleArray.length - candlesShown,
-        shiftedCandleArray.length
-      );
-
-      const xPosInPcnt = (e.clientX - rect.left) / rect.width;
-
-      const index = Math.floor(xPosInPcnt * zoomedCandleArray.length);
-
-      const candle = zoomedCandleArray[index];
-      console.log(candle);
-      if (candle) {
-        setDisplayedDate(new Date(candle.openTime).toLocaleString());
-      }
+      cursorFunction({ x: e.clientX, y: e.clientY });
     };
     // cursor EventListeners
     canvas.addEventListener('mousemove', cursorMoveEventListener);
@@ -121,8 +134,6 @@ const Canvas: React.FC<CanvasProps> = ({
     const cursorOutEventListener = () => {
       // reset cursor
       setCursor({ x: -5, y: -5 });
-      setDisplayedPrice(undefined);
-      setDisplayedDate(undefined);
     };
     canvas.addEventListener('mouseleave', cursorOutEventListener);
 
@@ -134,7 +145,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
     if (allTradesShown) {
       let max = shownTrade ? shownTrade : 0;
-      drawingCandles.forEach((candle) => {
+      candleArray.forEach((candle) => {
         candle.trades?.forEach((trade) => {
           if (trade.tradeID > max) max = trade.tradeID;
         });
@@ -154,17 +165,7 @@ const Canvas: React.FC<CanvasProps> = ({
       canvas.removeEventListener('mousemove', cursorMoveEventListener);
       canvas.removeEventListener('mouseleave', cursorOutEventListener);
     };
-  }, [
-    width,
-    candlesShown,
-    candleArray,
-    shift,
-    height,
-    setShift,
-    setCandlesShown,
-    allTradesShown,
-    shownTrade,
-  ]);
+  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, allTradesShown, shownTrade, propsCanvas, cursorFunction]);
 
   // useEffect for cursor
   useEffect(() => {
@@ -173,7 +174,8 @@ const Canvas: React.FC<CanvasProps> = ({
     const cursorCtx = canvas.getContext('2d');
     if (!cursorCtx) return;
     drawCursor(cursorCtx, canvas.width, canvas.height, cursor);
-  }, [width, height, cursor, candlesShown]);
+    cursorFunction(cursor, true);
+  }, [width, height, cursor, candlesShown, cursorFunction]);
 
   // useEffect for to shift graph when shownTrade changes
   useEffect(() => {
