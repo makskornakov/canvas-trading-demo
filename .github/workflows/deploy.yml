@@ -19,7 +19,7 @@ jobs:
         run: pnpm i
 
       - name: Build 🔧
-        run: pnpm build
+        run: pnpm build:production
 
       - name: Postbuild
         run: pnpm postbuild
