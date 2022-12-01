@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/canvas-trading-demo/static/css/main.eea535f8.css",
+    "main.js": "/canvas-trading-demo/static/js/main.0ff775d6.js",
+    "static/js/422.d01baafe.chunk.js": "/canvas-trading-demo/static/js/422.d01baafe.chunk.js",
+    "index.html": "/canvas-trading-demo/index.html",
+    "main.eea535f8.css.map": "/canvas-trading-demo/static/css/main.eea535f8.css.map",
+    "main.0ff775d6.js.map": "/canvas-trading-demo/static/js/main.0ff775d6.js.map",
+    "422.d01baafe.chunk.js.map": "/canvas-trading-demo/static/js/422.d01baafe.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.eea535f8.css",
+    "static/js/main.0ff775d6.js"
+  ]
+}
