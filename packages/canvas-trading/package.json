@@ -1,15 +1,32 @@
 {
   "name": "canvas-trading",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.3",
+  "description": "Interactive HTML5 Canvas Trading Chart",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "prepack": "npm run build",
-    "postinstall": "npm run build"
+    "prepack": "npm run build"
   },
-  "keywords": [],
-  "author": "Maksim Kornakov & Art Ginzburg",
+  "keywords": [
+    "canvas",
+    "trading",
+    "stock",
+    "chart",
+    "react",
+    "typescript"
+  ],
+  "contributors": [
+    {
+      "name": "Art Ginzburg",
+      "email": "ginzburg.arthur@gmail.com",
+      "url": "https://ginzburg.art"
+    },
+    {
+      "name": "Maksim Kornakov",
+      "email": "makskornakov@gmail.com",
+      "url": "https://github.com/makskornakov"
+    }
+  ],
   "license": "MIT",
   "peerDependencies": {
     "react": "^18.2.0",

@@ -15,6 +15,7 @@ export class CandleCanvas {
   gap: number;
   candleWidth: number;
   candleArray: Candle2D[];
+  lastCandle: CandleToDraw | undefined;
   alligatorArray: {
     jaw: Vector2[];
     lips: Vector2[];
@@ -27,10 +28,15 @@ export class CandleCanvas {
     height: number,
     public candlesShown: number,
     public candleShift: number,
-    candlesToDraw: CandleToDraw[]
+    candlesToDraw: CandleToDraw[],
+    lastCandle: CandleToDraw | undefined
   ) {
     this.width = width * canvasSettings.scaleForQuality;
     this.height = height * canvasSettings.scaleForQuality;
+    this.lastCandle = lastCandle;
+
+    if (lastCandle !== undefined)
+      candlesToDraw[candlesToDraw.length - 9] = lastCandle;
 
     const zoomedAndShifted = candlesToDraw.slice(
       candlesToDraw.length - this.candlesShown - this.candleShift,

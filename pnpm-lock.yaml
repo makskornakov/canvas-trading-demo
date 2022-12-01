@@ -9,7 +9,7 @@ specifiers:
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.9
   '@types/styled-components': ^5.1.26
-  canvas-trading: file:packages/canvas-trading
+  canvas-trading: ^1.0.3
   gh-pages: ^4.0.0
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -26,7 +26,7 @@ dependencies:
   '@types/node': 16.18.3
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
-  canvas-trading: file:packages/canvas-trading_56nicwxcbpehznvjhlpvpy75bu
+  canvas-trading: 1.0.3_56nicwxcbpehznvjhlpvpy75bu
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_eetduzquwu67aqoq5644t6dxzu
@@ -3508,6 +3508,16 @@ packages:
 
   /caniuse-lite/1.0.30001435:
     resolution: {integrity: sha512-kdCkUTjR+v4YAJelyiDTqiu82BDr4W4CP5sgTA0ZBmqn30XfS2ZghPLMowik9TPhS+psWJiUNxsqLyurDbmutA==}
+    dev: false
+
+  /canvas-trading/1.0.3_56nicwxcbpehznvjhlpvpy75bu:
+    resolution: {integrity: sha512-3yNRispmKpvIbn6kprQsFfOG9ZfkJkNCZwxgrZLprCz+BDU6sVaH44R1yYr5/d7SSjJtbmYwNBHhzNZFakQc8A==}
+    peerDependencies:
+      react: ^18.2.0
+      styled-components: ^5.3.6
+    dependencies:
+      react: 18.2.0
+      styled-components: 5.3.6_biqbaboplfbrettd7655fr4n2y
     dev: false
 
   /case-sensitive-paths-webpack-plugin/2.4.0:
@@ -10209,18 +10219,4 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-    dev: false
-
-  file:packages/canvas-trading_56nicwxcbpehznvjhlpvpy75bu:
-    resolution: {directory: packages/canvas-trading, type: directory}
-    id: file:packages/canvas-trading
-    name: canvas-trading
-    version: 1.0.0
-    requiresBuild: true
-    peerDependencies:
-      react: ^18.2.0
-      styled-components: ^5.3.6
-    dependencies:
-      react: 18.2.0
-      styled-components: 5.3.6_biqbaboplfbrettd7655fr4n2y
     dev: false

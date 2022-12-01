@@ -20,7 +20,7 @@ export const ControlWrap = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 450px;
+  width: 650px;
   margin: 0 auto;
 `;
 export const ControlButton = styled.button`

@@ -30,12 +30,36 @@ function App() {
   const [candleArray, setCandleArray] = useState<CandleToDraw[]>(
     exampleArray1 as CandleToDraw[]
   );
+  const [lastCandle, setLastCandle] = useState<CandleToDraw>(
+    candleArray[candleArray.length - 9]
+  );
   const [maxTrade, setMaxTrade] = useState<number>(0);
+
+  function changeCandle(add: boolean = true) {
+    if (lastCandle) {
+      let newLastCandle = { ...lastCandle };
+      const value = Math.max(
+        Math.abs(lastCandle.close - lastCandle.open) * 0.1,
+        Math.abs(lastCandle.low - lastCandle.high) * 0.05
+      );
+      newLastCandle.close += add ? value : -value;
+      // if low is higher than close, set low to close
+      if (newLastCandle.low > newLastCandle.close) {
+        newLastCandle.low = newLastCandle.close;
+      }
+      // if high is lower than close, set high to close
+      if (newLastCandle.high < newLastCandle.close) {
+        newLastCandle.high = newLastCandle.close;
+      }
+      setLastCandle(newLastCandle);
+    }
+  }
 
   useEffect(() => {
     let max = findMaxTrade(candleArray);
     setMaxTrade(max);
     setSelectedTrade(undefined);
+    setLastCandle(candleArray[candleArray.length - 9]);
   }, [candleArray]);
   return (
     <>
@@ -46,6 +70,7 @@ function App() {
           width={800}
           height={400}
           candleArray={candleArray}
+          lastCandle={lastCandle}
           candlesShown={160}
           shift={0}
           allTradesShown={true}
@@ -57,6 +82,7 @@ function App() {
           width={350}
           height={300}
           candleArray={candleArray}
+          lastCandle={lastCandle}
           candlesShown={40}
           shift={0}
           allTradesShown={false}
@@ -94,6 +120,21 @@ function App() {
         >
           Next trade
         </ControlButton>
+        <ControlButton
+          onClick={() => {
+            changeCandle();
+          }}
+        >
+          add 10%
+        </ControlButton>
+        <ControlButton
+          onClick={() => {
+            changeCandle(false);
+          }}
+        >
+          sub 10%
+        </ControlButton>
+
         <label style={{ color: 'white' }}>
           Selected trade: {selectedTrade}
         </label>

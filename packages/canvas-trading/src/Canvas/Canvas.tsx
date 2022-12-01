@@ -18,6 +18,7 @@ import { findCandleWithTrade } from '../draw/drawFunctions';
 
 type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
+  lastCandle: CandleToDraw;
   candlesShown: number;
   shift: number;
   allTradesShown: boolean;
@@ -36,6 +37,7 @@ function usePropState<T>(prop: T) {
 
 const Canvas: React.FC<CanvasProps> = ({
   candleArray: candleArrayProp,
+  lastCandle: lastCandleProp,
   candlesShown: candlesShownProp,
   shift: shiftProp,
   ...props
@@ -48,6 +50,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [height, setHeight] = usePropState(props.height);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp);
   const [candleArray, setCandleArray] = usePropState(candleArrayProp);
+  const [lastCandle, setLastCandle] = usePropState(lastCandleProp);
   const [shift, setShift] = usePropState(shiftProp);
   const [allTradesShown, setAllTradesShown] = usePropState(
     props.allTradesShown
@@ -70,9 +73,10 @@ const Canvas: React.FC<CanvasProps> = ({
         Number(height),
         candlesShown,
         shift,
-        candleArray
+        candleArray,
+        lastCandle
       ),
-    [candleArray, candlesShown, height, shift, width]
+    [candleArray, lastCandle, candlesShown, height, shift, width]
   );
 
   const cursorFunction = useCallback(
@@ -212,7 +216,6 @@ const Canvas: React.FC<CanvasProps> = ({
       // reset shift and zoom on candleArray change
       setShift(0);
       setCandlesShown(initialCandlesShown.current);
-
       return;
     }
     const startCandle = findCandleWithTrade(candleArray, shownTrade);
