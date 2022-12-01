@@ -1,0 +1,31 @@
+name: Build and Deploy
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install `pnpm`
+        run: npm i -g pnpm
+
+      - name: Install dependencies (development)
+        # It automatically lints before building, so devDependencies are required.
+        run: pnpm i
+
+      - name: Build 🔧
+        run: pnpm build:production
+
+      - name: Postbuild
+        run: pnpm postbuild
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build
