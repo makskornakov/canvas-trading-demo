@@ -4,6 +4,7 @@
   "private": true,
   "author": "Maksim Kornakov",
   "license": "MIT",
+  "homepage": "https://makskornakov.github.io/canvas-trading-demo",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
