@@ -68,6 +68,27 @@ export const PriceLabel = styled.p<{
   font-size: ${(props) => props.height / 25}px;
   font-weight: 200;
 `;
+export const OclhLabel = styled.div<{
+  canvasWidth: number;
+}>`
+  pointer-events: none;
+  width: ${(props) => Math.sqrt(props.canvasWidth) * 2.5 * 5}px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  margin: 0;
+  left: 2%;
+
+  p {
+    width: ${(props) => Math.sqrt(props.canvasWidth) * 2.5}px;
+    white-space: nowrap;
+    color: white;
+    opacity: 0.65;
+    font-weight: 200;
+    font-size: ${(props) => Math.sqrt(props.canvasWidth) / 2}px;
+  }
+`;
 export const DateLabel = styled.p<{
   height: number;
   width: number;

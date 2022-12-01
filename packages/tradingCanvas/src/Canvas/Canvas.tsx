@@ -6,6 +6,7 @@ import {
   PriceLabel,
   DateLabel,
   Wrap,
+  OclhLabel,
 } from './canvas.styled';
 
 import { CandleCanvas } from '../classes/CandleCanvas';
@@ -54,6 +55,12 @@ const Canvas: React.FC<CanvasProps> = ({
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
   const [displayedPrice, setDisplayedPrice] = useState<number>();
   const [displayedDate, setDisplayedDate] = useState<string>();
+  const [displayedOclh, setDisplayedOclh] = useState<{
+    o: number;
+    c: number;
+    l: number;
+    h: number;
+  }>();
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
 
   const propsCanvas = useMemo(
@@ -76,6 +83,7 @@ const Canvas: React.FC<CanvasProps> = ({
         // Also, resetting cursor labels.
         setDisplayedPrice(undefined);
         setDisplayedDate(undefined);
+        setDisplayedOclh(undefined);
         return;
       }
 
@@ -97,6 +105,14 @@ const Canvas: React.FC<CanvasProps> = ({
       const candle = zoomedAndShifted[index];
       if (candle) {
         setDisplayedDate(new Date(candle.openTime).toLocaleString());
+        if (!candle.open || !candle.close || !candle.low || !candle.high)
+          return;
+        setDisplayedOclh({
+          o: candle.open,
+          c: candle.close,
+          l: candle.low,
+          h: candle.high,
+        });
       }
       //#endregion
     },
@@ -236,6 +252,18 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         {displayedDate}
       </DateLabel>
+      <OclhLabel canvasWidth={Number(props.width)}>
+        {displayedOclh && (
+          <>
+            {/* unbreakable space */}
+
+            <p>O: {displayedOclh?.o}</p>
+            <p>C: {displayedOclh?.c}</p>
+            <p>L: {displayedOclh?.l}</p>
+            <p>H: {displayedOclh?.h}</p>
+          </>
+        )}
+      </OclhLabel>
       <MainCanvas
         {...props}
         width={Number(props.width) * canvasSettings.scaleForQuality}

@@ -4,7 +4,7 @@ export const Header = styled.h1`
   color: white;
   font-size: 1.5em;
   text-align: center;
-  margin-top: 50px;
+  margin-top: 30px;
 `;
 export const Wrap = styled.div`
   margin: 30px auto;
