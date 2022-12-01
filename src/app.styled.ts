@@ -5,6 +5,7 @@ export const Header = styled.h1`
   font-size: 1.5em;
   text-align: center;
   margin-top: 30px;
+  font-weight: 300;
 `;
 export const Wrap = styled.div`
   margin: 30px auto;

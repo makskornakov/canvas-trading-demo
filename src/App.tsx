@@ -1,7 +1,7 @@
 import Canvas, { CandleToDraw } from 'canvas-trading';
 
-import exampleArray from './output.json';
-import exampleArray2 from './output2.json';
+import exampleArray1 from './exampleData/output.json';
+import exampleArray2 from './exampleData/output2.json';
 import {
   Description,
   Header,
@@ -28,7 +28,7 @@ function App() {
     undefined
   );
   const [candleArray, setCandleArray] = useState<CandleToDraw[]>(
-    exampleArray as CandleToDraw[]
+    exampleArray1 as CandleToDraw[]
   );
   const [maxTrade, setMaxTrade] = useState<number>(0);
 
@@ -49,6 +49,9 @@ function App() {
           candlesShown={160}
           shift={0}
           allTradesShown={true}
+          style={{
+            outline: '0.5px solid rgba(255, 255, 255, 0.2)',
+          }}
         ></Canvas>
         <Canvas
           width={350}
@@ -58,12 +61,15 @@ function App() {
           shift={0}
           allTradesShown={false}
           shownTrade={selectedTrade}
+          style={{
+            outline: '0.5px solid rgba(255, 255, 255, 0.2)',
+          }}
         ></Canvas>
       </Wrap>
       <ControlWrap>
         <ControlButton
           onClick={() => {
-            setCandleArray(exampleArray as CandleToDraw[]);
+            setCandleArray(exampleArray1 as CandleToDraw[]);
           }}
         >
           Example 1

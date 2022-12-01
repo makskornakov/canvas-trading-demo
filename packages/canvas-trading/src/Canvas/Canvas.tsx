@@ -240,7 +240,7 @@ const Canvas: React.FC<CanvasProps> = ({
     <Wrap
       width={Number(props.width)}
       height={Number(props.height)}
-      style={{ position: 'relative' }}
+      style={props.style}
     >
       <PriceLabel height={Number(props.height)} cursor={cursor}>
         {displayedPrice}
@@ -269,6 +269,8 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={Number(props.height) * canvasSettings.scaleForQuality}
         ref={canvasRef}
+        // style undefined because it's not needed
+        style={undefined}
       />
       <CursorCanvas
         ref={cursorRef}

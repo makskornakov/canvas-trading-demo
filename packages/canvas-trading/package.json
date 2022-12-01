@@ -9,9 +9,9 @@
     "postinstall": "npm run build"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
+  "author": "Maksim Kornakov & Art Ginzburg",
+  "license": "MIT",
+  "peerDependencies": {
     "react": "^18.2.0",
     "styled-components": "^5.3.6"
   },

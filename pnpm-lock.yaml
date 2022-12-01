@@ -9,7 +9,7 @@ specifiers:
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.9
   '@types/styled-components': ^5.1.26
-  canvas-trading: file:packages/tradingCanvas
+  canvas-trading: file:packages/canvas-trading
   react: ^18.2.0
   react-dom: ^18.2.0
   react-scripts: 5.0.1
@@ -25,7 +25,7 @@ dependencies:
   '@types/node': 16.18.3
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
-  canvas-trading: file:packages/tradingCanvas_react-dom@18.2.0
+  canvas-trading: file:packages/canvas-trading_56nicwxcbpehznvjhlpvpy75bu
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_eetduzquwu67aqoq5644t6dxzu
@@ -10130,16 +10130,16 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  file:packages/tradingCanvas_react-dom@18.2.0:
-    resolution: {directory: packages/tradingCanvas, type: directory}
-    id: file:packages/tradingCanvas
+  file:packages/canvas-trading_56nicwxcbpehznvjhlpvpy75bu:
+    resolution: {directory: packages/canvas-trading, type: directory}
+    id: file:packages/canvas-trading
     name: canvas-trading
     version: 1.0.0
     requiresBuild: true
+    peerDependencies:
+      react: ^18.2.0
+      styled-components: ^5.3.6
     dependencies:
       react: 18.2.0
       styled-components: 5.3.6_biqbaboplfbrettd7655fr4n2y
-    transitivePeerDependencies:
-      - react-dom
-      - react-is
     dev: false
