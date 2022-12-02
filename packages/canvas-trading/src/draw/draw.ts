@@ -42,8 +42,9 @@ export function displayTrade(
     };
     const isProfit =
       endCandle.candle.trades[endCandle.innerIndex].tradeType === 'long'
-        ? end.y > start.y
-        : end.y < start.y;
+        ? // canvas cords are inverted
+          end.y < start.y
+        : end.y > start.y;
 
     // draw filled rect behind the line
     roundedRect(
@@ -172,7 +173,9 @@ export const drawFunction = (
   });
   if (otherSettings.alligator) {
     // draw alligator
-    const alligatorWidth = Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight);
+    const alligatorWidth = Math.sqrt(
+      canvas.candleWidth * alligatorLinesSettings.lineWeight
+    );
     const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
       keyof typeof canvas.alligatorArray
     >;
