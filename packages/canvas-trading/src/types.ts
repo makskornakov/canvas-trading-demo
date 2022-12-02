@@ -30,12 +30,18 @@ export interface OtherSettings {
   alligator?: boolean;
   ao?: boolean;
   mountedIndicators?: boolean;
+  /** @default true */
+  zoom?: boolean;
+  /** @default true */
+  scroll?: boolean;
 }
 export interface CheckedOtherSettings {
   allTradesShown: boolean;
   alligator: boolean;
   ao: boolean;
   mountedIndicators: boolean;
+  zoom: boolean;
+  scroll: boolean;
 }
 export interface Indicators {
   revBar: RevBarIndicator | '';

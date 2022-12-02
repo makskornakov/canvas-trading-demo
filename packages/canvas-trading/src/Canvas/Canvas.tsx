@@ -57,6 +57,8 @@ const Canvas: React.FC<CanvasProps> = ({
       alligator: props.otherSettings?.alligator ?? true,
       ao: props.otherSettings?.ao ?? true,
       mountedIndicators: props.otherSettings?.mountedIndicators ?? true,
+      zoom: props.otherSettings?.zoom ?? true,
+      scroll: props.otherSettings?.scroll ?? true,
     }),
     [props.otherSettings]
   );
@@ -176,8 +178,9 @@ const Canvas: React.FC<CanvasProps> = ({
     const scrollZoomEventListener = (e: WheelEvent) => {
       e.preventDefault();
       // e.stopPropagation(); // makes it laggy
+      if (!(otherSettings.scroll || otherSettings.zoom)) return;
       scrollZoom(
-        { x: e.deltaX, y: e.deltaY },
+        { x: otherSettings.scroll ? e.deltaX : 0, y: otherSettings.zoom ? e.deltaY : 0 },
         shift,
         candlesShown,
         candleArray.length,
