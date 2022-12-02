@@ -21,6 +21,7 @@ const indicatorNames = {
   allTradesShown: 'Trades',
   zoom: 'Zoom',
   scroll: 'Scroll',
+  showAsset: 'Asset',
 };
 
 function findMaxTrade(candleArray: CandleToDraw[]) {
@@ -53,6 +54,7 @@ function App() {
     allTradesShown: false,
     zoom: true,
     scroll: true,
+    showAsset: true,
   });
 
   function changeCandle(add: boolean = true) {

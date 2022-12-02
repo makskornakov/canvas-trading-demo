@@ -7,6 +7,7 @@ import {
   DateLabel,
   Wrap,
   OclhLabel,
+  AssetLabel,
 } from './canvas.styled';
 
 import { CandleCanvas } from '../classes/CandleCanvas';
@@ -59,6 +60,7 @@ const Canvas: React.FC<CanvasProps> = ({
       mountedIndicators: props.otherSettings?.mountedIndicators ?? true,
       zoom: props.otherSettings?.zoom ?? true,
       scroll: props.otherSettings?.scroll ?? true,
+      showAsset: props.otherSettings?.showAsset ?? false,
     }),
     [props.otherSettings]
   );
@@ -180,7 +182,10 @@ const Canvas: React.FC<CanvasProps> = ({
       // e.stopPropagation(); // makes it laggy
       if (!(otherSettings.scroll || otherSettings.zoom)) return;
       scrollZoom(
-        { x: otherSettings.scroll ? e.deltaX : 0, y: otherSettings.zoom ? e.deltaY : 0 },
+        {
+          x: otherSettings.scroll ? e.deltaX : 0,
+          y: otherSettings.zoom ? e.deltaY : 0,
+        },
         shift,
         candlesShown,
         candleArray.length,
@@ -263,7 +268,6 @@ const Canvas: React.FC<CanvasProps> = ({
     setShift(newShift);
     setCandlesShown(newCandlesShown);
   }, [candleArray, setCandlesShown, setShift, shownTrade]);
-
   return (
     <Wrap
       width={Number(props.width)}
@@ -271,6 +275,11 @@ const Canvas: React.FC<CanvasProps> = ({
       style={props.style}
       ao={otherSettings.ao}
     >
+      {otherSettings.showAsset && (
+        <AssetLabel height={Number(props.height)} width={Number(props.width)}>
+          {lastCandle.asset}
+        </AssetLabel>
+      )}
       <PriceLabel height={Number(props.height)} cursor={cursor}>
         {displayedPrice}
       </PriceLabel>
@@ -282,7 +291,10 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         {displayedDate}
       </DateLabel>
-      <OclhLabel canvasWidth={Number(props.width)}>
+      <OclhLabel
+        canvasWidth={Number(props.width)}
+        canvasHeight={Number(props.height)}
+      >
         {displayedOclh &&
           Object.keys(displayedOclh).map((key) => (
             <p>

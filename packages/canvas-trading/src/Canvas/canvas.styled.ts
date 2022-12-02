@@ -39,6 +39,27 @@ export const CursorCanvas = styled.canvas<{
   top: 0;
   left: 0;
 `;
+export const AssetLabel = styled.p<{
+  height: number;
+  width: number;
+}>`
+  height: ${(props) => props.height / 2}px;
+  width: 100%;
+  position: absolute;
+  margin: 0;
+  top: calc(50% - ${(props) => props.height / 4}px);
+
+  line-height: ${(props) => props.height / 2}px;
+  color: #fff;
+  font-size: ${(props) => Math.sqrt(props.width) * 2.5}px;
+  letter-spacing: ${(props) => Math.sqrt(props.width) * 0.15}px;
+  text-align: center;
+  font-weight: 100;
+
+  opacity: 0.065;
+  z-index: -2;
+`;
+
 export const AoCanvas = styled.canvas<{
   width: number;
   height: number;
@@ -71,6 +92,7 @@ export const PriceLabel = styled.p<{
 `;
 export const OclhLabel = styled.div<{
   canvasWidth: number;
+  canvasHeight: number;
 }>`
   pointer-events: none;
   width: ${(props) => Math.sqrt(props.canvasWidth) * 2.5 * 5}px;
@@ -79,13 +101,15 @@ export const OclhLabel = styled.div<{
   align-items: center;
   position: absolute;
   margin: 0;
-  left: 2%;
+  left: ${(props) => props.canvasHeight / 30}px;
+  top: ${(props) => props.canvasHeight / 40}px;
 
   p {
     width: ${(props) => Math.sqrt(props.canvasWidth) * 2.5}px;
     white-space: nowrap;
     color: white;
     opacity: 0.65;
+    margin: 0;
     font-weight: 200;
     font-size: ${(props) => Math.sqrt(props.canvasWidth) / 2}px;
   }

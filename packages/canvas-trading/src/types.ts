@@ -9,6 +9,7 @@ export interface CandleToDraw {
   close: number;
   indicators: Indicators;
   trades?: AssignedTrade[];
+  asset?: string;
 }
 export type MountedIndicatorType = keyof Pick<Indicators, 'fractal' | 'revBar'>;
 export type IndicatorValue = RevBarIndicator | FractalIndicator;
@@ -34,6 +35,8 @@ export interface OtherSettings {
   zoom?: boolean;
   /** @default true */
   scroll?: boolean;
+  /** @default false */
+  showAsset?: boolean;
 }
 export interface CheckedOtherSettings {
   allTradesShown: boolean;
@@ -42,6 +45,7 @@ export interface CheckedOtherSettings {
   mountedIndicators: boolean;
   zoom: boolean;
   scroll: boolean;
+  showAsset: boolean;
 }
 export interface Indicators {
   revBar: RevBarIndicator | '';
