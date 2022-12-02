@@ -200,7 +200,7 @@ function drawLastCandlePrice(
   if (!otherSettings.showLastCandlePrice) return;
 
   const lastCandle = canvas.lastCandle;
-  if (!lastCandle) return;
+  if (!lastCandle || !lastCandle.close) return; // lastCandle.close may be undefined on DF3 sometimes. Idk why.
 
   const alligatorOffset = 8;
 
@@ -212,10 +212,11 @@ function drawLastCandlePrice(
   const fontFamily = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif`;
   ctx.font = `${canvas.height / 25}px ${fontFamily}`;
   const text = `-- ${Number(lastCandle.close.toFixed(2))}`;
+  const metrics = ctx.measureText(text);
   const x = lastCandle2D.xPosition + canvas.candleWidth * 2 + canvas.gap;
   /** So that the '--' in the start of the text exactly matches the position of the candle body bottom. */
-  const fineTunedYOffset = 7;
-  const y = lastCandle2D.close + fineTunedYOffset;
+  const centerYOffset = metrics.actualBoundingBoxAscent / 2 - metrics.actualBoundingBoxDescent;
+  const y = lastCandle2D.close + centerYOffset;
   ctx.fillText(text, x, y);
   ctx.closePath();
 }
