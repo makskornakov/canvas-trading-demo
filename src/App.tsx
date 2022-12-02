@@ -56,7 +56,7 @@ function App() {
     zoom: true,
     scroll: true,
     showAsset: true,
-    showLastCandlePrice: false,
+    showLastCandlePrice: true,
   });
 
   function changeCandle(add: boolean = true) {
