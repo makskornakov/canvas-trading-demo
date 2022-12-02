@@ -51,7 +51,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const cursorRef = useRef<HTMLCanvasElement>(null);
   const aoCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const properOtherSettings = useMemo<CheckedOtherSettings>(
+  const otherSettings = useMemo<CheckedOtherSettings>(
     () => ({
       allTradesShown: props.otherSettings?.allTradesShown ?? false,
       alligator: props.otherSettings?.alligator ?? true,
@@ -64,10 +64,10 @@ const Canvas: React.FC<CanvasProps> = ({
   const [width, setWidth] = usePropState(props.width);
   const [height, setHeight] = usePropState(props.height);
   const [candleArray, setCandleArray] = usePropState(candleArrayProp);
+  // It might cause a small lag when candle array is updated
   const [lastCandle, setLastCandle] = usePropState(lastCandleProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
-  const [otherSettings, setOtherSettings] = usePropState(properOtherSettings);
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
 
   // canvas elements
@@ -144,34 +144,6 @@ const Canvas: React.FC<CanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const scrollZoomEventListener = (e: WheelEvent) => {
-      e.preventDefault();
-      // e.stopPropagation(); // makes it laggy
-      scrollZoom(
-        { x: e.deltaX, y: e.deltaY },
-        shift,
-        candlesShown,
-        candleArray.length,
-        setShift,
-        setCandlesShown
-      );
-      return false; // Why does it return false?
-    };
-    // scroll zoom EventListener
-    canvas.addEventListener('wheel', scrollZoomEventListener);
-
-    const cursorMoveEventListener = (e: MouseEvent) => {
-      cursorFunction({ x: e.clientX, y: e.clientY });
-    };
-    // cursor EventListeners
-    canvas.addEventListener('mousemove', cursorMoveEventListener);
-
-    const cursorOutEventListener = () => {
-      // reset cursor
-      setCursor({ x: -5, y: -5 });
-    };
-    canvas.addEventListener('mouseleave', cursorOutEventListener);
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     drawFunction(ctx, propsCanvas, otherSettings);
@@ -190,10 +162,41 @@ const Canvas: React.FC<CanvasProps> = ({
       displayTrade(ctx, propsCanvas, shownTrade);
     }
 
-    const aoCanvas = aoCanvasRef.current;
-    if (!aoCanvas) return;
-    const aoCtx = aoCanvas?.getContext('2d');
-    if (otherSettings.ao && aoCtx) drawAo(aoCtx, propsCanvas);
+    if (otherSettings.ao) {
+      const aoCanvas = aoCanvasRef.current;
+      if (!aoCanvas) return;
+      const aoCtx = aoCanvas.getContext('2d');
+      if (!aoCtx) return;
+      drawAo(aoCtx, propsCanvas);
+    }
+    const scrollZoomEventListener = (e: WheelEvent) => {
+      e.preventDefault();
+      // e.stopPropagation(); // makes it laggy
+      scrollZoom(
+        { x: e.deltaX, y: e.deltaY },
+        shift,
+        candlesShown,
+        candleArray.length,
+        setShift,
+        setCandlesShown
+      );
+      return false; // Why does it return false?
+    };
+
+    // scroll zoom EventListener
+    canvas.addEventListener('wheel', scrollZoomEventListener);
+
+    const cursorMoveEventListener = (e: MouseEvent) => {
+      cursorFunction({ x: e.clientX, y: e.clientY });
+    };
+
+    // cursor EventListeners
+    canvas.addEventListener('mousemove', cursorMoveEventListener);
+    const cursorOutEventListener = () => {
+      // reset cursor
+      setCursor({ x: -5, y: -5 });
+    };
+    canvas.addEventListener('mouseleave', cursorOutEventListener);
 
     return () => {
       // Cleanup. Otherwise, the events are duplicated.
@@ -213,7 +216,6 @@ const Canvas: React.FC<CanvasProps> = ({
     propsCanvas,
     cursorFunction,
     otherSettings,
-    properOtherSettings.ao,
   ]);
 
   // useEffect for cursor
@@ -276,8 +278,6 @@ const Canvas: React.FC<CanvasProps> = ({
       <OclhLabel canvasWidth={Number(props.width)}>
         {displayedOclh && (
           <>
-            {/* unbreakable space */}
-
             <p>O: {displayedOclh?.o}</p>
             <p>C: {displayedOclh?.c}</p>
             <p>L: {displayedOclh?.l}</p>
@@ -298,7 +298,7 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={Number(props.height) * canvasSettings.scaleForQuality}
       />
-      {properOtherSettings.ao && (
+      {otherSettings.ao && (
         <AoCanvas
           width={Number(props.width) * canvasSettings.scaleForQuality}
           height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}

@@ -67,7 +67,6 @@ function App() {
     let max = findMaxTrade(candleArray);
     setMaxTrade(max);
     setSelectedTrade(undefined);
-    setLastCandle(candleArray[candleArray.length - 9]);
   }, [candleArray]);
   const indicatorNames = {
     ao: 'AO',
@@ -80,6 +79,11 @@ function App() {
     const buttons = keys.map((key) => {
       return (
         <IndicatorButton
+          style={{
+            backgroundColor: otherSettings[key as keyof typeof otherSettings]
+              ? 'rgba(42, 237, 42, 0.8)'
+              : 'rgba(237, 42, 42, 0.8)',
+          }}
           onClick={() =>
             setOtherSettings({
               ...otherSettings,
@@ -129,15 +133,33 @@ function App() {
       </Wrap>
       <ControlWrap>
         <ControlButton
+          style={{
+            backgroundColor:
+              candleArray === exampleArray1
+                ? 'rgba(42, 237, 42, 0.8)'
+                : 'initial',
+          }}
           onClick={() => {
             setCandleArray(exampleArray1 as CandleToDraw[]);
+            setLastCandle(
+              exampleArray1[exampleArray1.length - 9] as CandleToDraw
+            );
           }}
         >
           Example 1
         </ControlButton>
         <ControlButton
+          style={{
+            backgroundColor:
+              candleArray === exampleArray2
+                ? 'rgba(42, 237, 42, 0.8)'
+                : 'initial',
+          }}
           onClick={() => {
             setCandleArray(exampleArray2 as CandleToDraw[]);
+            setLastCandle(
+              exampleArray2[exampleArray2.length - 9] as CandleToDraw
+            );
           }}
         >
           Example 2

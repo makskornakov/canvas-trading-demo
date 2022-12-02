@@ -25,16 +25,17 @@ export const ControlWrap = styled.div`
 `;
 const buttonStyles = css`
   border: 1px solid white;
-  background: transparent;
+  background-color: transparent;
   border-radius: 5px;
   color: white;
   font-size: 12px;
   transition-duration: 0.4s;
+  font-weight: 400;
   cursor: pointer;
   transition-property: background-color color;
 
   &:hover {
-    background: white;
+    background-color: white !important;
     color: black;
   }
 `;
