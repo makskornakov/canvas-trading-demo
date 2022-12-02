@@ -92,6 +92,7 @@ function App() {
     const buttons = keys.map((key) => {
       return (
         <IndicatorButton
+          key={key}
           style={{
             backgroundColor: otherSettings[key as keyof typeof otherSettings]
               ? 'rgba(42, 237, 42, 0.8)'

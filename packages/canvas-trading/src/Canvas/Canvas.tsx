@@ -318,7 +318,7 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         {displayedOclh &&
           Object.keys(displayedOclh).map((key) => (
-            <p>
+            <p key={key}>
               {key.toUpperCase()}:{' '}
               {displayedOclh[key as keyof typeof displayedOclh].toFixed(2)}
             </p>
