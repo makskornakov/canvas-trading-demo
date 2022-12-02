@@ -13,6 +13,15 @@ import {
 } from './app.styled';
 import { useState, useEffect } from 'react';
 
+const indicatorNames = {
+  ao: 'AO',
+  alligator: 'Alligator',
+  mountedIndicators: 'R / F',
+  allTradesShown: 'Trades',
+  zoom: 'Zoom',
+  scroll: 'Scroll',
+};
+
 function findMaxTrade(candleArray: CandleToDraw[]) {
   let max = 0;
   candleArray.forEach((candle) => {
@@ -41,6 +50,8 @@ function App() {
     alligator: false,
     mountedIndicators: false,
     allTradesShown: false,
+    zoom: true,
+    scroll: true,
   });
 
   function changeCandle(add: boolean = true) {
@@ -68,12 +79,7 @@ function App() {
     setMaxTrade(max);
     setSelectedTrade(undefined);
   }, [candleArray]);
-  const indicatorNames = {
-    ao: 'AO',
-    alligator: 'Alligator',
-    mountedIndicators: 'R / F',
-    allTradesShown: 'Trades',
-  };
+
   function IndicatorButtons() {
     const keys = Object.keys(otherSettings);
     const buttons = keys.map((key) => {

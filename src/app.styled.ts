@@ -53,7 +53,7 @@ export const IndicatorWrap = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 30%;
+  height: 40%;
 `;
 // use Header
 export const Description = styled(Header)`
