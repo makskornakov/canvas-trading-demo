@@ -85,17 +85,23 @@ export function fractal(
   candleWidth: number
 ) {
   ctx.beginPath();
-  const triangleAdditionalWidthMultiplier = 0.5;
+
+  /** It also adds to the height a little bit, proportionally */
+  const triangleAdditionalWidthMultiplier = 0.1;
   const triangleWidthShrinker = 1 / triangleAdditionalWidthMultiplier;
+
+  const triangleWidthMultiplier = (1 + triangleAdditionalWidthMultiplier);
+  const triangleWidth = candleWidth * triangleWidthMultiplier;
 
   ctx.moveTo(x - candleWidth / triangleWidthShrinker, y);
 
-  const toY = type === 'up' ? y - candleWidth * 1.5 : y + candleWidth * 1.5;
+  const toY = type === 'up' ? y - triangleWidth : y + triangleWidth;
   ctx.lineTo(x + candleWidth / 2, toY);
-  ctx.lineTo(x + candleWidth * (1 + triangleAdditionalWidthMultiplier), y);
+  ctx.lineTo(x + triangleWidth, y);
 
   ctx.fillStyle = type === 'up' ? candleColors.green : candleColors.red;
   ctx.fill();
+
   ctx.closePath();
 }
 export function rect(
