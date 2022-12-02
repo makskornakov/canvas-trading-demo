@@ -16,6 +16,7 @@ interface CandleToDraw {
   close: number;
   indicators: Indicators; //bellow
   trades?: AssignedTrade[];
+  asset?: string;
 }
 ```
 
@@ -82,6 +83,9 @@ function App() {
           alligator: true;
           ao: true;
           mountedIndicators: true; // revbar & fractal
+          shift: true;
+          scroll: true;
+          showAsset: false; // shows big asset label
         }}
       ></Canvas>
    );

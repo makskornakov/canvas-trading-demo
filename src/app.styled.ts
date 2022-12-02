@@ -29,15 +29,15 @@ export const ReadmeLink = styled.a`
   font-size: 0.9em;
   text-decoration: none;
   position: absolute;
-  top: 0;
-  right: 0;
-  margin: 1em;
+  top: 1em;
+  right: 1.5em;
+  margin: 0;
   font-weight: 300;
   transition: 0.2s;
   transition-property: color;
 
   &:hover {
-    color: #f55500;
+    color: #6bc800;
   }
 `;
 
