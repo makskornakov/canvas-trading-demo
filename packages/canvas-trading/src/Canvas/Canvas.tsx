@@ -240,12 +240,17 @@ const Canvas: React.FC<CanvasProps> = ({
     cursorFunction(cursor, true);
   }, [width, height, cursor, candlesShown, cursorFunction]);
 
+  useEffect(() => {
+    if (shownTrade === undefined) {
+      // reset shift and zoom unselecting trade.
+      setShift(0);
+      setCandlesShown(initialCandlesShown.current);
+    }
+  }, [shownTrade, setShift, setCandlesShown]);
+
   // useEffect for to shift graph when shownTrade changes
   useEffect(() => {
     if (shownTrade === undefined) {
-      // reset shift and zoom on candleArray change
-      setShift(0);
-      setCandlesShown(initialCandlesShown.current);
       return;
     }
     const startCandle = findCandleWithTrade(candleArray, shownTrade);
