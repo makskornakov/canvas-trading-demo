@@ -35,7 +35,7 @@ export const CursorCanvas = styled.canvas<{
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
   position: absolute;
-  z-index: -1;
+  pointer-events: none;
   top: 0;
   left: 0;
 `;
