@@ -116,7 +116,6 @@ export class Candle2D {
   mountPoints: CandleMountPoints;
   alligator: Indicators['alligator'];
   trades: AssignedTrade[];
-  xPosition: number;
   constructor(
     originalOpen: number,
     originalClose: number,
@@ -125,13 +124,13 @@ export class Candle2D {
     originalIndicators: Indicators,
     candleCanvas: CandleCanvas,
     originalTrades: AssignedTrade[],
-    xPosition: number
+    public xPosition: number,
+    public originalIndex: number
   ) {
-    this.xPosition = xPosition;
-    this.open = this.getPoint(originalOpen, candleCanvas);
-    this.close = this.getPoint(originalClose, candleCanvas);
-    this.low = this.getPoint(originalLow, candleCanvas);
-    this.high = this.getPoint(originalHigh, candleCanvas);
+    this.open = Candle2D.getPoint(originalOpen, candleCanvas);
+    this.close = Candle2D.getPoint(originalClose, candleCanvas);
+    this.low = Candle2D.getPoint(originalLow, candleCanvas);
+    this.high = Candle2D.getPoint(originalHigh, candleCanvas);
     this.mountPoints = new CandleMountPoints(
       candleCanvas.candleWidth,
       originalIndicators,
@@ -150,16 +149,16 @@ export class Candle2D {
     originalTrades.forEach((trade) => {
       const tradeCopy = { ...trade };
       if (tradeCopy.isThisCandleStart) {
-        tradeCopy.buyPrice = this.getPoint(tradeCopy.buyPrice, candleCanvas);
+        tradeCopy.buyPrice = Candle2D.getPoint(tradeCopy.buyPrice, candleCanvas);
       }
       if (tradeCopy.isThisCandleEnd) {
-        tradeCopy.sellPrice = this.getPoint(tradeCopy.sellPrice, candleCanvas);
+        tradeCopy.sellPrice = Candle2D.getPoint(tradeCopy.sellPrice, candleCanvas);
       }
       this.trades.push(tradeCopy);
     });
   }
   // private arrow function with original point as an argument
-  private getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
+  public static getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
     const gapSpace = candleCanvas.candleWidth * 4.5;
     const point =
       ((candleCanvas.minMax.max - originalPoint) /
@@ -177,7 +176,7 @@ export class Candle2D {
     const points = {} as Indicators['alligator'];
     keys.forEach((key) => {
       points[key] =
-        alligator[key] !== 0 ? this.getPoint(alligator[key], candleCanvas) : 0;
+        alligator[key] !== 0 ? Candle2D.getPoint(alligator[key], candleCanvas) : 0;
     });
     return points;
   };

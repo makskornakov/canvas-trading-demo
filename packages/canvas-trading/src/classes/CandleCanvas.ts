@@ -28,7 +28,7 @@ export class CandleCanvas {
     height: number,
     public candlesShown: number,
     public candleShift: number,
-    candlesToDraw: CandleToDraw[],
+    public candlesToDraw: CandleToDraw[],
     lastCandle: CandleToDraw | undefined
   ) {
     if (candlesToDraw.length < canvasSettings.minCandlesShown)
@@ -91,6 +91,7 @@ export class CandleCanvas {
     };
   }
   private getDrawingArray(slicedArray: CandleToDraw[]) {
+    const indexInTheOriginalArray = this.candlesToDraw.length - slicedArray.length;
     const candles2D = slicedArray.map((candle, i) => {
       return new Candle2D(
         candle.open,
@@ -100,7 +101,8 @@ export class CandleCanvas {
         candle.indicators,
         this,
         candle.trades ? candle.trades : [],
-        i * (this.candleWidth + this.gap)
+        i * (this.candleWidth + this.gap),
+        i + indexInTheOriginalArray,
       );
     });
     return candles2D;

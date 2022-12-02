@@ -14,34 +14,60 @@ import {
   drawCurveLine,
   findCandleWithTrade,
 } from './drawFunctions';
-import type { CheckedOtherSettings, FoundCandle, Vector2 } from '../types';
+import type { CandleToDraw, CheckedOtherSettings, FoundCandle, Vector2 } from '../types';
+import { Candle2D } from '../classes/CandleClasses';
 
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas,
   tradeID: number
 ): {
-  startCandle: FoundCandle;
-  endCandle: FoundCandle;
-} {
-  const startCandle = findCandleWithTrade(candleCanvas.candleArray, tradeID);
+  startCandle: FoundCandle<CandleToDraw>;
+  endCandle: FoundCandle<CandleToDraw>;
+} | undefined {
+  const startCandle = findCandleWithTrade(candleCanvas.candlesToDraw, tradeID);
   const endCandle = findCandleWithTrade(
-    candleCanvas.candleArray,
+    candleCanvas.candlesToDraw,
     tradeID,
     true
   );
   // draw line from buy to sell
   if (startCandle.candle && endCandle.candle) {
+    const originalIndexOfFirstVisibleCandle = candleCanvas.candleArray[0].originalIndex;
+    const startCandleIndex =
+      startCandle.index - originalIndexOfFirstVisibleCandle + candleCanvas.candleShift; // will be negative if the candle is not visible
+
+    const originalEndCandleIndex =
+      endCandle.index - originalIndexOfFirstVisibleCandle + candleCanvas.candleShift;
+
+    const isNotInViewport =
+      (originalEndCandleIndex < 0 || originalEndCandleIndex >= candleCanvas.candlesShown) &&
+      (startCandleIndex < 0 || startCandleIndex >= candleCanvas.candlesShown);
+
+    if (isNotInViewport) return;
+
+    const xEnd = originalEndCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap);
+    const xStart = startCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap);
+
+    const yStart = Candle2D.getPoint(
+      startCandle.candle.trades?.[startCandle.innerIndex].buyPrice!,
+      candleCanvas,
+    );
+    const yEnd = Candle2D.getPoint(
+      endCandle.candle.trades?.[endCandle.innerIndex].sellPrice!,
+      candleCanvas,
+    );
+
     const start = {
-      x: startCandle.candle.xPosition + candleCanvas.candleWidth / 2,
-      y: startCandle.candle.trades[startCandle.innerIndex].buyPrice,
+      x: xStart + candleCanvas.candleWidth / 2,
+      y: yStart,
     };
     const end = {
-      x: endCandle.candle.xPosition + candleCanvas.candleWidth / 2,
-      y: endCandle.candle.trades[endCandle.innerIndex].sellPrice,
+      x: xEnd + candleCanvas.candleWidth / 2,
+      y: yEnd,
     };
     const isProfit =
-      endCandle.candle.trades[endCandle.innerIndex].tradeType === 'long'
+      endCandle.candle.trades?.[endCandle.innerIndex].tradeType === 'long'
         ? // canvas cords are inverted
           end.y < start.y
         : end.y > start.y;
