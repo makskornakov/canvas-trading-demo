@@ -172,6 +172,7 @@ export const drawFunction = (
   });
   if (otherSettings.alligator) {
     // draw alligator
+    const alligatorWidth = Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight);
     const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
       keyof typeof canvas.alligatorArray
     >;
@@ -180,7 +181,7 @@ export const drawFunction = (
         ctx,
         canvas.alligatorArray[key],
         alligatorLinesSettings[key],
-        Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight)
+        alligatorWidth
       );
     });
   }
