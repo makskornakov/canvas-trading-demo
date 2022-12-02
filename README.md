@@ -4,6 +4,8 @@
 
 Initially was made for an existing trading bot that provides an analyzed array of candles.
 
+## Candle type
+
 ```typescript
 interface CandleToDraw {
   open: number;
@@ -12,10 +14,14 @@ interface CandleToDraw {
   high: number;
   low: number;
   close: number;
-  indicators: Indicators;
+  indicators: Indicators; //bellow
   trades?: AssignedTrade[];
 }
+```
 
+### Trade in the candle.trades[]
+
+```typescript
 interface AssignedTrade {
   tradeID: number;
   tradeType: 'long' | 'short';
@@ -24,8 +30,12 @@ interface AssignedTrade {
   isThisCandleStart: boolean;
   isThisCandleEnd: boolean;
 }
+```
 
-export interface Indicators {
+### Indicators in candle.idicators
+
+```typescript
+interface Indicators {
   revBar: 'buy' | 'sell';
   fractal: 'up' | 'down';
   alligator: {
@@ -44,39 +54,38 @@ export interface Indicators {
 }
 ```
 
-#### The logic of assigning the trade
+### The logic of assigning the trade
 
 Each trade has an entry time and an exit one. We search for two candles (enter & exit) for each trade and add AssignedTrade to the trades array.
 
-### Simple Usage
+## Simple Usage
 
 ```typescript
-import  Canvas, { CandleToDraw } from  'canvas-trading';
+import Canvas, { CandleToDraw } from 'canvas-trading';
 
-function  App() {
+function App() {
   return (
     <Canvas
-        // Mandatory
-      width={800}
-      height={400}
-      candleArray={candleArray} // CandleToDraw[]
-      lastCandle={lastCandle} // CandleToDraw
+      // Mandatory
+        width={800}
+        height={400}
+        candleArray={candleArray} // CandleToDraw[]
+        lastCandle={lastCandle} // CandleToDraw
 
-      // Optioanl
-      candlesShown={160}
-      shift={0}
-      shownTrade={undefind}
-      otherSettings={{
-        // all optional
-        allTradesShown: false, // display all trades
-        alligator: true;
-        ao: true;
-        mountedIndicators: true; // revbar & fractal
-      }}
-    ></Canvas>
-  );
+        // Optioanl
+        candlesShown={160}
+        shift={0}
+        shownTrade={undefind}
+        otherSettings={{
+          // all optional
+          allTradesShown: false, // display all trades
+          alligator: true;
+          ao: true;
+          mountedIndicators: true; // revbar & fractal
+        }}
+      ></Canvas>
+   );
 }
-
 export default App;
 ```
 
@@ -88,9 +97,13 @@ In a terminal, execute the following commands (assuming [`canvas-trading`][canva
 
 ```ps1
 pnpm link ./packages/canvas-trading # `./` in the start is important — this is how `pnpm link` knows that it is a relative path.
+
 cd packages/canvas-trading
+
 pnpm i
+
 pnpm tsc --watch
+
 # Leave this terminal running for Hot Reload.
 ```
 
