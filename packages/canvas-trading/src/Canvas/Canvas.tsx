@@ -17,6 +17,7 @@ import scrollZoom from '../scrollZoom';
 import type {
   CandleToDraw,
   CheckedOtherSettings,
+  FoundCandle,
   OtherSettings,
   Vector2,
 } from '../types';
@@ -149,6 +150,33 @@ const Canvas: React.FC<CanvasProps> = ({
   );
   const initialCandlesShown = useRef(candlesShown);
 
+  const maxTradeId = useMemo(() => (Math.max(...candleArray.map(candle => candle.trades).flat().map(trade => trade?.tradeID).filter(tradeID => tradeID !== undefined) as number[], 0)), [candleArray]);
+
+  const candlesForAllTrades = useMemo(() => {
+    if (!candleArray) return;
+    if (maxTradeId === undefined) return;
+
+    const result: Record<number, {
+      startCandle: FoundCandle<CandleToDraw>;
+      endCandle: FoundCandle<CandleToDraw>;
+    }> = {};
+
+    for (let tradeIDIndex = 0; tradeIDIndex <= maxTradeId; tradeIDIndex++) {
+      const startCandle = findCandleWithTrade(candleArray, tradeIDIndex);
+      const endCandle = findCandleWithTrade(
+        candleArray,
+        tradeIDIndex,
+        true
+      );
+      result[tradeIDIndex] = {
+        startCandle,
+        endCandle,
+      }
+    }
+
+    return result;
+  }, [maxTradeId, candleArray]);
+
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -158,13 +186,12 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!ctx) return;
     drawFunction(ctx, propsCanvas, otherSettings);
 
-    if (otherSettings.allTradesShown) {
-      const maxTradeId = shownTrade ?? Math.max(...candleArray.map(candle => candle.trades).flat().map(trade => trade?.tradeID).filter(tradeID => tradeID !== undefined) as number[], 0);
+    if (otherSettings.allTradesShown && maxTradeId !== undefined && candlesForAllTrades) {
       for (let i = 0; i <= maxTradeId; i++) {
-        displayTrade(ctx, propsCanvas, i);
+        displayTrade(ctx, propsCanvas, candlesForAllTrades[i]);
       }
-    } else if (shownTrade !== undefined) {
-      displayTrade(ctx, propsCanvas, shownTrade);
+    } else if (shownTrade !== undefined && candlesForAllTrades) {
+      displayTrade(ctx, propsCanvas, candlesForAllTrades[shownTrade]);
     }
 
     if (otherSettings.ao) {
@@ -214,19 +241,7 @@ const Canvas: React.FC<CanvasProps> = ({
       canvas.removeEventListener('mousemove', cursorMoveEventListener);
       canvas.removeEventListener('mouseleave', cursorOutEventListener);
     };
-  }, [
-    width,
-    candlesShown,
-    candleArray,
-    shift,
-    height,
-    setShift,
-    setCandlesShown,
-    shownTrade,
-    propsCanvas,
-    cursorFunction,
-    otherSettings,
-  ]);
+  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, shownTrade, propsCanvas, cursorFunction, otherSettings, maxTradeId, candlesForAllTrades]);
 
   // useEffect for cursor
   useEffect(() => {

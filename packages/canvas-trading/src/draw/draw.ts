@@ -12,7 +12,6 @@ import {
   rect,
   drawMountedIndicators,
   drawCurveLine,
-  findCandleWithTrade,
 } from './drawFunctions';
 import type { CandleToDraw, CheckedOtherSettings, FoundCandle, Vector2 } from '../types';
 import { Candle2D } from '../classes/CandleClasses';
@@ -20,17 +19,16 @@ import { Candle2D } from '../classes/CandleClasses';
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas,
-  tradeID: number
+  tradeCandles: {
+    startCandle: FoundCandle<CandleToDraw>,
+    endCandle: FoundCandle<CandleToDraw>,
+  }
 ): {
   startCandle: FoundCandle<CandleToDraw>;
   endCandle: FoundCandle<CandleToDraw>;
 } | undefined {
-  const startCandle = findCandleWithTrade(candleCanvas.candlesToDraw, tradeID);
-  const endCandle = findCandleWithTrade(
-    candleCanvas.candlesToDraw,
-    tradeID,
-    true
-  );
+  const { startCandle, endCandle } = tradeCandles;
+
   // draw line from buy to sell
   if (startCandle.candle && endCandle.candle) {
     const originalIndexOfFirstVisibleCandle = candleCanvas.candleArray[0].originalIndex;
