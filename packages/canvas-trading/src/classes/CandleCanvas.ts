@@ -31,6 +31,9 @@ export class CandleCanvas {
     candlesToDraw: CandleToDraw[],
     lastCandle: CandleToDraw | undefined
   ) {
+    if (candlesToDraw.length < canvasSettings.minCandlesShown)
+      throw new Error('Not enough candles to draw');
+
     this.width = width * canvasSettings.scaleForQuality;
     this.height = height * canvasSettings.scaleForQuality;
     this.lastCandle = lastCandle;

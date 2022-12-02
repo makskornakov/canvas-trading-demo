@@ -81,22 +81,26 @@ const Canvas: React.FC<CanvasProps> = ({
   }>();
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
 
-  const propsCanvas = useMemo(
-    () =>
-      new CandleCanvas(
+  const propsCanvas = useMemo(() => {
+    try {
+      return new CandleCanvas(
         Number(width),
         Number(height),
         candlesShown,
         shift,
         candleArray,
         lastCandle
-      ),
-    [candleArray, lastCandle, candlesShown, height, shift, width]
-  );
+      );
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }, [candleArray, lastCandle, candlesShown, height, shift, width]);
 
   const cursorFunction = useCallback(
     (position: Vector2, onlyLabels: boolean = false) => {
-      if (!canvasRef.current) return;
+      if (!canvasRef.current || !propsCanvas) return;
+
       if (position.x < 0 || position.y < 0) {
         // No need to update cursor that is not present.
         // Also, resetting cursor labels.
@@ -142,7 +146,7 @@ const Canvas: React.FC<CanvasProps> = ({
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !propsCanvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
