@@ -167,26 +167,8 @@ export const drawFunction = (
     );
 
     // draw indicators
-<<<<<<< Updated upstream
-    drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
-  });
-
-  // draw alligator
-  const alligatorWidth = Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight);
-  const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
-    keyof typeof canvas.alligatorArray
-  >;
-  alligatorKeys.forEach((key) => {
-    drawCurveLine(
-      ctx,
-      canvas.alligatorArray[key],
-      alligatorLinesSettings[key],
-      alligatorWidth,
-    );
-=======
     if (otherSettings.mountedIndicators)
       drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
->>>>>>> Stashed changes
   });
   if (otherSettings.alligator) {
     // draw alligator
