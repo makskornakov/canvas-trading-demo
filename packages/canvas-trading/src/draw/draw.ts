@@ -138,9 +138,12 @@ export const drawFunction = (
 
   canvas.candleArray.forEach((candle) => {
     if (candle.noDraw) return;
+
     const x = candle.xPosition;
     const candleIsRed = candle.open < candle.close;
     const y = candleIsRed ? candle.open : candle.close;
+
+    const candleFillColor = candleIsRed ? candleColors.red : candleColors.green;
 
     // draw candle
     rect(
@@ -149,15 +152,16 @@ export const drawFunction = (
       y,
       canvas.candleWidth,
       Math.abs(candle.open - candle.close),
-      candleIsRed ? candleColors.red : candleColors.green
+      candleFillColor
     );
 
     // draw wick
+    const wickX = x + canvas.candleWidth / 2;
     line(
       ctx,
-      { x: x + canvas.candleWidth / 2, y: candle.high },
-      { x: x + canvas.candleWidth / 2, y: candle.low },
-      candleIsRed ? candleColors.red : candleColors.green,
+      { x: wickX, y: candle.high },
+      { x: wickX, y: candle.low },
+      candleFillColor,
       canvas.candleWidth / 6
     );
 
@@ -166,6 +170,7 @@ export const drawFunction = (
   });
 
   // draw alligator
+  const alligatorWidth = Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight);
   const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
     keyof typeof canvas.alligatorArray
   >;
@@ -174,7 +179,7 @@ export const drawFunction = (
       ctx,
       canvas.alligatorArray[key],
       alligatorLinesSettings[key],
-      Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight)
+      alligatorWidth,
     );
   });
 };

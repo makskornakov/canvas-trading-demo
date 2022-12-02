@@ -1,6 +1,6 @@
 import type { Candle2D } from '../classes/CandleClasses';
 import { candleColors } from '../config';
-import type { CandleToDraw, FoundCandle, Vector2 } from '../types';
+import type { CandleToDraw, FoundCandle, FractalIndicator, RevBarIndicator, Vector2 } from '../types';
 
 export function drawCurveLine(
   ctx: CanvasRenderingContext2D,
@@ -38,25 +38,27 @@ export function drawMountedIndicators(
     candle.mountPoints.below.second,
   ];
 
-  arr.forEach((indicator, i) => {
-    if (indicator !== null) {
-      if (indicator.type === 'revBar') {
-        revBar(
-          ctx,
-          x,
-          indicator.yPos,
-          indicator.value as 'buy' | 'sell',
-          candleWidth
-        );
-      } else if (indicator.type === 'fractal') {
-        fractal(
-          ctx,
-          x,
-          indicator.yPos,
-          indicator.value as 'up' | 'down',
-          candleWidth
-        );
-      }
+  arr.forEach((indicator) => {
+    if (indicator === null) return;
+
+    if (indicator.type === 'revBar') {
+      revBar(
+        ctx,
+        x,
+        indicator.yPos,
+        indicator.value as RevBarIndicator,
+        candleWidth
+      );
+      return;
+    }
+    if (indicator.type === 'fractal') {
+      fractal(
+        ctx,
+        x,
+        indicator.yPos,
+        indicator.value as FractalIndicator,
+        candleWidth
+      );
     }
   });
 }
@@ -65,7 +67,7 @@ export function revBar(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  type: 'buy' | 'sell',
+  type: RevBarIndicator,
   candleWidth: number
 ) {
   ctx.beginPath();
@@ -79,7 +81,7 @@ export function fractal(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  type: 'up' | 'down',
+  type: FractalIndicator,
   candleWidth: number
 ) {
   ctx.beginPath();
