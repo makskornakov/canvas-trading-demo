@@ -276,15 +276,15 @@ const Canvas: React.FC<CanvasProps> = ({
         {displayedDate}
       </DateLabel>
       <OclhLabel canvasWidth={Number(props.width)}>
-        {displayedOclh && (
-          <>
-            <p>O: {displayedOclh?.o}</p>
-            <p>C: {displayedOclh?.c}</p>
-            <p>L: {displayedOclh?.l}</p>
-            <p>H: {displayedOclh?.h}</p>
-          </>
-        )}
+        {displayedOclh &&
+          Object.keys(displayedOclh).map((key) => (
+            <p>
+              {key.toUpperCase()}:{' '}
+              {displayedOclh[key as keyof typeof displayedOclh].toFixed(2)}
+            </p>
+          ))}
       </OclhLabel>
+
       <MainCanvas
         {...props}
         width={Number(props.width) * canvasSettings.scaleForQuality}
