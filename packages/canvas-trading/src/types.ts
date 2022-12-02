@@ -10,8 +10,8 @@ export interface CandleToDraw {
   indicators: Indicators;
   trades?: AssignedTrade[];
 }
-export type MountedIndicatorType = 'fractal' | 'revBar';
-export type IndicatorValue = 'buy' | 'sell' | 'up' | 'down';
+export type MountedIndicatorType = keyof Pick<Indicators, 'fractal' | 'revBar'>;
+export type IndicatorValue = RevBarIndicator | FractalIndicator;
 export interface FoundCandle<T extends Candle2D | CandleToDraw = Candle2D> {
   candle: T | false;
   index: number;
@@ -26,8 +26,8 @@ export interface AssignedTrade {
   isThisCandleEnd: boolean;
 }
 export interface Indicators {
-  revBar: 'buy' | 'sell';
-  fractal: 'up' | 'down';
+  revBar: RevBarIndicator | '';
+  fractal: FractalIndicator | '';
   alligator: {
     jaw: number;
     teeth: number;
@@ -35,6 +35,8 @@ export interface Indicators {
   };
   ao: { value: number; vertexValue: number };
 }
+export type RevBarIndicator = 'buy' | 'sell';
+export type FractalIndicator = 'up' | 'down';
 export type Vector2 = {
   x: number;
   y: number;
