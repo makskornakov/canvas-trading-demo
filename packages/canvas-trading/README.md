@@ -54,28 +54,29 @@ Each trade has an entry time and an exit one. We search for two candles (enter &
 import  Canvas, { CandleToDraw } from  'canvas-trading';
 
 function  App() {
-	return (
-		<Canvas
-			// Mandatory
-			width={800}
-			height={400}
-			candleArray={candleArray} // CandleToDraw[]
-			lastCandle={lastCandle} // CandleToDraw
+  return (
+      <Canvas
+      // Mandatory
+      width={800}
+      height={400}
+      candleArray={candleArray} // CandleToDraw[]
+      lastCandle={lastCandle} // CandleToDraw
 
-			// Optioanl
-			candlesShown={160}
-			shift={0}
-			shownTrade={undefind}
-			otherSettings={{
-				// all optional
-				allTradesShown: false, // display all trades
-				alligator: true;
-				ao: true;
-				mountedIndicators: true; // revbar & fractal
-			}}
-		></Canvas>
-	);
+      // Optioanl
+      candlesShown={160}
+      shift={0}
+      shownTrade={undefind}
+      otherSettings={{
+        // all optional
+        allTradesShown: false, // display all trades
+        alligator: true;
+        ao: true;
+        mountedIndicators: true; // revbar & fractal
+      }}
+    ></Canvas>
+  );
 }
+
 export default App;
 ```
 
