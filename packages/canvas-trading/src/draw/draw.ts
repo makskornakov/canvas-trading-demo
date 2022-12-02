@@ -14,7 +14,7 @@ import {
   drawCurveLine,
   findCandleWithTrade,
 } from './drawFunctions';
-import type { FoundCandle, Vector2 } from '../types';
+import type { CheckedOtherSettings, FoundCandle, Vector2 } from '../types';
 
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
@@ -131,7 +131,8 @@ export function drawAo(
 
 export const drawFunction = (
   ctx: CanvasRenderingContext2D,
-  canvas: CandleCanvas
+  canvas: CandleCanvas,
+  otherSettings: CheckedOtherSettings
 ) => {
   // clear ctx
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -166,6 +167,7 @@ export const drawFunction = (
     );
 
     // draw indicators
+<<<<<<< Updated upstream
     drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
   });
 
@@ -181,5 +183,23 @@ export const drawFunction = (
       alligatorLinesSettings[key],
       alligatorWidth,
     );
+=======
+    if (otherSettings.mountedIndicators)
+      drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
+>>>>>>> Stashed changes
   });
+  if (otherSettings.alligator) {
+    // draw alligator
+    const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
+      keyof typeof canvas.alligatorArray
+    >;
+    alligatorKeys.forEach((key) => {
+      drawCurveLine(
+        ctx,
+        canvas.alligatorArray[key],
+        alligatorLinesSettings[key],
+        Math.sqrt(canvas.candleWidth * alligatorLinesSettings.lineWeight)
+      );
+    });
+  }
 };

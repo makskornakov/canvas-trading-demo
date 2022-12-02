@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Header = styled.h1`
   color: white;
@@ -13,7 +13,7 @@ export const Wrap = styled.div`
   justify-content: center;
   align-items: center;
   height: 500px;
-  width: 1200px;
+  width: 1300px;
 `;
 export const ControlWrap = styled.div`
   display: flex;
@@ -23,9 +23,7 @@ export const ControlWrap = styled.div`
   width: 650px;
   margin: 0 auto;
 `;
-export const ControlButton = styled.button`
-  width: 80px;
-  height: 30px;
+const buttonStyles = css`
   border: 1px solid white;
   background: transparent;
   border-radius: 5px;
@@ -39,6 +37,22 @@ export const ControlButton = styled.button`
     background: white;
     color: black;
   }
+`;
+export const ControlButton = styled.button`
+  ${buttonStyles}
+  width: 80px;
+  height: 30px;
+`;
+export const IndicatorButton = styled.button`
+  ${buttonStyles}
+  width: 60px;
+  height: 25px;
+`;
+export const IndicatorWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 30%;
 `;
 // use Header
 export const Description = styled(Header)`

@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvas-trading</title>
+    <link rel="stylesheet" href="https://stackedit.io/style.css" />
+  </head>
+
+  <body class="stackedit">
+    <div class="stackedit__left">
+      <div class="stackedit__toc">
+        <ul>
+          <li>
+            <a href="#interactive-trading-canvas"
+              >Demo-project of an Interactive trading canvas</a
+            >
+            <ul>
+              <li></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="stackedit__right">
+      <div class="stackedit__html">
+        <h1 id="interactive-trading-canvas">Interactive trading canvas</h1>
+        <h3 id="react-typescript-open-source-module">
+          React Typescript open source module
+        </h3>
+        <p>
+          Initially was made for an existing trading bot that provides an
+          analyzed array of candles.
+        </p>
+        <pre
+          class="language-typescript"
+        ><code class="prism  language-typescript"><span class="token keyword">interface</span>  <span class="token class-name">CandleToDraw</span> <span class="token punctuation">{</span>
+	open<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	openTime<span class="token punctuation">:</span> <span class="token keyword">string</span> <span class="token operator">|</span> Date<span class="token punctuation">;</span>
+	closeTime<span class="token punctuation">:</span> <span class="token keyword">string</span> <span class="token operator">|</span> Date<span class="token punctuation">;</span>
+	high<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	low<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	close<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	indicators<span class="token punctuation">:</span> Indicators<span class="token punctuation">;</span>
+	trades<span class="token operator">?</span><span class="token punctuation">:</span> AssignedTrade<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">interface</span>  <span class="token class-name">AssignedTrade</span> <span class="token punctuation">{</span>
+	tradeID<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	tradeType<span class="token punctuation">:</span> <span class="token string">'long'</span>  <span class="token operator">|</span>  <span class="token string">'short'</span><span class="token punctuation">;</span>
+	buyPrice<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	sellPrice<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	isThisCandleStart<span class="token punctuation">:</span> <span class="token keyword">boolean</span><span class="token punctuation">;</span>
+	isThisCandleEnd<span class="token punctuation">:</span> <span class="token keyword">boolean</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">export</span>  <span class="token keyword">interface</span>  <span class="token class-name">Indicators</span> <span class="token punctuation">{</span>
+	revBar<span class="token punctuation">:</span> <span class="token string">'buy'</span> <span class="token operator">|</span> <span class="token string">'sell'</span><span class="token punctuation">;</span>
+	fractal<span class="token punctuation">:</span> <span class="token string">'up'</span> <span class="token operator">|</span> <span class="token string">'down'</span><span class="token punctuation">;</span>
+	alligator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		jaw<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+		teeth<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+		lips<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	ao<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+		value<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+		<span class="token comment">// Custom value used by bot</span>
+		vertexValue<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+		<span class="token comment">// Starts with 0, goes through array;</span>
+		<span class="token comment">// +1 if green AO bar, -1 if red;</span>
+		<span class="token comment">// Displays the strenfth of AO trend</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+        <h4 id="the-logic-of-assigning-the-trade">
+          The logic of assigning the trade
+        </h4>
+        <p>
+          Each trade has an entry time and an exit one. We search for two
+          candles (enter &amp; exit) for each trade and add AssignedTrade to the
+          trades array.
+        </p>
+        <h3 id="simple-usage">Simple Usage</h3>
+        <pre
+          class="language-typescript"
+        ><code class="prism  language-typescript"><span class="token keyword">import</span>  Canvas<span class="token punctuation">,</span> <span class="token punctuation">{</span> CandleToDraw <span class="token punctuation">}</span> <span class="token keyword">from</span>  <span class="token string">'canvas-trading'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span>  <span class="token function">App</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token punctuation">(</span>
+		<span class="token operator">&lt;</span>Canvas
+			<span class="token comment">// Mandatory</span>
+			width<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">800</span><span class="token punctuation">}</span>
+			height<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">400</span><span class="token punctuation">}</span>
+			candleArray<span class="token operator">=</span><span class="token punctuation">{</span>candleArray<span class="token punctuation">}</span> <span class="token comment">// CandleToDraw[]</span>
+			lastCandle<span class="token operator">=</span><span class="token punctuation">{</span>lastCandle<span class="token punctuation">}</span> <span class="token comment">// CandleToDraw</span>
+			
+			<span class="token comment">// Optioanl</span>
+			candlesShown<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">160</span><span class="token punctuation">}</span>
+			shift<span class="token operator">=</span><span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span>
+			shownTrade<span class="token operator">=</span><span class="token punctuation">{</span>undefind<span class="token punctuation">}</span>
+			otherSettings<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> 
+				<span class="token comment">// all optional</span>
+				allTradesShown<span class="token punctuation">:</span> <span class="token keyword">false</span><span class="token punctuation">,</span> <span class="token comment">// display all trades</span>
+				alligator<span class="token punctuation">:</span> <span class="token keyword">true</span><span class="token punctuation">;</span>
+				ao<span class="token punctuation">:</span> <span class="token keyword">true</span><span class="token punctuation">;</span>
+				mountedIndicators<span class="token punctuation">:</span> <span class="token keyword">true</span><span class="token punctuation">;</span> <span class="token comment">// revbar &amp; fractal</span>
+			<span class="token punctuation">}</span><span class="token punctuation">}</span>
+		<span class="token operator">&gt;</span><span class="token operator">&lt;</span><span class="token operator">/</span>Canvas<span class="token operator">&gt;</span>
+	<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> App<span class="token punctuation">;</span>
+</code></pre>
+      </div>
+    </div>
+  </body>
+</html>

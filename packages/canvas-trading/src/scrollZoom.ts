@@ -28,7 +28,8 @@ function yMovement(
 ) {
   if (movement.y !== 0) {
     if (
-      (candlesShown > 19 || (candlesShown === 20 && movement.y > 0)) &&
+      (candlesShown > canvasSettings.minCandlesShown - 1 ||
+        (candlesShown === canvasSettings.minCandlesShown && movement.y > 0)) &&
       (candlesShown < maxCandles - shift + 1 ||
         (candlesShown === maxCandles - shift && movement.y < 0))
     ) {
@@ -37,7 +38,7 @@ function yMovement(
           candlesShown + Math.round(movement.y * canvasSettings.zoomStrength),
           maxCandles - shift
         ),
-        20
+        canvasSettings.minCandlesShown
       );
       setCandlesShown(newCandlesShown);
       return newCandlesShown;

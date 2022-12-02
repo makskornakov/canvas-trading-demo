@@ -8,6 +8,8 @@ import {
   Wrap,
   ControlWrap,
   ControlButton,
+  IndicatorButton,
+  IndicatorWrap,
 } from './app.styled';
 import { useState, useEffect } from 'react';
 
@@ -34,6 +36,12 @@ function App() {
     candleArray[candleArray.length - 9]
   );
   const [maxTrade, setMaxTrade] = useState<number>(0);
+  const [otherSettings, setOtherSettings] = useState({
+    ao: false,
+    alligator: false,
+    mountedIndicators: false,
+    allTradesShown: false,
+  });
 
   function changeCandle(add: boolean = true) {
     if (lastCandle) {
@@ -61,6 +69,32 @@ function App() {
     setSelectedTrade(undefined);
     setLastCandle(candleArray[candleArray.length - 9]);
   }, [candleArray]);
+  const indicatorNames = {
+    ao: 'AO',
+    alligator: 'Alligator',
+    mountedIndicators: 'R / F',
+    allTradesShown: 'Trades',
+  };
+  function IndicatorButtons() {
+    const keys = Object.keys(otherSettings);
+    const buttons = keys.map((key) => {
+      return (
+        <IndicatorButton
+          onClick={() =>
+            setOtherSettings({
+              ...otherSettings,
+              [key]: !otherSettings[key as keyof typeof otherSettings],
+            })
+          }
+        >
+          {indicatorNames[key as keyof typeof indicatorNames]}
+        </IndicatorButton>
+      );
+    });
+    return <IndicatorWrap>{buttons}</IndicatorWrap>;
+
+    // );
+  }
   return (
     <>
       <Header>Trading Canvases</Header>
@@ -72,8 +106,9 @@ function App() {
           candleArray={candleArray}
           lastCandle={lastCandle}
           candlesShown={160}
-          shift={0}
-          allTradesShown={true}
+          otherSettings={{
+            allTradesShown: true,
+          }}
           style={{
             outline: '0.5px solid rgba(255, 255, 255, 0.2)',
           }}
@@ -84,13 +119,13 @@ function App() {
           candleArray={candleArray}
           lastCandle={lastCandle}
           candlesShown={40}
-          shift={0}
-          allTradesShown={false}
           shownTrade={selectedTrade}
+          otherSettings={otherSettings}
           style={{
             outline: '0.5px solid rgba(255, 255, 255, 0.2)',
           }}
         ></Canvas>
+        {IndicatorButtons()}
       </Wrap>
       <ControlWrap>
         <ControlButton

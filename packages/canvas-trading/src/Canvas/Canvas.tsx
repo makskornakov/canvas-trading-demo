@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlligatorCanvas,
+  AoCanvas,
   CursorCanvas,
   MainCanvas,
   PriceLabel,
@@ -13,16 +13,21 @@ import { CandleCanvas } from '../classes/CandleCanvas';
 import { canvasSettings } from '../config';
 import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw/draw';
 import scrollZoom from '../scrollZoom';
-import type { CandleToDraw, Vector2 } from '../types';
+import type {
+  CandleToDraw,
+  CheckedOtherSettings,
+  OtherSettings,
+  Vector2,
+} from '../types';
 import { findCandleWithTrade } from '../draw/drawFunctions';
 
 type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
   lastCandle: CandleToDraw;
-  candlesShown: number;
-  shift: number;
-  allTradesShown: boolean;
+  otherSettings?: OtherSettings;
+  candlesShown?: number;
   shownTrade?: number;
+  shift?: number;
 };
 
 function usePropState<T>(prop: T) {
@@ -46,16 +51,26 @@ const Canvas: React.FC<CanvasProps> = ({
   const cursorRef = useRef<HTMLCanvasElement>(null);
   const aoCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  const properOtherSettings = useMemo<CheckedOtherSettings>(
+    () => ({
+      allTradesShown: props.otherSettings?.allTradesShown ?? false,
+      alligator: props.otherSettings?.alligator ?? true,
+      ao: props.otherSettings?.ao ?? true,
+      mountedIndicators: props.otherSettings?.mountedIndicators ?? true,
+    }),
+    [props.otherSettings]
+  );
+
   const [width, setWidth] = usePropState(props.width);
   const [height, setHeight] = usePropState(props.height);
-  const [candlesShown, setCandlesShown] = usePropState(candlesShownProp);
   const [candleArray, setCandleArray] = usePropState(candleArrayProp);
   const [lastCandle, setLastCandle] = usePropState(lastCandleProp);
-  const [shift, setShift] = usePropState(shiftProp);
-  const [allTradesShown, setAllTradesShown] = usePropState(
-    props.allTradesShown
-  );
+  const [shift, setShift] = usePropState(shiftProp ?? 0);
+  const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
+  const [otherSettings, setOtherSettings] = usePropState(properOtherSettings);
   const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
+
+  // canvas elements
   const [displayedPrice, setDisplayedPrice] = useState<number>();
   const [displayedDate, setDisplayedDate] = useState<string>();
   const [displayedOclh, setDisplayedOclh] = useState<{
@@ -122,13 +137,12 @@ const Canvas: React.FC<CanvasProps> = ({
     },
     [candleArray, candlesShown, propsCanvas, shift]
   );
-  const initialCandlesShown = useRef(candlesShownProp);
+  const initialCandlesShown = useRef(candlesShown);
 
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
-    const aoCanvas = aoCanvasRef.current;
-    if (!canvas || !aoCanvas) return;
+    if (!canvas) return;
 
     const scrollZoomEventListener = (e: WheelEvent) => {
       e.preventDefault();
@@ -159,12 +173,10 @@ const Canvas: React.FC<CanvasProps> = ({
     canvas.addEventListener('mouseleave', cursorOutEventListener);
 
     const ctx = canvas.getContext('2d');
-    const aoCtx = aoCanvas.getContext('2d');
-    if (!ctx || !aoCtx) return;
+    if (!ctx) return;
+    drawFunction(ctx, propsCanvas, otherSettings);
 
-    drawFunction(ctx, propsCanvas);
-
-    if (allTradesShown) {
+    if (otherSettings.allTradesShown) {
       let max = shownTrade ? shownTrade : 0;
       candleArray.forEach((candle) => {
         candle.trades?.forEach((trade) => {
@@ -178,7 +190,10 @@ const Canvas: React.FC<CanvasProps> = ({
       displayTrade(ctx, propsCanvas, shownTrade);
     }
 
-    drawAo(aoCtx, propsCanvas);
+    const aoCanvas = aoCanvasRef.current;
+    if (!aoCanvas) return;
+    const aoCtx = aoCanvas?.getContext('2d');
+    if (otherSettings.ao && aoCtx) drawAo(aoCtx, propsCanvas);
 
     return () => {
       // Cleanup. Otherwise, the events are duplicated.
@@ -194,10 +209,11 @@ const Canvas: React.FC<CanvasProps> = ({
     height,
     setShift,
     setCandlesShown,
-    allTradesShown,
     shownTrade,
     propsCanvas,
     cursorFunction,
+    otherSettings,
+    properOtherSettings.ao,
   ]);
 
   // useEffect for cursor
@@ -244,6 +260,7 @@ const Canvas: React.FC<CanvasProps> = ({
       width={Number(props.width)}
       height={Number(props.height)}
       style={props.style}
+      ao={otherSettings.ao}
     >
       <PriceLabel height={Number(props.height)} cursor={cursor}>
         {displayedPrice}
@@ -252,6 +269,7 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(props.width)}
         height={Number(props.height)}
         cursor={cursor}
+        ao={otherSettings.ao}
       >
         {displayedDate}
       </DateLabel>
@@ -280,11 +298,13 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={Number(props.height) * canvasSettings.scaleForQuality}
       />
-      <AlligatorCanvas
-        width={Number(props.width) * canvasSettings.scaleForQuality}
-        height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}
-        ref={aoCanvasRef}
-      />
+      {properOtherSettings.ao && (
+        <AoCanvas
+          width={Number(props.width) * canvasSettings.scaleForQuality}
+          height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}
+          ref={aoCanvasRef}
+        />
+      )}
     </Wrap>
   );
 };

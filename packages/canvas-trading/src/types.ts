@@ -25,6 +25,18 @@ export interface AssignedTrade {
   isThisCandleStart: boolean;
   isThisCandleEnd: boolean;
 }
+export interface OtherSettings {
+  allTradesShown?: boolean;
+  alligator?: boolean;
+  ao?: boolean;
+  mountedIndicators?: boolean;
+}
+export interface CheckedOtherSettings {
+  allTradesShown: boolean;
+  alligator: boolean;
+  ao: boolean;
+  mountedIndicators: boolean;
+}
 export interface Indicators {
   revBar: RevBarIndicator | '';
   fractal: FractalIndicator | '';

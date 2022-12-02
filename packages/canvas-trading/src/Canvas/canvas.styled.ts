@@ -6,9 +6,10 @@ import type { Vector2 } from '../types';
 export const Wrap = styled.div<{
   width: number;
   height: number;
+  ao: boolean;
 }>`
   width: ${(props) => props.width}px;
-  height: ${(props) => props.height + props.height / 5 + 5}px;
+  height: ${(props) => props.height + (props.ao ? props.height / 5 + 5 : 0)}px;
   margin: 0 auto;
   position: relative;
 `;
@@ -38,7 +39,7 @@ export const CursorCanvas = styled.canvas<{
   top: 0;
   left: 0;
 `;
-export const AlligatorCanvas = styled.canvas<{
+export const AoCanvas = styled.canvas<{
   width: number;
   height: number;
 }>`
@@ -93,6 +94,7 @@ export const DateLabel = styled.p<{
   height: number;
   width: number;
   cursor: Vector2;
+  ao: boolean;
 }>`
   pointer-events: none;
   position: absolute;
@@ -107,7 +109,7 @@ export const DateLabel = styled.p<{
       ${side}: ${Math.max(offset + props.height / 40, minimumSidePosition)}px;
     `;
   }}
-  bottom: ${(props) => props.height / 5 + props.height / 40}px;
+  bottom: ${(props) => props.height / 40 + (props.ao ? props.height / 5 : 0)}px;
   color: gray;
   font-size: ${(props) => props.height / 30}px;
   font-weight: 200;
