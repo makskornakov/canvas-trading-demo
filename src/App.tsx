@@ -164,19 +164,7 @@ function App() {
         >
           Example 2
         </ControlButton>
-        <ControlButton
-          onClick={() => {
-            // next but if max trade is reached, go to 0
-            if (selectedTrade === maxTrade) {
-              setSelectedTrade(0);
-            } else
-              setSelectedTrade(
-                selectedTrade !== undefined ? selectedTrade + 1 : 0
-              );
-          }}
-        >
-          Next trade
-        </ControlButton>
+
         <ControlButton
           onClick={() => {
             changeCandle();
@@ -190,6 +178,19 @@ function App() {
           }}
         >
           sub 10%
+        </ControlButton>
+        <ControlButton
+          onClick={() => {
+            // next but if max trade is reached, go to 0
+            if (selectedTrade === maxTrade) {
+              setSelectedTrade(0);
+            } else
+              setSelectedTrade(
+                selectedTrade !== undefined ? selectedTrade + 1 : 0
+              );
+          }}
+        >
+          Next trade
         </ControlButton>
 
         <label style={{ color: 'white' }}>
