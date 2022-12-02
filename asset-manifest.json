@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/canvas-trading-demo/static/css/main.a2b82a7d.css",
-    "main.js": "/canvas-trading-demo/static/js/main.a8e1498e.js",
+    "main.js": "/canvas-trading-demo/static/js/main.dcdb17f1.js",
     "static/js/464.7fd65dab.chunk.js": "/canvas-trading-demo/static/js/464.7fd65dab.chunk.js",
     "index.html": "/canvas-trading-demo/index.html"
   },
   "entrypoints": [
     "static/css/main.a2b82a7d.css",
-    "static/js/main.a8e1498e.js"
+    "static/js/main.dcdb17f1.js"
   ]
 }
