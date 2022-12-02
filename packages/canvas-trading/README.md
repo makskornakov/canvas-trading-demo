@@ -1,4 +1,4 @@
-﻿# Interactive trading canvas
+﻿# Demo-project of an Interactive trading canvas
 
 ### React Typescript open source module
 
@@ -55,8 +55,8 @@ import  Canvas, { CandleToDraw } from  'canvas-trading';
 
 function  App() {
   return (
-      <Canvas
-      // Mandatory
+    <Canvas
+        // Mandatory
       width={800}
       height={400}
       candleArray={candleArray} // CandleToDraw[]
