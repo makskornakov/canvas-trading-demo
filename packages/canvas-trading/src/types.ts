@@ -37,16 +37,9 @@ export interface OtherSettings {
   scroll?: boolean;
   /** @default false */
   showAsset?: boolean;
+  showLastCandlePrice?: boolean;
 }
-export interface CheckedOtherSettings {
-  allTradesShown: boolean;
-  alligator: boolean;
-  ao: boolean;
-  mountedIndicators: boolean;
-  zoom: boolean;
-  scroll: boolean;
-  showAsset: boolean;
-}
+export type CheckedOtherSettings = Required<OtherSettings>;
 export interface Indicators {
   revBar: RevBarIndicator | '';
   fractal: FractalIndicator | '';

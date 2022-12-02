@@ -61,6 +61,7 @@ const Canvas: React.FC<CanvasProps> = ({
       zoom: props.otherSettings?.zoom ?? true,
       scroll: props.otherSettings?.scroll ?? true,
       showAsset: props.otherSettings?.showAsset ?? false,
+      showLastCandlePrice: props.otherSettings?.showLastCandlePrice ?? false,
     }),
     [props.otherSettings]
   );

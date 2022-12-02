@@ -185,4 +185,34 @@ export const drawFunction = (
       );
     });
   }
+
+  drawLastCandlePrice(ctx, canvas, otherSettings);
 };
+
+function drawLastCandlePrice(
+  ctx: CanvasRenderingContext2D,
+  canvas: CandleCanvas,
+  otherSettings: CheckedOtherSettings,
+) {
+  if (!otherSettings.showLastCandlePrice) return;
+
+  const lastCandle = canvas.lastCandle;
+  if (!lastCandle) return;
+
+  const alligatorOffset = 8;
+
+  const lastCandle2D = canvas.candleArray[canvas.candleArray.length - (1 + alligatorOffset) + canvas.candleShift];
+  if (!lastCandle2D) return;
+
+  ctx.beginPath();
+  ctx.fillStyle = 'white';
+  const fontFamily = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif`;
+  ctx.font = `${canvas.height / 25}px ${fontFamily}`;
+  const text = `-- ${Number(lastCandle.close.toFixed(2))}`;
+  const x = lastCandle2D.xPosition + canvas.candleWidth * 2 + canvas.gap;
+  /** So that the '--' in the start of the text exactly matches the position of the candle body bottom. */
+  const fineTunedYOffset = 7;
+  const y = lastCandle2D.close + fineTunedYOffset;
+  ctx.fillText(text, x, y);
+  ctx.closePath();
+}

@@ -1,4 +1,4 @@
-import Canvas, { CandleToDraw } from 'canvas-trading';
+import Canvas, { CandleToDraw, OtherSettings } from 'canvas-trading';
 
 import exampleArray1 from './exampleData/output.json';
 import exampleArray2 from './exampleData/output2.json';
@@ -14,7 +14,7 @@ import {
 } from './app.styled';
 import { useState, useEffect } from 'react';
 
-const indicatorNames = {
+const indicatorNames: Partial<Record<keyof OtherSettings, string>> = {
   ao: 'AO',
   alligator: 'Alligator',
   mountedIndicators: 'R / F',
@@ -22,6 +22,7 @@ const indicatorNames = {
   zoom: 'Zoom',
   scroll: 'Scroll',
   showAsset: 'Asset',
+  showLastCandlePrice: 'Last Price',
 };
 
 function findMaxTrade(candleArray: CandleToDraw[]) {
@@ -47,7 +48,7 @@ function App() {
     candleArray[candleArray.length - 9]
   );
   const [maxTrade, setMaxTrade] = useState<number>(0);
-  const [otherSettings, setOtherSettings] = useState({
+  const [otherSettings, setOtherSettings] = useState<Partial<OtherSettings>>({
     ao: false,
     alligator: false,
     mountedIndicators: false,
@@ -55,6 +56,7 @@ function App() {
     zoom: true,
     scroll: true,
     showAsset: true,
+    showLastCandlePrice: false,
   });
 
   function changeCandle(add: boolean = true) {
