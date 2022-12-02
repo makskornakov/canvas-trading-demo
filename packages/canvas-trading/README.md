@@ -4,6 +4,9 @@
 
 Initially was made for an existing trading bot that provides an analyzed array of candles.
 
+[GitHub repository](https://github.com/makskornakov/canvas-trading-demo)
+[Demo application](https://makskornakov.github.io/canvas-trading-demo/)
+
 ## Candle type
 
 ```typescript
@@ -117,7 +120,7 @@ Update anything in [`canvas-trading`][canvas-trading] for a test.
 
 #### When you're done
 
-Execute:
+In project root execute:
 
 ```ps1
 pnpm unlink canvas-trading

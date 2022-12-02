@@ -69,7 +69,7 @@ export const IndicatorButton = styled.button`
 export const IndicatorWrap = styled.div`
   display: flex;
   flex-direction: column;
-  row-gap: 4px;
+  row-gap: 7px;
 `;
 // use Header
 export const Description = styled(Header)`

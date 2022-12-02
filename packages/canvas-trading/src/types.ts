@@ -38,6 +38,7 @@ export interface OtherSettings {
   /** @default false */
   showAsset?: boolean;
   showLastCandlePrice?: boolean;
+  cursor?: boolean;
 }
 export type CheckedOtherSettings = Required<OtherSettings>;
 export interface Indicators {

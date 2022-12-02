@@ -62,6 +62,7 @@ const Canvas: React.FC<CanvasProps> = ({
       scroll: props.otherSettings?.scroll ?? true,
       showAsset: props.otherSettings?.showAsset ?? false,
       showLastCandlePrice: props.otherSettings?.showLastCandlePrice ?? false,
+      cursor: props.otherSettings?.cursor ?? true,
     }),
     [props.otherSettings]
   );
@@ -200,6 +201,7 @@ const Canvas: React.FC<CanvasProps> = ({
     canvas.addEventListener('wheel', scrollZoomEventListener);
 
     const cursorMoveEventListener = (e: MouseEvent) => {
+      if (!otherSettings.cursor) return;
       cursorFunction({ x: e.clientX, y: e.clientY });
     };
 
@@ -233,13 +235,21 @@ const Canvas: React.FC<CanvasProps> = ({
 
   // useEffect for cursor
   useEffect(() => {
+    if (!otherSettings.cursor) return;
     const canvas = cursorRef.current;
     if (!canvas) return;
     const cursorCtx = canvas.getContext('2d');
     if (!cursorCtx) return;
     drawCursor(cursorCtx, canvas.width, canvas.height, cursor);
     cursorFunction(cursor, true);
-  }, [width, height, cursor, candlesShown, cursorFunction]);
+  }, [
+    width,
+    height,
+    cursor,
+    candlesShown,
+    cursorFunction,
+    otherSettings.cursor,
+  ]);
 
   // useEffect to reset shift and zoom when candleArray shrinks in size (e.g. switching to a smaller data example, or setting smaller history length)
   useEffect(() => {
