@@ -159,13 +159,8 @@ const Canvas: React.FC<CanvasProps> = ({
     drawFunction(ctx, propsCanvas, otherSettings);
 
     if (otherSettings.allTradesShown) {
-      let max = shownTrade ? shownTrade : 0;
-      candleArray.forEach((candle) => {
-        candle.trades?.forEach((trade) => {
-          if (trade.tradeID > max) max = trade.tradeID;
-        });
-      });
-      for (let i = 0; i <= max; i++) {
+      const maxTradeId = shownTrade ?? Math.max(...candleArray.map(candle => candle.trades).flat().map(trade => trade?.tradeID).filter(tradeID => tradeID !== undefined) as number[], 0);
+      for (let i = 0; i <= maxTradeId; i++) {
         displayTrade(ctx, propsCanvas, i);
       }
     } else if (shownTrade !== undefined) {
