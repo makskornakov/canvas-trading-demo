@@ -2,6 +2,8 @@ import { canvasSettings } from '../config';
 import type { CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
+type MinMax = { min: number; max: number; aoMin: number; aoMax: number };
+
 interface AoCandle {
   x: number;
   y: number;
@@ -11,7 +13,7 @@ interface AoCandle {
 export class CandleCanvas {
   width: number;
   height: number;
-  minMax: { min: number; max: number; aoMin: number; aoMax: number };
+  minMax: MinMax;
   gap: number;
   candleWidth: number;
   candleArray: Candle2D[];
@@ -63,7 +65,7 @@ export class CandleCanvas {
       (this.width - (this.candlesShown - 1) * gap) / this.candlesShown;
     return { gap, candleWidth };
   }
-  private minMaxCalc(candles: CandleToDraw[]) {
+  private minMaxCalc(candles: CandleToDraw[]): MinMax {
     // not if value is 0
     const min = Math.min(
       ...candles.map((candle) => (candle.low !== 0 ? candle.low : Infinity)) // if candle.low is 0, wont be used
@@ -124,16 +126,18 @@ export class CandleCanvas {
   }
   private getAOArray(
     candles: CandleToDraw[],
-    minMax: { min: number; max: number; aoMin: number; aoMax: number }
+    minMax: MinMax
   ) {
     const aoArray: AoCandle[] = [];
 
+    const minMaxRange = minMax.aoMax - minMax.aoMin;
+
+    const midLine = this.height / 10;
+
     candles.forEach((candle, index) => {
-      const minMaxRange = minMax.aoMax - minMax.aoMin;
       const newValue = candle.indicators.ao.value / minMaxRange;
 
       const aboveLine = candle.indicators.ao.value > 0;
-      const midLine = this.height / 10;
 
       aoArray.push({
         x: index * (this.candleWidth + this.gap),
