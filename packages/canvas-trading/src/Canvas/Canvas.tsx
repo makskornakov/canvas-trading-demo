@@ -61,6 +61,7 @@ const Canvas: React.FC<CanvasProps> = ({
       zoom: props.otherSettings?.zoom ?? true,
       scroll: props.otherSettings?.scroll ?? true,
       showAsset: props.otherSettings?.showAsset ?? false,
+      showLastCandlePrice: props.otherSettings?.showLastCandlePrice ?? false,
     }),
     [props.otherSettings]
   );
@@ -240,12 +241,27 @@ const Canvas: React.FC<CanvasProps> = ({
     cursorFunction(cursor, true);
   }, [width, height, cursor, candlesShown, cursorFunction]);
 
+  // useEffect to reset shift and zoom when candleArray shrinks in size (e.g. switching to a smaller data example, or setting smaller history length)
+  useEffect(() => {
+    const currentlyRequiredLength = shift + candlesShown;
+    if (candleArray.length < currentlyRequiredLength) {
+      setShift(0);
+      setCandlesShown(initialCandlesShown.current);
+    }
+  }, [candleArray, candlesShown, setCandlesShown, setShift, shift]);
+
+  // useEffect to reset shift and zoom when unselecting trade.
+  useEffect(() => {
+    if (shownTrade === undefined) {
+      // reset shift and zoom on unselecting trade.
+      setShift(0);
+      setCandlesShown(initialCandlesShown.current);
+    }
+  }, [shownTrade, setShift, setCandlesShown]);
+
   // useEffect for to shift graph when shownTrade changes
   useEffect(() => {
     if (shownTrade === undefined) {
-      // reset shift and zoom on candleArray change
-      setShift(0);
-      setCandlesShown(initialCandlesShown.current);
       return;
     }
     const startCandle = findCandleWithTrade(candleArray, shownTrade);

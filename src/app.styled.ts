@@ -64,14 +64,12 @@ export const ControlButton = styled.button`
 `;
 export const IndicatorButton = styled.button`
   ${buttonStyles}
-  width: 60px;
   height: 25px;
 `;
 export const IndicatorWrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 40%;
+  row-gap: 4px;
 `;
 // use Header
 export const Description = styled(Header)`
