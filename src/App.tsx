@@ -10,6 +10,7 @@ import {
   ControlButton,
   IndicatorButton,
   IndicatorWrap,
+  ReadmeLink,
 } from './app.styled';
 import { useState, useEffect } from 'react';
 
@@ -109,6 +110,9 @@ function App() {
     <>
       <Header>Trading Canvases</Header>
       <Description>Resizable canvas with Zoom/Scroll functionality</Description>
+      <ReadmeLink href="/canvas-trading-demo/readme.html" target="_blank">
+        Read Me
+      </ReadmeLink>
       <Wrap>
         <Canvas
           width={800}

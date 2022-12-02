@@ -1,38 +1,50 @@
 ﻿<!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvas-trading</title>
+    <link rel="stylesheet" href="https://stackedit.io/style.css" />
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>canvas-trading</title>
-  <link rel="stylesheet" href="https://stackedit.io/style.css" />
-</head>
-
-<body class="stackedit">
-  <div class="stackedit__left">
-    <div class="stackedit__toc">
-      
-<ul>
-<li><a href="#demo-project-of-an-interactive-trading-canvas">Demo-project of an Interactive trading canvas</a>
-<ul>
-<li></li>
-<li><a href="#how-to-develop-local-packages-with-hot-reload">How to develop local packages with Hot Reload</a>
-<ul>
-<li></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
+  <body class="stackedit">
+    <div class="stackedit__left">
+      <div class="stackedit__toc">
+        <ul>
+          <li>
+            <a href="#demo-project-of-an-interactive-trading-canvas"
+              >Demo-project of an Interactive trading canvas</a
+            >
+            <ul>
+              <li></li>
+              <li>
+                <a href="#how-to-develop-local-packages-with-hot-reload"
+                  >How to develop local packages with Hot Reload</a
+                >
+                <ul>
+                  <li></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-  <div class="stackedit__right">
-    <div class="stackedit__html">
-      <h1 id="demo-project-of-an-interactive-trading-canvas">Demo-project of an Interactive trading canvas</h1>
-<h3 id="react-typescript-open-source-module">React Typescript open source module</h3>
-<p>Initially was made for an existing trading bot that provides an analyzed array of candles.</p>
-<pre class=" language-typescript"><code class="prism  language-typescript">
+    <div class="stackedit__right">
+      <div class="stackedit__html">
+        <h1 id="demo-project-of-an-interactive-trading-canvas">
+          Demo-project of an Interactive trading canvas
+        </h1>
+        <h3 id="react-typescript-open-source-module">
+          React Typescript open source module
+        </h3>
+        <p>
+          Initially was made for an existing trading bot that provides an
+          analyzed array of candles.
+        </p>
+        <pre
+          class="language-typescript"
+        ><code class="prism  language-typescript">
 <span class="token keyword">interface</span>  <span class="token class-name">CandleToDraw</span> <span class="token punctuation">{</span>
 
 open<span class="token punctuation">:</span>  <span class="token keyword">number</span><span class="token punctuation">;</span>
@@ -108,10 +120,18 @@ vertexValue<span class="token punctuation">:</span>  <span class="token keyword"
 <span class="token punctuation">}</span>
 
 </code></pre>
-<h4 id="the-logic-of-assigning-the-trade">The logic of assigning the trade</h4>
-<p>Each trade has an entry time and an exit one. We search for two candles (enter &amp; exit) for each trade and add AssignedTrade to the trades array.</p>
-<h3 id="simple-usage">Simple Usage</h3>
-<pre class=" language-typescript"><code class="prism  language-typescript">
+        <h4 id="the-logic-of-assigning-the-trade">
+          The logic of assigning the trade
+        </h4>
+        <p>
+          Each trade has an entry time and an exit one. We search for two
+          candles (enter &amp; exit) for each trade and add AssignedTrade to the
+          trades array.
+        </p>
+        <h3 id="simple-usage">Simple Usage</h3>
+        <pre
+          class="language-typescript"
+        ><code class="prism  language-typescript">
 <span class="token keyword">import</span>  Canvas<span class="token punctuation">,</span> <span class="token punctuation">{</span> CandleToDraw <span class="token punctuation">}</span> <span class="token keyword">from</span>  <span class="token string">'canvas-trading'</span><span class="token punctuation">;</span>
 
   
@@ -165,12 +185,21 @@ mountedIndicators<span class="token punctuation">:</span> <span class="token key
 <span class="token keyword">export</span>  <span class="token keyword">default</span>  App<span class="token punctuation">;</span>
 
 </code></pre>
-<h2 id="how-to-develop-local-packages-with-hot-reload">How to develop local packages with Hot Reload</h2>
-<blockquote>
-<p>Reference: <a href="https://pnpm.io/cli/link">https://pnpm.io/cli/link</a></p>
-</blockquote>
-<p>In a terminal, execute the following commands (assuming <a href="./packages/canvas-trading/"><code>canvas-trading</code></a> is the package we want to develop):</p>
-<pre class=" language-ps1"><code class="prism  language-ps1">
+        <h2 id="how-to-develop-local-packages-with-hot-reload">
+          How to develop local packages with Hot Reload
+        </h2>
+        <blockquote>
+          <p>
+            Reference:
+            <a href="https://pnpm.io/cli/link">https://pnpm.io/cli/link</a>
+          </p>
+        </blockquote>
+        <p>
+          In a terminal, execute the following commands (assuming
+          <a href="./packages/canvas-trading/"><code>canvas-trading</code></a>
+          is the package we want to develop):
+        </p>
+        <pre class="language-ps1"><code class="prism  language-ps1">
 pnpm link <span class="token punctuation">.</span><span class="token operator">/</span>packages<span class="token operator">/</span>canvas<span class="token operator">-</span>trading <span class="token comment"># `./` in the start is important — this is how `pnpm link` knows that it is a relative path.</span>
 
 cd packages<span class="token operator">/</span>canvas<span class="token operator">-</span>trading
@@ -182,19 +211,30 @@ pnpm tsc <span class="token operator">--</span>watch
 <span class="token comment"># Leave this terminal running for Hot Reload.</span>
 
 </code></pre>
-<p>In another terminal, just execute <code>pnpm start</code>, or restart if it’s already running. Good to go!</p>
-<p>Update anything in <a href="./packages/canvas-trading/"><code>canvas-trading</code></a> for a test.</p>
-<h4 id="when-youre-done">When you’re done</h4>
-<p>Execute:</p>
-<pre class=" language-ps1"><code class="prism  language-ps1">
+        <p>
+          In another terminal, just execute <code>pnpm start</code>, or restart
+          if it’s already running. Good to go!
+        </p>
+        <p>
+          Update anything in
+          <a href="./packages/canvas-trading/"><code>canvas-trading</code></a>
+          for a test.
+        </p>
+        <h4 id="when-youre-done">When you’re done</h4>
+        <p>Execute:</p>
+        <pre class="language-ps1"><code class="prism  language-ps1">
 pnpm unlink canvas<span class="token operator">-</span>trading
 
 </code></pre>
-<p>You may also want to stop the terminal running <code>pnpm tsc --watch</code>.</p>
-<p>No need to stop the <code>pnpm start</code> terminal (if you have it running).</p>
-
+        <p>
+          You may also want to stop the terminal running
+          <code>pnpm tsc --watch</code>.
+        </p>
+        <p>
+          No need to stop the <code>pnpm start</code> terminal (if you have it
+          running).
+        </p>
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

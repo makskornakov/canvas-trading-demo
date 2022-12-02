@@ -23,6 +23,24 @@ export const ControlWrap = styled.div`
   width: 650px;
   margin: 0 auto;
 `;
+
+export const ReadmeLink = styled.a`
+  color: white;
+  font-size: 0.9em;
+  text-decoration: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1em;
+  font-weight: 300;
+  transition: 0.2s;
+  transition-property: color;
+
+  &:hover {
+    color: #f55500;
+  }
+`;
+
 const buttonStyles = css`
   border: 1px solid white;
   background-color: transparent;
