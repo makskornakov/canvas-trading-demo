@@ -56,10 +56,10 @@ export function displayTrade(
       10,
       isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
     );
-
-    line(ctx, start, end, 'white', Math.sqrt(candleCanvas.candleWidth), 0.8, [
-      candleCanvas.candleWidth,
-      candleCanvas.candleWidth,
+    const tradeLineColor = '#b5b5b5'
+    line(ctx, start, end, tradeLineColor, Math.sqrt(candleCanvas.candleWidth), 0.8, [
+      candleCanvas.candleWidth * 0.7,
+      candleCanvas.candleWidth * 0.7,
     ]);
 
     // arrow head
@@ -67,17 +67,17 @@ export function displayTrade(
     ctx.beginPath();
     ctx.moveTo(end.x, end.y);
     const size =
-      candleCanvas.candleWidth + Math.sqrt(candleCanvas.candleWidth) * 3;
+      candleCanvas.candleWidth + Math.sqrt(candleCanvas.candleWidth) * 1.5;
     ctx.lineTo(
       end.x - size * Math.cos(angle - Math.PI / 6),
       end.y - size * Math.sin(angle - Math.PI / 6)
-    );
+    )
     ctx.lineTo(
       end.x - size * Math.cos(angle + Math.PI / 6),
       end.y - size * Math.sin(angle + Math.PI / 6)
     );
     ctx.lineTo(end.x, end.y);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = tradeLineColor;
     ctx.fill();
     ctx.closePath();
   }
