@@ -6,11 +6,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - run: cd packages/canvas-trading
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
           node-version: 14
+      - run: cd packages/canvas-trading
       - run: npm install
       - uses: JS-DevTools/npm-publish@v1
         with:
