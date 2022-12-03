@@ -71,14 +71,14 @@ const Canvas: React.FC<CanvasProps> = ({
     [props.otherSettings]
   );
 
-  const [width, setWidth] = usePropState(props.width);
-  const [height, setHeight] = usePropState(props.height);
-  const [candleArray, setCandleArray] = usePropState(candleArrayProp);
+  const [width] = usePropState(props.width);
+  const [height] = usePropState(props.height);
+  const [candleArray] = usePropState(candleArrayProp);
   // It might cause a small lag when candle array is updated
-  const [lastCandle, setLastCandle] = usePropState(lastCandleProp);
+  const [lastCandle] = usePropState(lastCandleProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
-  const [shownTrade, setShownTrade] = usePropState(props.shownTrade);
+  const [shownTrade] = usePropState(props.shownTrade);
 
   // canvas elements
   const [displayedPrice, setDisplayedPrice] = useState<number>();
