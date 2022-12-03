@@ -46,10 +46,11 @@ function usePropState<T>(prop: T) {
 
 const Canvas: React.FC<CanvasProps> = ({
   style,
-  candleArray: candleArrayProp,
-  lastCandle: lastCandleProp,
+  candleArray,
+  lastCandle,
   candlesShown: candlesShownProp,
   shift: shiftProp,
+  shownTrade,
   ...props
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,14 +72,8 @@ const Canvas: React.FC<CanvasProps> = ({
     [props.otherSettings]
   );
 
-  const [width] = usePropState(props.width);
-  const [height] = usePropState(props.height);
-  const [candleArray] = usePropState(candleArrayProp);
-  // It might cause a small lag when candle array is updated
-  const [lastCandle] = usePropState(lastCandleProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
-  const [shownTrade] = usePropState(props.shownTrade);
 
   // canvas elements
   const [displayedPrice, setDisplayedPrice] = useState<number>();
@@ -95,8 +90,8 @@ const Canvas: React.FC<CanvasProps> = ({
   const propsCanvas = useMemo(() => {
     try {
       return new CandleCanvas(
-        Number(width),
-        Number(height),
+        Number(props.width),
+        Number(props.height),
         candlesShown,
         shift,
         candleArray,
@@ -106,7 +101,7 @@ const Canvas: React.FC<CanvasProps> = ({
       console.error(error);
       return null;
     }
-  }, [candleArray, lastCandle, candlesShown, height, shift, width]);
+  }, [props.width, props.height, candlesShown, shift, candleArray, lastCandle]);
 
   const cursorFunction = useCallback(
     (position: Vector2, onlyLabels: boolean = false) => {
@@ -265,10 +260,7 @@ const Canvas: React.FC<CanvasProps> = ({
     drawCursor(cursorCtx, canvas.width, canvas.height, cursor);
     cursorFunction(cursor, true);
   }, [
-    width,
-    height,
     cursor,
-    candlesShown,
     cursorFunction,
     otherSettings.cursor,
   ]);
@@ -316,6 +308,7 @@ const Canvas: React.FC<CanvasProps> = ({
     setShift(newShift);
     setCandlesShown(newCandlesShown);
   }, [candleArray, setCandlesShown, setShift, shownTrade]);
+
   return (
     <Wrap
       width={Number(props.width)}
