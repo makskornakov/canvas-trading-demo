@@ -38,9 +38,11 @@ export function displayTrade(
     const originalEndCandleIndex =
       endCandle.index - originalIndexOfFirstVisibleCandle + candleCanvas.candleShift;
 
-    const isNotInViewport =
-      (originalEndCandleIndex < 0 || originalEndCandleIndex >= candleCanvas.candlesShown) &&
-      (startCandleIndex < 0 || startCandleIndex >= candleCanvas.candlesShown);
+    /** if the trade is all the way (fully) hidden outside the viewport borders. */
+    const isNotInViewport = (
+      (originalEndCandleIndex < 0 && startCandleIndex < 0) ||
+      (originalEndCandleIndex >= candleCanvas.candlesShown && startCandleIndex >= candleCanvas.candlesShown)
+    );
 
     if (isNotInViewport) return;
 
