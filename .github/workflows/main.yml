@@ -6,7 +6,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - run: cd ./packages/canvas-trading
+      - run: cd packages/canvas-trading
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
