@@ -1,0 +1,19 @@
+name: NPM Publish
+
+on: push
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - run: cd packages/canvas-trading
+      - run: npm install
+      - run: npm test
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          package: ./packages/canvas-trading/package.json
+          token: ${{ secrets.NPM_TOKEN }}
