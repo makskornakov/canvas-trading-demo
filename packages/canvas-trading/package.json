@@ -1,7 +1,12 @@
 {
   "name": "canvas-trading",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Interactive HTML5 Canvas Trading Chart",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/makskornakov/canvas-trading-demo.git",
+    "directory": "packages/canvas-trading"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
