@@ -33,9 +33,11 @@ function yMovement(
       (candlesShown < maxCandles - shift + 1 ||
         (candlesShown === maxCandles - shift && movement.y < 0))
     ) {
+      const exponentialMultiplier = Math.max(0.3, candlesShown / maxCandles * 3);
+
       const newCandlesShown = Math.max(
         Math.min(
-          candlesShown + Math.round(movement.y * canvasSettings.zoomStrength),
+          candlesShown + Math.round(movement.y * exponentialMultiplier * canvasSettings.zoomStrength),
           maxCandles - shift
         ),
         canvasSettings.minCandlesShown
@@ -59,9 +61,11 @@ function xMovement(
       (shift < maxCandles - candlesShown + 1 ||
         (shift === maxCandles - candlesShown && movement.x > 0))
     ) {
+      const exponentialMultiplier = Math.max(0.6, candlesShown / maxCandles * 3);
+
       const newShift = Math.max(
         Math.min(
-          shift - Math.round(movement.x * canvasSettings.shiftStrength),
+          shift - Math.round(movement.x * exponentialMultiplier * canvasSettings.shiftStrength),
           maxCandles - candlesShown
         ),
         0
