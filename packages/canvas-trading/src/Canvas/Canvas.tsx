@@ -51,6 +51,8 @@ const Canvas: React.FC<CanvasProps> = ({
   candlesShown: candlesShownProp,
   shift: shiftProp,
   shownTrade,
+  width: widthProp,
+  height: heightProp,
   ...props
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,10 +70,13 @@ const Canvas: React.FC<CanvasProps> = ({
       showAsset: props.otherSettings?.showAsset ?? false,
       showLastCandlePrice: props.otherSettings?.showLastCandlePrice ?? false,
       cursor: props.otherSettings?.cursor ?? true,
+      resizable: props.otherSettings?.resizable ?? false,
     }),
     [props.otherSettings]
   );
 
+  const [width, setWidth] = usePropState(widthProp);
+  const [height, setHeight] = usePropState(heightProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
 
@@ -90,8 +95,8 @@ const Canvas: React.FC<CanvasProps> = ({
   const propsCanvas = useMemo(() => {
     try {
       return new CandleCanvas(
-        Number(props.width),
-        Number(props.height),
+        Number(width),
+        Number(height),
         candlesShown,
         shift,
         candleArray,
@@ -101,7 +106,7 @@ const Canvas: React.FC<CanvasProps> = ({
       console.error(error);
       return null;
     }
-  }, [props.width, props.height, candlesShown, shift, candleArray, lastCandle]);
+  }, [width, height, candlesShown, shift, candleArray, lastCandle]);
 
   const cursorFunction = useCallback(
     (position: Vector2, onlyLabels: boolean = false) => {
@@ -311,30 +316,46 @@ const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <Wrap
-      width={Number(props.width)}
-      height={Number(props.height)}
+      onMouseMove={otherSettings.resizable ? (event) => {
+        const isMouseDown = event.buttons > 0;
+        if (!isMouseDown) return;
+
+        const newWidth = Math.round(event.currentTarget.clientWidth);
+        if (width !== newWidth) {
+          setWidth(newWidth);
+        }
+
+        const aoHeight = otherSettings.ao ? Number(height) / 5 + 5 : 0;
+        const newHeight = Math.round(event.currentTarget.clientHeight - aoHeight);
+        if (height !== newHeight) {
+          setHeight(newHeight);
+        }
+      } : undefined}
+      resizable={otherSettings.resizable}
+      width={Number(width)}
+      height={Number(height)}
       style={style}
       ao={otherSettings.ao}
     >
       {otherSettings.showAsset && (
-        <AssetLabel height={Number(props.height)} width={Number(props.width)}>
+        <AssetLabel height={Number(height)} width={Number(width)}>
           {lastCandle.asset}
         </AssetLabel>
       )}
-      <PriceLabel height={Number(props.height)} cursor={cursor}>
+      <PriceLabel height={Number(height)} cursor={cursor}>
         {displayedPrice}
       </PriceLabel>
       <DateLabel
-        width={Number(props.width)}
-        height={Number(props.height)}
+        width={Number(width)}
+        height={Number(height)}
         cursor={cursor}
         ao={otherSettings.ao}
       >
         {displayedDate}
       </DateLabel>
       <OclhLabel
-        canvasWidth={Number(props.width)}
-        canvasHeight={Number(props.height)}
+        canvasWidth={Number(width)}
+        canvasHeight={Number(height)}
       >
         {displayedOclh &&
           Object.keys(displayedOclh).map((key) => (
@@ -347,19 +368,21 @@ const Canvas: React.FC<CanvasProps> = ({
 
       <MainCanvas
         {...props}
-        width={Number(props.width) * canvasSettings.scaleForQuality}
-        height={Number(props.height) * canvasSettings.scaleForQuality}
+        resizable={otherSettings.resizable}
+        width={Number(width) * canvasSettings.scaleForQuality}
+        height={Number(height) * canvasSettings.scaleForQuality}
         ref={canvasRef}
       />
       <CursorCanvas
         ref={cursorRef}
-        width={Number(props.width) * canvasSettings.scaleForQuality}
-        height={Number(props.height) * canvasSettings.scaleForQuality}
+        width={Number(width) * canvasSettings.scaleForQuality}
+        height={Number(height) * canvasSettings.scaleForQuality}
       />
       {otherSettings.ao && (
         <AoCanvas
-          width={Number(props.width) * canvasSettings.scaleForQuality}
-          height={(Number(props.height) * canvasSettings.scaleForQuality) / 5}
+          resizable={otherSettings.resizable}
+          width={Number(width) * canvasSettings.scaleForQuality}
+          height={(Number(height) * canvasSettings.scaleForQuality) / 5}
           ref={aoCanvasRef}
         />
       )}

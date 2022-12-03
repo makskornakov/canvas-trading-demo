@@ -24,6 +24,7 @@ const indicatorNames: Partial<Record<keyof OtherSettings, string>> = {
   showAsset: 'Asset',
   showLastCandlePrice: 'Last Price',
   cursor: 'Cursor',
+  resizable: 'Resizable',
 };
 
 function findMaxTrade(candleArray: CandleToDraw[]) {
@@ -59,6 +60,7 @@ function App() {
     showAsset: true,
     showLastCandlePrice: true,
     cursor: true,
+    resizable: true,
   });
 
   function changeCandle(add: boolean = true) {

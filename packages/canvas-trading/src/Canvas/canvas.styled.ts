@@ -7,11 +7,18 @@ export const Wrap = styled.div<{
   width: number;
   height: number;
   ao: boolean;
+  resizable: boolean;
 }>`
   width: ${(props) => props.width}px;
   height: ${(props) => props.height + (props.ao ? props.height / 5 + 5 : 0)}px;
   margin: 0 auto;
   position: relative;
+
+  ${({ resizable }) => resizable && css`
+    resize: both;
+    /* The property below is needed so that the resize icon is visible. */
+    overflow: hidden;
+  `}
 `;
 const canvasStyles = css`
   margin: 0 auto;
@@ -22,6 +29,7 @@ const canvasStyles = css`
 export const MainCanvas = styled.canvas<{
   width: number;
   height: number;
+  resizable: boolean;
 }>`
   ${canvasStyles}
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
@@ -29,6 +37,10 @@ export const MainCanvas = styled.canvas<{
 
   :active {
     cursor: grabbing;
+    ${({ resizable }) => resizable && css`
+      /* This is a hack to make the resize icon clickable. */
+      border-bottom-right-radius: 50px;
+    `}
   }
 `;
 export const CursorCanvas = styled.canvas<{
@@ -67,10 +79,16 @@ export const AssetLabel = styled.p<{
 export const AoCanvas = styled.canvas<{
   width: number;
   height: number;
+  resizable: boolean;
 }>`
   ${canvasStyles};
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
+
+  ${({resizable}) => resizable && css`
+    /* This makes the resize icon larger for easier click */
+    pointer-events: none;
+  `}
 `;
 export const PriceLabel = styled.p<{
   height: number;
