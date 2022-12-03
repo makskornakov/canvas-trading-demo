@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import useEventListener from 'usehooks-ts/dist/esm/useEventListener/useEventListener';
+
 import {
   AoCanvas,
   CursorCanvas,
@@ -178,6 +180,54 @@ const Canvas: React.FC<CanvasProps> = ({
     return result;
   }, [maxTradeId, candleArray]);
 
+  useEventListener('wheel', (e: WheelEvent) => {
+    e.preventDefault();
+
+    if (!(otherSettings.scroll || otherSettings.zoom)) return;
+    scrollZoom(
+      {
+        x: otherSettings.scroll ? e.deltaX : 0,
+        y: otherSettings.zoom ? e.deltaY : 0,
+      },
+      shift,
+      candlesShown,
+      candleArray.length,
+      setShift,
+      setCandlesShown
+    );
+    return false; // Why does it return false?
+  }, canvasRef);
+  useEventListener('mousemove', (e: MouseEvent) => {
+    if (isDragging) {
+      scrollZoom(
+        {
+          x: -Math.round(e.movementX) * 2,
+          y: 0,
+        },
+        shift,
+        candlesShown,
+        candleArray.length,
+        setShift,
+        setCandlesShown,
+      )
+    }
+    if (!otherSettings.cursor) return;
+    cursorFunction({ x: e.clientX, y: e.clientY });
+  }, canvasRef);
+  const mouseUpOrLeaveListener = () => {
+    setIsDragging(false);
+  };
+  useEventListener('mouseleave', () => {
+    // reset cursor
+    setCursor({ x: -5, y: -5 });
+
+    mouseUpOrLeaveListener();
+  }, canvasRef);
+  useEventListener('mousedown', () => {
+    setIsDragging(true);
+  }, canvasRef);
+  useEventListener('mouseup', mouseUpOrLeaveListener, canvasRef);
+
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -202,74 +252,7 @@ const Canvas: React.FC<CanvasProps> = ({
       if (!aoCtx) return;
       drawAo(aoCtx, propsCanvas);
     }
-    const scrollZoomEventListener = (e: WheelEvent) => {
-      e.preventDefault();
-
-      if (!(otherSettings.scroll || otherSettings.zoom)) return;
-      scrollZoom(
-        {
-          x: otherSettings.scroll ? e.deltaX : 0,
-          y: otherSettings.zoom ? e.deltaY : 0,
-        },
-        shift,
-        candlesShown,
-        candleArray.length,
-        setShift,
-        setCandlesShown
-      );
-      return false; // Why does it return false?
-    };
-
-    // scroll zoom EventListener
-    canvas.addEventListener('wheel', scrollZoomEventListener);
-
-    const cursorMoveEventListener = (e: MouseEvent) => {
-      if (isDragging) {
-        scrollZoom(
-          {
-            x: -Math.round(e.movementX) * 2,
-            y: 0,
-          },
-          shift,
-          candlesShown,
-          candleArray.length,
-          setShift,
-          setCandlesShown,
-        )
-      }
-      if (!otherSettings.cursor) return;
-      cursorFunction({ x: e.clientX, y: e.clientY });
-    };
-
-    // cursor EventListeners
-    canvas.addEventListener('mousemove', cursorMoveEventListener);
-    const cursorOutEventListener = () => {
-      // reset cursor
-      setCursor({ x: -5, y: -5 });
-    };
-    canvas.addEventListener('mouseleave', cursorOutEventListener);
-
-    const mouseDownListener = () => {
-      setIsDragging(true);
-    };
-    canvas.addEventListener('mousedown', mouseDownListener);
-
-    const mouseUpOrLeaveListener = () => {
-      setIsDragging(false);
-    };
-    canvas.addEventListener('mouseup', mouseUpOrLeaveListener);
-    canvas.addEventListener('mouseleave', mouseUpOrLeaveListener);
-
-    return () => {
-      // Cleanup. Otherwise, the events are duplicated.
-      canvas.removeEventListener('wheel', scrollZoomEventListener);
-      canvas.removeEventListener('mousemove', cursorMoveEventListener);
-      canvas.removeEventListener('mouseleave', cursorOutEventListener);
-      canvas.removeEventListener('mousedown', mouseDownListener);
-      canvas.removeEventListener('mouseup', mouseUpOrLeaveListener);
-      canvas.removeEventListener('mouseleave', mouseUpOrLeaveListener);
-    };
-  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, shownTrade, propsCanvas, cursorFunction, otherSettings, maxTradeId, candlesForAllTrades, isDragging]);
+  }, [candlesForAllTrades, maxTradeId, otherSettings, propsCanvas, shownTrade]);
 
   // useEffect for cursor
   useEffect(() => {
