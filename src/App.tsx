@@ -16,15 +16,10 @@ import { useState, useEffect } from 'react';
 
 const indicatorNames: Partial<Record<keyof OtherSettings, string>> = {
   ao: 'AO',
-  alligator: 'Alligator',
   mountedIndicators: 'R / F',
   allTradesShown: 'Trades',
-  zoom: 'Zoom',
-  scroll: 'Scroll',
   showAsset: 'Asset',
   showLastCandlePrice: 'Last Price',
-  cursor: 'Cursor',
-  resizable: 'Resizable',
 };
 
 function findMaxTrade(candleArray: CandleToDraw[]) {
@@ -107,7 +102,7 @@ function App() {
             })
           }
         >
-          {indicatorNames[key as keyof typeof indicatorNames]}
+          {indicatorNames[key as keyof typeof indicatorNames] ?? key}
         </IndicatorButton>
       );
     });

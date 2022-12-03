@@ -65,6 +65,7 @@ export const ControlButton = styled.button`
 export const IndicatorButton = styled.button`
   ${buttonStyles}
   height: 25px;
+  text-transform: capitalize;
 `;
 export const IndicatorWrap = styled.div`
   display: flex;
