@@ -87,6 +87,7 @@ const Canvas: React.FC<CanvasProps> = ({
     h: number;
   }>();
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
+  const [isDragging, setIsDragging] = useState(false);
 
   const propsCanvas = useMemo(() => {
     try {
@@ -223,6 +224,19 @@ const Canvas: React.FC<CanvasProps> = ({
     canvas.addEventListener('wheel', scrollZoomEventListener);
 
     const cursorMoveEventListener = (e: MouseEvent) => {
+      if (isDragging) {
+        scrollZoom(
+          {
+            x: -Math.round(e.movementX) * 2,
+            y: 0,
+          },
+          shift,
+          candlesShown,
+          candleArray.length,
+          setShift,
+          setCandlesShown,
+        )
+      }
       if (!otherSettings.cursor) return;
       cursorFunction({ x: e.clientX, y: e.clientY });
     };
@@ -235,13 +249,27 @@ const Canvas: React.FC<CanvasProps> = ({
     };
     canvas.addEventListener('mouseleave', cursorOutEventListener);
 
+    const mouseDownListener = () => {
+      setIsDragging(true);
+    };
+    canvas.addEventListener('mousedown', mouseDownListener);
+
+    const mouseUpOrLeaveListener = () => {
+      setIsDragging(false);
+    };
+    canvas.addEventListener('mouseup', mouseUpOrLeaveListener);
+    canvas.addEventListener('mouseleave', mouseUpOrLeaveListener);
+
     return () => {
       // Cleanup. Otherwise, the events are duplicated.
       canvas.removeEventListener('wheel', scrollZoomEventListener);
       canvas.removeEventListener('mousemove', cursorMoveEventListener);
       canvas.removeEventListener('mouseleave', cursorOutEventListener);
+      canvas.removeEventListener('mousedown', mouseDownListener);
+      canvas.removeEventListener('mouseup', mouseUpOrLeaveListener);
+      canvas.removeEventListener('mouseleave', mouseUpOrLeaveListener);
     };
-  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, shownTrade, propsCanvas, cursorFunction, otherSettings, maxTradeId, candlesForAllTrades]);
+  }, [width, candlesShown, candleArray, shift, height, setShift, setCandlesShown, shownTrade, propsCanvas, cursorFunction, otherSettings, maxTradeId, candlesForAllTrades, isDragging]);
 
   // useEffect for cursor
   useEffect(() => {

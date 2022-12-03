@@ -26,6 +26,10 @@ export const MainCanvas = styled.canvas<{
   ${canvasStyles}
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
+
+  :active {
+    cursor: grabbing;
+  }
 `;
 export const CursorCanvas = styled.canvas<{
   width: number;
