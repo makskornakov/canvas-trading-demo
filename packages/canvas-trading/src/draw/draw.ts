@@ -234,9 +234,10 @@ function drawLastCandlePrice(
   if (!lastCandle2D) return;
 
   ctx.beginPath();
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = 'gray';
+  const fontWeight = 200;
   const fontFamily = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif`;
-  ctx.font = `${canvas.height / 25}px ${fontFamily}`;
+  ctx.font = `${fontWeight} ${canvas.height / 25}px ${fontFamily}`;
   const text = `-- ${Number(lastCandle.close.toFixed(2))}`;
   const metrics = ctx.measureText(text);
   const x = lastCandle2D.xPosition + canvas.candleWidth * 2 + canvas.gap;
