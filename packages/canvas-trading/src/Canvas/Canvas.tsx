@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import useEventListener from 'usehooks-ts/dist/esm/useEventListener/useEventListener';
+import { useEventListener } from 'usehooks-ts';
 
 import {
   AoCanvas,
@@ -154,79 +154,105 @@ const Canvas: React.FC<CanvasProps> = ({
   );
   const initialCandlesShown = useRef(candlesShown);
 
-  const maxTradeId = useMemo(() => (Math.max(...candleArray.map(candle => candle.trades).flat().map(trade => trade?.tradeID).filter(tradeID => tradeID !== undefined) as number[], 0)), [candleArray]);
+  const maxTradeId = useMemo(
+    () =>
+      Math.max(
+        ...(candleArray
+          .map((candle) => candle.trades)
+          .flat()
+          .map((trade) => trade?.tradeID)
+          .filter((tradeID) => tradeID !== undefined) as number[]),
+        0
+      ),
+    [candleArray]
+  );
 
   const candlesForAllTrades = useMemo(() => {
     if (!candleArray) return;
     if (maxTradeId === undefined) return;
 
-    const result: Record<number, {
-      startCandle: FoundCandle<CandleToDraw>;
-      endCandle: FoundCandle<CandleToDraw>;
-    }> = {};
+    const result: Record<
+      number,
+      {
+        startCandle: FoundCandle<CandleToDraw>;
+        endCandle: FoundCandle<CandleToDraw>;
+      }
+    > = {};
 
     for (let tradeIDIndex = 0; tradeIDIndex <= maxTradeId; tradeIDIndex++) {
       const startCandle = findCandleWithTrade(candleArray, tradeIDIndex);
-      const endCandle = findCandleWithTrade(
-        candleArray,
-        tradeIDIndex,
-        true
-      );
+      const endCandle = findCandleWithTrade(candleArray, tradeIDIndex, true);
       result[tradeIDIndex] = {
         startCandle,
         endCandle,
-      }
+      };
     }
 
     return result;
   }, [maxTradeId, candleArray]);
 
-  useEventListener('wheel', (e: WheelEvent) => {
-    e.preventDefault();
+  useEventListener(
+    'wheel',
+    (e: WheelEvent) => {
+      e.preventDefault();
 
-    if (!(otherSettings.scroll || otherSettings.zoom)) return;
-    scrollZoom(
-      {
-        x: otherSettings.scroll ? e.deltaX : 0,
-        y: otherSettings.zoom ? e.deltaY : 0,
-      },
-      shift,
-      candlesShown,
-      candleArray.length,
-      setShift,
-      setCandlesShown
-    );
-    return false; // Why does it return false?
-  }, canvasRef);
-  useEventListener('mousemove', (e: MouseEvent) => {
-    if (isDragging) {
+      if (!(otherSettings.scroll || otherSettings.zoom)) return;
       scrollZoom(
         {
-          x: -Math.round(e.movementX) * 2,
-          y: 0,
+          x: otherSettings.scroll ? e.deltaX : 0,
+          y: otherSettings.zoom ? e.deltaY : 0,
         },
         shift,
         candlesShown,
         candleArray.length,
         setShift,
-        setCandlesShown,
-      )
-    }
-    if (!otherSettings.cursor) return;
-    cursorFunction({ x: e.clientX, y: e.clientY });
-  }, canvasRef);
+        setCandlesShown
+      );
+      return false; // Why does it return false?
+    },
+    canvasRef
+  );
+  useEventListener(
+    'mousemove',
+    (e: MouseEvent) => {
+      if (isDragging) {
+        scrollZoom(
+          {
+            x: -Math.round(e.movementX) * 2,
+            y: 0,
+          },
+          shift,
+          candlesShown,
+          candleArray.length,
+          setShift,
+          setCandlesShown
+        );
+      }
+      if (!otherSettings.cursor) return;
+      cursorFunction({ x: e.clientX, y: e.clientY });
+    },
+    canvasRef
+  );
   const mouseUpOrLeaveListener = () => {
     setIsDragging(false);
   };
-  useEventListener('mouseleave', () => {
-    // reset cursor
-    setCursor({ x: -5, y: -5 });
+  useEventListener(
+    'mouseleave',
+    () => {
+      // reset cursor
+      setCursor({ x: -5, y: -5 });
 
-    mouseUpOrLeaveListener();
-  }, canvasRef);
-  useEventListener('mousedown', () => {
-    setIsDragging(true);
-  }, canvasRef);
+      mouseUpOrLeaveListener();
+    },
+    canvasRef
+  );
+  useEventListener(
+    'mousedown',
+    () => {
+      setIsDragging(true);
+    },
+    canvasRef
+  );
   useEventListener('mouseup', mouseUpOrLeaveListener, canvasRef);
 
   // main useEffect
@@ -238,7 +264,11 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!ctx) return;
     drawFunction(ctx, propsCanvas, otherSettings);
 
-    if (otherSettings.allTradesShown && maxTradeId !== undefined && candlesForAllTrades) {
+    if (
+      otherSettings.allTradesShown &&
+      maxTradeId !== undefined &&
+      candlesForAllTrades
+    ) {
       for (let i = 0; i <= maxTradeId; i++) {
         displayTrade(ctx, propsCanvas, candlesForAllTrades[i]);
       }
@@ -264,11 +294,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!cursorCtx) return;
     drawCursor(cursorCtx, canvas.width, canvas.height, cursor);
     cursorFunction(cursor, true);
-  }, [
-    cursor,
-    cursorFunction,
-    otherSettings.cursor,
-  ]);
+  }, [cursor, cursorFunction, otherSettings.cursor]);
 
   // useEffect to reset shift and zoom when candleArray shrinks in size (e.g. switching to a smaller data example, or setting smaller history length)
   useEffect(() => {
@@ -316,21 +342,27 @@ const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <Wrap
-      onMouseMove={otherSettings.resizable ? (event) => {
-        const isMouseDown = event.buttons > 0;
-        if (!isMouseDown) return;
+      onMouseMove={
+        otherSettings.resizable
+          ? (event) => {
+              const isMouseDown = event.buttons > 0;
+              if (!isMouseDown) return;
 
-        const newWidth = Math.round(event.currentTarget.clientWidth);
-        if (width !== newWidth) {
-          setWidth(newWidth);
-        }
+              const newWidth = Math.round(event.currentTarget.clientWidth);
+              if (width !== newWidth) {
+                setWidth(newWidth);
+              }
 
-        const aoHeight = otherSettings.ao ? Number(height) / 5 + 5 : 0;
-        const newHeight = Math.round(event.currentTarget.clientHeight - aoHeight);
-        if (height !== newHeight) {
-          setHeight(newHeight);
-        }
-      } : undefined}
+              const aoHeight = otherSettings.ao ? Number(height) / 5 + 5 : 0;
+              const newHeight = Math.round(
+                event.currentTarget.clientHeight - aoHeight
+              );
+              if (height !== newHeight) {
+                setHeight(newHeight);
+              }
+            }
+          : undefined
+      }
       resizable={otherSettings.resizable}
       width={Number(width)}
       height={Number(height)}
@@ -353,10 +385,7 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         {displayedDate}
       </DateLabel>
-      <OclhLabel
-        canvasWidth={Number(width)}
-        canvasHeight={Number(height)}
-      >
+      <OclhLabel canvasWidth={Number(width)} canvasHeight={Number(height)}>
         {displayedOclh &&
           Object.keys(displayedOclh).map((key) => (
             <p key={key}>
