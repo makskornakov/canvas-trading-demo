@@ -79,7 +79,7 @@ export function displayTrade(
       Math.min(start.y, end.y),
       end.x - start.x,
       Math.abs(end.y - start.y),
-      10,
+      candleCanvas.width / 150,
       isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
     );
     const tradeLineColor = '#b5b5b5'
@@ -210,7 +210,8 @@ export const drawFunction = (
         ctx,
         canvas.alligatorArray[key],
         alligatorLinesSettings[key],
-        alligatorWidth
+        alligatorWidth,
+        'round'
       );
     });
   }

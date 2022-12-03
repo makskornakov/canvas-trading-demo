@@ -6,9 +6,13 @@ export function drawCurveLine(
   ctx: CanvasRenderingContext2D,
   points: { x: number; y: number }[],
   color: string,
-  lineWidth: number
+  lineWidth: number,
+  lineCap?: CanvasRenderingContext2D['lineCap'],
 ) {
   ctx.beginPath();
+  if (lineCap) {
+    ctx.lineCap = lineCap;
+  }
   ctx.lineWidth = lineWidth;
   ctx.strokeStyle = color;
 
@@ -22,6 +26,10 @@ export function drawCurveLine(
   }
 
   ctx.stroke();
+  if (lineCap) {
+    // initial value
+    ctx.lineCap = 'butt';
+  }
   ctx.closePath();
 }
 
@@ -128,7 +136,8 @@ export function line(
   color: string,
   width: number = 1,
   opacity: number = 1,
-  dash: number[] = []
+  dash: number[] = [],
+  lineCap?: CanvasRenderingContext2D['lineCap'],
 ) {
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
@@ -136,11 +145,18 @@ export function line(
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
   ctx.globalAlpha = opacity;
+  if (lineCap) {
+    ctx.lineCap = lineCap;
+  }
   ctx.setLineDash(dash);
   ctx.stroke();
   ctx.closePath();
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
+  if (lineCap) {
+    // initial value
+    ctx.lineCap = 'butt';
+  }
 }
 export function roundedRect(
   ctx: CanvasRenderingContext2D,

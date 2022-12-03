@@ -203,7 +203,7 @@ const Canvas: React.FC<CanvasProps> = ({
     }
     const scrollZoomEventListener = (e: WheelEvent) => {
       e.preventDefault();
-      // e.stopPropagation(); // makes it laggy
+
       if (!(otherSettings.scroll || otherSettings.zoom)) return;
       scrollZoom(
         {
