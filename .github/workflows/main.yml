@@ -14,5 +14,4 @@ jobs:
       - run: npm install
       - uses: JS-DevTools/npm-publish@v1
         with:
-          package: ./packages/canvas-trading/package.json
           token: ${{ secrets.NPM_TOKEN }}
