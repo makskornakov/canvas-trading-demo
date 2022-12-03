@@ -9,7 +9,7 @@ specifiers:
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.9
   '@types/styled-components': ^5.1.26
-  canvas-trading: ^1.0.6
+  canvas-trading: ^1.0.7
   gh-pages: ^4.0.0
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -26,7 +26,7 @@ dependencies:
   '@types/node': 16.18.3
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
-  canvas-trading: 1.0.6_56nicwxcbpehznvjhlpvpy75bu
+  canvas-trading: 1.0.7_2zpt4ilzykmne4yndyzrqd4gdm
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_eetduzquwu67aqoq5644t6dxzu
@@ -3510,14 +3510,17 @@ packages:
     resolution: {integrity: sha512-kdCkUTjR+v4YAJelyiDTqiu82BDr4W4CP5sgTA0ZBmqn30XfS2ZghPLMowik9TPhS+psWJiUNxsqLyurDbmutA==}
     dev: false
 
-  /canvas-trading/1.0.6_56nicwxcbpehznvjhlpvpy75bu:
-    resolution: {integrity: sha512-nAx9gnJIp7rZ9Jdk/XOByUQPd4c/nA3Te3K+khUtBpVLiw6DpgKu+hxVV705ut4SwWQ9gIyv7C5d/3wpX45qHA==}
+  /canvas-trading/1.0.7_2zpt4ilzykmne4yndyzrqd4gdm:
+    resolution: {integrity: sha512-p5CjClSXOULsdIFweux9CeLGwsm4XVX8GPNNJoJMqj5//c9iTS2O/S++Bv2dIPlBzMWq63trHTwcn1o0jBEmBg==}
     peerDependencies:
       react: ^18.2.0
       styled-components: ^5.3.6
     dependencies:
       react: 18.2.0
       styled-components: 5.3.6_biqbaboplfbrettd7655fr4n2y
+      usehooks-ts: 2.9.1_biqbaboplfbrettd7655fr4n2y
+    transitivePeerDependencies:
+      - react-dom
     dev: false
 
   /case-sensitive-paths-webpack-plugin/2.4.0:
@@ -9637,6 +9640,17 @@ packages:
     dependencies:
       querystringify: 2.2.0
       requires-port: 1.0.0
+    dev: false
+
+  /usehooks-ts/2.9.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-2FAuSIGHlY+apM9FVlj8/oNhd+1y+Uwv5QNkMQz1oSfdHk4PXo1qoCw9I5M7j0vpH8CSWFJwXbVPeYDjLCx9PA==}
+    engines: {node: '>=16.15.0', npm: '>=8'}
+    peerDependencies:
+      react: ^16.8.0  || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /util-deprecate/1.0.2:
