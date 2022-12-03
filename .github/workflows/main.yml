@@ -10,6 +10,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 10
+      - run: cd packages/canvas-trading
       - run: npm install
       - uses: JS-DevTools/npm-publish@v1
         with:
