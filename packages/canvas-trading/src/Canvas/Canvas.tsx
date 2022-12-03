@@ -45,6 +45,7 @@ function usePropState<T>(prop: T) {
 }
 
 const Canvas: React.FC<CanvasProps> = ({
+  style,
   candleArray: candleArrayProp,
   lastCandle: lastCandleProp,
   candlesShown: candlesShownProp,
@@ -319,7 +320,7 @@ const Canvas: React.FC<CanvasProps> = ({
     <Wrap
       width={Number(props.width)}
       height={Number(props.height)}
-      style={props.style}
+      style={style}
       ao={otherSettings.ao}
     >
       {otherSettings.showAsset && (
@@ -356,8 +357,6 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(props.width) * canvasSettings.scaleForQuality}
         height={Number(props.height) * canvasSettings.scaleForQuality}
         ref={canvasRef}
-        // style undefined because it's not needed
-        style={undefined}
       />
       <CursorCanvas
         ref={cursorRef}
