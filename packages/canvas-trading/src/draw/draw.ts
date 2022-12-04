@@ -171,7 +171,11 @@ export const drawFunction = (
     const candleIsRed = candle.open < candle.close;
     const y = candleIsRed ? candle.open : candle.close;
 
-    const candleFillColor = candleIsRed ? candleColors.red : candleColors.green;
+    /** Should be white when it closed at the same price it opened. */
+    const candleIsWhite = candle.open === candle.close;
+    const fixedWidthIfCandleIsWhite = 3;
+
+    const candleFillColor = candleIsWhite ? 'white' : candleIsRed ? candleColors.red : candleColors.green;
 
     // draw candle
     rect(
@@ -179,7 +183,7 @@ export const drawFunction = (
       x,
       y,
       canvas.candleWidth,
-      Math.abs(candle.open - candle.close),
+      candleIsWhite ? fixedWidthIfCandleIsWhite : Math.abs(candle.open - candle.close),
       candleFillColor
     );
 
