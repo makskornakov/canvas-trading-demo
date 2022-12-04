@@ -26,7 +26,7 @@ dependencies:
   '@types/node': 16.18.3
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
-  canvas-trading: 1.0.7_2zpt4ilzykmne4yndyzrqd4gdm
+  canvas-trading: 1.0.10_2zpt4ilzykmne4yndyzrqd4gdm
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_eetduzquwu67aqoq5644t6dxzu
@@ -3510,8 +3510,8 @@ packages:
     resolution: {integrity: sha512-kdCkUTjR+v4YAJelyiDTqiu82BDr4W4CP5sgTA0ZBmqn30XfS2ZghPLMowik9TPhS+psWJiUNxsqLyurDbmutA==}
     dev: false
 
-  /canvas-trading/1.0.7_2zpt4ilzykmne4yndyzrqd4gdm:
-    resolution: {integrity: sha512-p5CjClSXOULsdIFweux9CeLGwsm4XVX8GPNNJoJMqj5//c9iTS2O/S++Bv2dIPlBzMWq63trHTwcn1o0jBEmBg==}
+  /canvas-trading/1.0.10_2zpt4ilzykmne4yndyzrqd4gdm:
+    resolution: {integrity: sha512-F8vffphwv2vOeLvuWY9OWOi9N1bc6BRLCAigTopwdsg3PqUOu/aR8aqO2JqVOZ3DrBumYw3FOHL5BI5MI00Hdw==}
     peerDependencies:
       react: ^18.2.0
       styled-components: ^5.3.6

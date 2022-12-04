@@ -370,7 +370,11 @@ const Canvas: React.FC<CanvasProps> = ({
       ao={otherSettings.ao}
     >
       {otherSettings.showAsset && (
-        <AssetLabel height={Number(height)} width={Number(width)}>
+        <AssetLabel
+          height={Number(height)}
+          width={Number(width)}
+          aoShown={otherSettings.ao}
+        >
           {lastCandle.asset}
         </AssetLabel>
       )}

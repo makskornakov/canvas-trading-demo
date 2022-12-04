@@ -14,11 +14,13 @@ export const Wrap = styled.div<{
   margin: 0 auto;
   position: relative;
 
-  ${({ resizable }) => resizable && css`
-    resize: both;
-    /* The property below is needed so that the resize icon is visible. */
-    overflow: hidden;
-  `}
+  ${({ resizable }) =>
+    resizable &&
+    css`
+      resize: both;
+      /* The property below is needed so that the resize icon is visible. */
+      overflow: hidden;
+    `}
 `;
 const canvasStyles = css`
   margin: 0 auto;
@@ -37,10 +39,12 @@ export const MainCanvas = styled.canvas<{
 
   :active {
     cursor: grabbing;
-    ${({ resizable }) => resizable && css`
-      /* This is a hack to make the resize icon clickable. */
-      border-bottom-right-radius: 50px;
-    `}
+    ${({ resizable }) =>
+      resizable &&
+      css`
+        /* This is a hack to make the resize icon clickable. */
+        border-bottom-right-radius: 50px;
+      `}
   }
 `;
 export const CursorCanvas = styled.canvas<{
@@ -58,14 +62,20 @@ export const CursorCanvas = styled.canvas<{
 export const AssetLabel = styled.p<{
   height: number;
   width: number;
+  aoShown: boolean;
 }>`
   height: ${(props) => props.height / 2}px;
   width: 100%;
   position: absolute;
   margin: 0;
-  top: calc(50% - ${(props) => props.height / 4}px);
+  top: calc(
+    50% -
+      ${(props) =>
+        props.height / 4 + (props.aoShown ? props.height / 10 + 2.5 : 0)}px
+  );
 
   line-height: ${(props) => props.height / 2}px;
+  height: ${(props) => props.height / 2}px;
   color: #fff;
   font-size: ${(props) => Math.sqrt(props.width) * 2.5}px;
   letter-spacing: ${(props) => Math.sqrt(props.width) * 0.15}px;
@@ -85,10 +95,12 @@ export const AoCanvas = styled.canvas<{
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
 
-  ${({resizable}) => resizable && css`
-    /* This makes the resize icon larger for easier click */
-    pointer-events: none;
-  `}
+  ${({ resizable }) =>
+    resizable &&
+    css`
+      /* This makes the resize icon larger for easier click */
+      pointer-events: none;
+    `}
 `;
 export const PriceLabel = styled.p<{
   height: number;
