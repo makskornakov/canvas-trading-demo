@@ -27,7 +27,7 @@ import { findCandleWithTrade } from '../draw/drawFunctions';
 
 type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
-  lastCandle: CandleToDraw;
+  lastCandle: CandleToDraw | undefined;
   otherSettings?: OtherSettings;
   candlesShown?: number;
   shownTrade?: number;
@@ -369,7 +369,7 @@ const Canvas: React.FC<CanvasProps> = ({
       style={style}
       ao={otherSettings.ao}
     >
-      {otherSettings.showAsset && (
+      {otherSettings.showAsset && lastCandle?.asset && (
         <AssetLabel
           height={Number(height)}
           width={Number(width)}
