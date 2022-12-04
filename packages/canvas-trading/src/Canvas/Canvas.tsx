@@ -103,7 +103,7 @@ const Canvas: React.FC<CanvasProps> = ({
         lastCandle
       );
     } catch (error) {
-      console.error(error);
+      console.error('Could not create new CandleCanvas()', error);
       return null;
     }
   }, [width, height, candlesShown, shift, candleArray, lastCandle]);
