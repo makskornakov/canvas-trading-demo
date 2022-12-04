@@ -9,7 +9,7 @@ specifiers:
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.9
   '@types/styled-components': ^5.1.26
-  canvas-trading: ^1.0.7
+  canvas-trading: ^1.0.11
   gh-pages: ^4.0.0
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -26,7 +26,7 @@ dependencies:
   '@types/node': 16.18.3
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
-  canvas-trading: 1.0.10_2zpt4ilzykmne4yndyzrqd4gdm
+  canvas-trading: 1.0.11_2zpt4ilzykmne4yndyzrqd4gdm
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_eetduzquwu67aqoq5644t6dxzu
@@ -3510,8 +3510,8 @@ packages:
     resolution: {integrity: sha512-kdCkUTjR+v4YAJelyiDTqiu82BDr4W4CP5sgTA0ZBmqn30XfS2ZghPLMowik9TPhS+psWJiUNxsqLyurDbmutA==}
     dev: false
 
-  /canvas-trading/1.0.10_2zpt4ilzykmne4yndyzrqd4gdm:
-    resolution: {integrity: sha512-F8vffphwv2vOeLvuWY9OWOi9N1bc6BRLCAigTopwdsg3PqUOu/aR8aqO2JqVOZ3DrBumYw3FOHL5BI5MI00Hdw==}
+  /canvas-trading/1.0.11_2zpt4ilzykmne4yndyzrqd4gdm:
+    resolution: {integrity: sha512-FN1vC9XBflbHIhOyswuEv6MXP3XrHlRNHu7J2tlGA3sHZnruttrk8wk0tGeMBrkMWYYnx0PeOF1I9MEZWSXRfA==}
     peerDependencies:
       react: ^18.2.0
       styled-components: ^5.3.6
