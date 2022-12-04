@@ -83,7 +83,6 @@ export const AssetLabel = styled.p<{
   font-weight: 100;
 
   opacity: 0.065;
-  z-index: -2;
 `;
 
 export const AoCanvas = styled.canvas<{
