@@ -24,13 +24,19 @@ export const ControlWrap = styled.div`
   margin: 0 auto;
 `;
 
+export const LinksContainer = styled.div`
+  position: absolute;
+  top: 1em;
+  right: 1.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 export const ReadmeLink = styled.a`
   color: white;
   font-size: 0.9em;
   text-decoration: none;
-  position: absolute;
-  top: 1em;
-  right: 1.5em;
   margin: 0;
   font-weight: 300;
   transition: 0.2s;
