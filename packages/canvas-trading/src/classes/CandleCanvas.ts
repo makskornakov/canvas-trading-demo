@@ -128,17 +128,19 @@ export class CandleCanvas {
   private getAOArray(candles: CandleToDraw[], minMax: MinMax) {
     const aoArray: AoCandle[] = [];
 
+    const min = minMax.aoMin * 1.1;
+    const max = minMax.aoMax * 1.1;
+
     const allHeight = this.height / 5;
-    const maxPercentOfMin =
-      minMax.aoMax / (Math.abs(minMax.aoMin) + minMax.aoMax);
+    const maxPercentOfMin = minMax.aoMax / (Math.abs(min) + max);
 
     const newMidLine = allHeight * maxPercentOfMin;
 
     candles.forEach((candle, index) => {
       const newValue =
         candle.indicators.ao.value > 0
-          ? candle.indicators.ao.value / minMax.aoMax
-          : candle.indicators.ao.value / minMax.aoMin;
+          ? candle.indicators.ao.value / max
+          : candle.indicators.ao.value / min;
 
       const aboveLine = candle.indicators.ao.value > 0;
 
