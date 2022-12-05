@@ -3,6 +3,7 @@ export const candleColors = {
   green: '#6bc800',
 } as const;
 export const tradeColors = {
+  arrow: '#b5b5b5',
   positiveArrow: '#6bc800',
   negativeArrow: '#ff0037',
   positiveRect: 'rgba(50, 255, 30, 0.35)',

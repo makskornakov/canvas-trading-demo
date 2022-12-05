@@ -12,100 +12,134 @@ import {
   rect,
   drawMountedIndicators,
   drawCurveLine,
+  arrowWithHead,
+  tradeLetter,
 } from './drawFunctions';
-import type { CandleToDraw, CheckedOtherSettings, FoundCandle, Vector2 } from '../types';
+import type {
+  CandleToDraw,
+  CheckedOtherSettings,
+  FoundCandle,
+  Vector2,
+} from '../types';
 import { Candle2D } from '../classes/CandleClasses';
 
 export function displayTrade(
   ctx: CanvasRenderingContext2D,
   candleCanvas: CandleCanvas,
   tradeCandles: {
-    startCandle: FoundCandle<CandleToDraw>,
-    endCandle: FoundCandle<CandleToDraw>,
+    startCandle: FoundCandle<CandleToDraw>;
+    endCandle: FoundCandle<CandleToDraw>;
   }
-): {
-  startCandle: FoundCandle<CandleToDraw>;
-  endCandle: FoundCandle<CandleToDraw>;
-} | undefined {
+):
+  | {
+      startCandle: FoundCandle<CandleToDraw>;
+      endCandle: FoundCandle<CandleToDraw>;
+    }
+  | undefined {
   const { startCandle, endCandle } = tradeCandles;
 
   // draw line from buy to sell
   if (startCandle.candle && endCandle.candle) {
-    const originalIndexOfFirstVisibleCandle = candleCanvas.candleArray[0].originalIndex;
+    const originalIndexOfFirstVisibleCandle =
+      candleCanvas.candleArray[0].originalIndex;
     const startCandleIndex =
-      startCandle.index - originalIndexOfFirstVisibleCandle + candleCanvas.candleShift; // will be negative if the candle is not visible
+      startCandle.index -
+      originalIndexOfFirstVisibleCandle +
+      candleCanvas.candleShift; // will be negative if the candle is not visible
 
     const originalEndCandleIndex =
-      endCandle.index - originalIndexOfFirstVisibleCandle + candleCanvas.candleShift;
+      endCandle.index -
+      originalIndexOfFirstVisibleCandle +
+      candleCanvas.candleShift;
 
     /** if the trade is all the way (fully) hidden outside the viewport borders. */
-    const isNotInViewport = (
+    const isNotInViewport =
       (originalEndCandleIndex < 0 && startCandleIndex < 0) ||
-      (originalEndCandleIndex >= candleCanvas.candlesShown && startCandleIndex >= candleCanvas.candlesShown)
-    );
+      (originalEndCandleIndex >= candleCanvas.candlesShown &&
+        startCandleIndex >= candleCanvas.candlesShown);
 
     if (isNotInViewport) return;
 
-    const xEnd = originalEndCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap);
-    const xStart = startCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap);
+    const buyPrice =
+      startCandle.candle.trades?.[startCandle.innerIndex].buyPrice!;
+    const sellPrice =
+      endCandle.candle.trades?.[endCandle.innerIndex].sellPrice!;
 
-    const yStart = Candle2D.getPoint(
-      startCandle.candle.trades?.[startCandle.innerIndex].buyPrice!,
-      candleCanvas,
-    );
-    const yEnd = Candle2D.getPoint(
-      endCandle.candle.trades?.[endCandle.innerIndex].sellPrice!,
-      candleCanvas,
-    );
+    const isTradeLong =
+      endCandle.candle.trades?.[endCandle.innerIndex].tradeType === 'long';
+    const isProfit = isTradeLong ? buyPrice < sellPrice : buyPrice > sellPrice;
 
     const start = {
-      x: xStart + candleCanvas.candleWidth / 2,
-      y: yStart,
+      x:
+        startCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap) +
+        candleCanvas.candleWidth / 2,
+      y: Candle2D.getPoint(buyPrice, candleCanvas),
     };
     const end = {
-      x: xEnd + candleCanvas.candleWidth / 2,
-      y: yEnd,
+      x:
+        originalEndCandleIndex * (candleCanvas.candleWidth + candleCanvas.gap) +
+        candleCanvas.candleWidth / 2,
+      y: Candle2D.getPoint(sellPrice, candleCanvas),
     };
-    const isProfit =
-      endCandle.candle.trades?.[endCandle.innerIndex].tradeType === 'long'
-        ? // canvas cords are inverted
-          end.y < start.y
-        : end.y > start.y;
 
-    // draw filled rect behind the line
-    roundedRect(
+    // const tradeLineColor = '#b5b5b5';
+    const tradeInOneCandle =
+      startCandle.candle.openTime === endCandle.candle.openTime;
+
+    const candleAboveMidLine =
+      Candle2D.getPoint(
+        (startCandle.candle.high + startCandle.candle.low) / 2,
+        candleCanvas
+      ) <
+      candleCanvas.height / 2;
+
+    const newY = candleAboveMidLine
+      ? Candle2D.getPoint(startCandle.candle.low, candleCanvas)
+      : Candle2D.getPoint(startCandle.candle.high, candleCanvas);
+
+    const normalGap = candleCanvas.gap * 8;
+
+    if (tradeInOneCandle) {
+      // display one candle trade
+      tradeLetter(
+        ctx,
+        start,
+        normalGap,
+        isTradeLong,
+        isProfit,
+        candleAboveMidLine,
+        newY
+      );
+    } else {
+      // draw filled rect behind the line
+      roundedRect(
+        ctx,
+        start.x,
+        Math.min(start.y, end.y),
+        end.x - start.x,
+        Math.abs(end.y - start.y),
+        candleCanvas.width / 150,
+        isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
+      );
+    }
+    // arrow or arrow for 1 candle trade
+    arrowWithHead(
       ctx,
-      start.x,
-      Math.min(start.y, end.y),
-      end.x - start.x,
-      Math.abs(end.y - start.y),
-      candleCanvas.width / 150,
-      isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
+      tradeInOneCandle
+        ? {
+            ...start,
+            y: candleAboveMidLine ? newY + normalGap * 3 : newY - normalGap * 3,
+          }
+        : start,
+      tradeInOneCandle
+        ? {
+            ...end,
+            y: candleAboveMidLine ? newY + normalGap : newY - normalGap,
+          }
+        : end,
+      tradeColors.arrow,
+      candleCanvas.candleWidth
     );
-    const tradeLineColor = '#b5b5b5'
-    line(ctx, start, end, tradeLineColor, Math.sqrt(candleCanvas.candleWidth), 0.8, [
-      candleCanvas.candleWidth * 0.7,
-      candleCanvas.candleWidth * 0.7,
-    ]);
-
-    // arrow head
-    const angle = Math.atan2(end.y - start.y, end.x - start.x);
-    ctx.beginPath();
-    ctx.moveTo(end.x, end.y);
-    const size =
-      candleCanvas.candleWidth + Math.sqrt(candleCanvas.candleWidth) * 1.5;
-    ctx.lineTo(
-      end.x - size * Math.cos(angle - Math.PI / 6),
-      end.y - size * Math.sin(angle - Math.PI / 6)
-    )
-    ctx.lineTo(
-      end.x - size * Math.cos(angle + Math.PI / 6),
-      end.y - size * Math.sin(angle + Math.PI / 6)
-    );
-    ctx.lineTo(end.x, end.y);
-    ctx.fillStyle = tradeLineColor;
-    ctx.fill();
-    ctx.closePath();
   }
   return { startCandle, endCandle };
 }
@@ -175,7 +209,11 @@ export const drawFunction = (
     const candleIsWhite = candle.open === candle.close;
     const fixedWidthIfCandleIsWhite = 3;
 
-    const candleFillColor = candleIsWhite ? 'white' : candleIsRed ? candleColors.red : candleColors.green;
+    const candleFillColor = candleIsWhite
+      ? 'white'
+      : candleIsRed
+      ? candleColors.red
+      : candleColors.green;
 
     // draw candle
     rect(
@@ -183,7 +221,9 @@ export const drawFunction = (
       x,
       y,
       canvas.candleWidth,
-      candleIsWhite ? fixedWidthIfCandleIsWhite : Math.abs(candle.open - candle.close),
+      candleIsWhite
+        ? fixedWidthIfCandleIsWhite
+        : Math.abs(candle.open - candle.close),
       candleFillColor
     );
 
@@ -226,7 +266,7 @@ export const drawFunction = (
 function drawLastCandlePrice(
   ctx: CanvasRenderingContext2D,
   canvas: CandleCanvas,
-  otherSettings: CheckedOtherSettings,
+  otherSettings: CheckedOtherSettings
 ) {
   if (!otherSettings.showLastCandlePrice) return;
 
@@ -235,7 +275,10 @@ function drawLastCandlePrice(
 
   const alligatorOffset = 8;
 
-  const lastCandle2D = canvas.candleArray[canvas.candleArray.length - (1 + alligatorOffset) + canvas.candleShift];
+  const lastCandle2D =
+    canvas.candleArray[
+      canvas.candleArray.length - (1 + alligatorOffset) + canvas.candleShift
+    ];
   if (!lastCandle2D) return;
 
   ctx.beginPath();
@@ -247,7 +290,8 @@ function drawLastCandlePrice(
   const metrics = ctx.measureText(text);
   const x = lastCandle2D.xPosition + canvas.candleWidth * 2 + canvas.gap;
   /** So that the '--' in the start of the text exactly matches the position of the candle body bottom. */
-  const centerYOffset = metrics.actualBoundingBoxAscent / 2 - metrics.actualBoundingBoxDescent;
+  const centerYOffset =
+    metrics.actualBoundingBoxAscent / 2 - metrics.actualBoundingBoxDescent;
   const y = lastCandle2D.close + centerYOffset;
   ctx.fillText(text, x, y);
   ctx.closePath();

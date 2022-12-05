@@ -1,13 +1,19 @@
 import type { Candle2D } from '../classes/CandleClasses';
-import { candleColors } from '../config';
-import type { CandleToDraw, FoundCandle, FractalIndicator, RevBarIndicator, Vector2 } from '../types';
+import { candleColors, tradeColors } from '../config';
+import type {
+  CandleToDraw,
+  FoundCandle,
+  FractalIndicator,
+  RevBarIndicator,
+  Vector2,
+} from '../types';
 
 export function drawCurveLine(
   ctx: CanvasRenderingContext2D,
   points: { x: number; y: number }[],
   color: string,
   lineWidth: number,
-  lineCap?: CanvasRenderingContext2D['lineCap'],
+  lineCap?: CanvasRenderingContext2D['lineCap']
 ) {
   ctx.beginPath();
   if (lineCap) {
@@ -98,7 +104,7 @@ export function fractal(
   const triangleAdditionalWidthMultiplier = 0.1;
   const triangleWidthShrinker = 1 / triangleAdditionalWidthMultiplier;
 
-  const triangleWidthMultiplier = (1 + triangleAdditionalWidthMultiplier);
+  const triangleWidthMultiplier = 1 + triangleAdditionalWidthMultiplier;
   const triangleWidth = candleWidth * triangleWidthMultiplier;
 
   ctx.moveTo(x - candleWidth / triangleWidthShrinker, y);
@@ -137,7 +143,7 @@ export function line(
   width: number = 1,
   opacity: number = 1,
   dash: number[] = [],
-  lineCap?: CanvasRenderingContext2D['lineCap'],
+  lineCap?: CanvasRenderingContext2D['lineCap']
 ) {
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
@@ -207,3 +213,67 @@ export function findCandleWithTrade<T extends Candle2D | CandleToDraw>(
   });
   return foundObj;
 }
+
+export const tradeLetter = function (
+  ctx: CanvasRenderingContext2D,
+  cords: Vector2,
+  gap: number,
+  isTradeLong: boolean,
+  isProfit: boolean,
+  candleAboveMidLine: boolean,
+  yPoint: number
+) {
+  // draw small letter above the arrow
+
+  ctx.font = `${
+    gap * 1.3
+  }px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`;
+  ctx.fillStyle = isProfit
+    ? tradeColors.positiveArrow
+    : tradeColors.negativeArrow;
+  ctx.textAlign = 'center';
+
+  ctx.shadowColor = 'rgba(255, 255, 255, 1)';
+  ctx.shadowBlur = 2;
+
+  ctx.fillText(
+    isTradeLong ? 'L' : 'S',
+    cords.x,
+    candleAboveMidLine ? yPoint + gap * 5 : yPoint - gap * 4
+  );
+
+  //reset shadow
+  ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+  ctx.shadowBlur = 0;
+};
+
+export const arrowWithHead = function (
+  ctx: CanvasRenderingContext2D,
+  start: Vector2,
+  end: Vector2,
+  color: string,
+  candleWidth: number
+) {
+  line(ctx, start, end, color, Math.sqrt(candleWidth), 0.8, [
+    candleWidth * 0.7,
+    candleWidth * 0.7,
+  ]);
+
+  // arrow head
+  const angle = Math.atan2(end.y - start.y, end.x - start.x);
+  ctx.beginPath();
+  ctx.moveTo(end.x, end.y);
+  const size = candleWidth + Math.sqrt(candleWidth) * 1.5;
+  ctx.lineTo(
+    end.x - size * Math.cos(angle - Math.PI / 6),
+    end.y - size * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    end.x - size * Math.cos(angle + Math.PI / 6),
+    end.y - size * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.lineTo(end.x, end.y);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.closePath();
+};
