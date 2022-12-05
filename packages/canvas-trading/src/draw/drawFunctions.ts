@@ -1,4 +1,5 @@
 import type { Candle2D } from '../classes/CandleClasses';
+import { MountedIndicator, MountedTrade } from '../classes/MountedClasses';
 import { candleColors, tradeColors } from '../config';
 import type {
   CandleToDraw,
@@ -45,14 +46,11 @@ export function drawMountedIndicators(
   x: number,
   candleWidth: number
 ) {
-  const arr = [
-    candle.mountPoints.above.first,
-    candle.mountPoints.above.second,
-    candle.mountPoints.below.first,
-    candle.mountPoints.below.second,
-  ];
+  const arr = [...candle.mountPoints.above, ...candle.mountPoints.below];
 
   arr.forEach((indicator) => {
+    const indicatorIsInAboveArray =
+      candle.mountPoints.above.includes(indicator);
     if (indicator === null) return;
 
     if (indicator.type === 'revBar') {
@@ -71,6 +69,45 @@ export function drawMountedIndicators(
         x,
         indicator.yPos,
         indicator.value as FractalIndicator,
+        candleWidth
+      );
+    }
+    function indicatorIsTrade(
+      indicator: MountedIndicator | MountedTrade
+    ): indicator is MountedTrade {
+      return 'tradeType' in indicator;
+    }
+
+    if (indicator.type === 'trade' && indicatorIsTrade(indicator)) {
+      const candleAboveMin = !indicatorIsInAboveArray;
+
+      tradeLetter(
+        ctx,
+        { x: x + candleWidth / 2, y: indicator.yPos },
+        candleWidth,
+        indicator.tradeType === 'long',
+        indicator.profitable,
+        candleAboveMin,
+        indicator.yPos
+      );
+
+      arrowWithHead(
+        ctx,
+        {
+          x: x + candleWidth / 2,
+          y: candleAboveMin
+            ? indicator.yPos + candleWidth * 3
+            : indicator.yPos - candleWidth * 3,
+        },
+
+        {
+          x: x + candleWidth / 2,
+          y: candleAboveMin
+            ? indicator.yPos + candleWidth
+            : indicator.yPos - candleWidth,
+        },
+
+        tradeColors.arrow,
         candleWidth
       );
     }

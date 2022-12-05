@@ -13,7 +13,6 @@ import {
   drawMountedIndicators,
   drawCurveLine,
   arrowWithHead,
-  tradeLetter,
 } from './drawFunctions';
 import type {
   CandleToDraw,
@@ -82,35 +81,10 @@ export function displayTrade(
       y: Candle2D.getPoint(sellPrice, candleCanvas),
     };
 
-    // const tradeLineColor = '#b5b5b5';
     const tradeInOneCandle =
       startCandle.candle.openTime === endCandle.candle.openTime;
 
-    const candleAboveMidLine =
-      Candle2D.getPoint(
-        (startCandle.candle.high + startCandle.candle.low) / 2,
-        candleCanvas
-      ) <
-      candleCanvas.height / 2;
-
-    const newY = candleAboveMidLine
-      ? Candle2D.getPoint(startCandle.candle.low, candleCanvas)
-      : Candle2D.getPoint(startCandle.candle.high, candleCanvas);
-
-    const normalGap = candleCanvas.gap * 8;
-
-    if (tradeInOneCandle) {
-      // display one candle trade
-      tradeLetter(
-        ctx,
-        start,
-        normalGap,
-        isTradeLong,
-        isProfit,
-        candleAboveMidLine,
-        newY
-      );
-    } else {
+    if (!tradeInOneCandle) {
       // draw filled rect behind the line
       roundedRect(
         ctx,
@@ -121,25 +95,14 @@ export function displayTrade(
         candleCanvas.width / 150,
         isProfit ? tradeColors.positiveRect : tradeColors.negativeRect
       );
+      arrowWithHead(
+        ctx,
+        start,
+        end,
+        tradeColors.arrow,
+        candleCanvas.candleWidth
+      );
     }
-    // arrow or arrow for 1 candle trade
-    arrowWithHead(
-      ctx,
-      tradeInOneCandle
-        ? {
-            ...start,
-            y: candleAboveMidLine ? newY + normalGap * 3 : newY - normalGap * 3,
-          }
-        : start,
-      tradeInOneCandle
-        ? {
-            ...end,
-            y: candleAboveMidLine ? newY + normalGap : newY - normalGap,
-          }
-        : end,
-      tradeColors.arrow,
-      candleCanvas.candleWidth
-    );
   }
   return { startCandle, endCandle };
 }

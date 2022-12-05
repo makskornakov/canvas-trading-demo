@@ -11,8 +11,10 @@ export interface CandleToDraw {
   trades?: AssignedTrade[];
   asset?: string;
 }
-export type MountedIndicatorType = keyof Pick<Indicators, 'fractal' | 'revBar'>;
-export type IndicatorValue = RevBarIndicator | FractalIndicator;
+export type MountedIndicatorType =
+  | keyof Pick<Indicators, 'fractal' | 'revBar'>
+  | 'trade';
+export type IndicatorValue = RevBarIndicator | FractalIndicator | number;
 export interface FoundCandle<T extends Candle2D | CandleToDraw = Candle2D> {
   candle: T | false;
   index: number;
@@ -23,6 +25,7 @@ export interface AssignedTrade {
   tradeType: 'long' | 'short';
   buyPrice: number;
   sellPrice: number;
+  profit: number;
   isThisCandleStart: boolean;
   isThisCandleEnd: boolean;
 }
