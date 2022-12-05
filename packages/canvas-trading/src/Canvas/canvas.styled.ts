@@ -11,6 +11,9 @@ export const Wrap = styled.div<{
 }>`
   width: ${(props) => props.width}px;
   height: ${(props) => props.height + (props.ao ? props.height / 5 + 5 : 0)}px;
+  font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   margin: 0 auto;
   position: relative;
 
@@ -27,6 +30,7 @@ const canvasStyles = css`
   padding: 0;
   background: transparent;
   cursor: crosshair;
+  font-family: inherit;
 `;
 export const MainCanvas = styled.canvas<{
   width: number;

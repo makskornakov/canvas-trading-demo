@@ -88,12 +88,13 @@ export class CandleCanvas {
     return {
       min,
       max,
-      aoMin: aoMin < 0 ? aoMin : -aoMax,
-      aoMax: aoMax > 0 ? aoMax : -aoMin,
+      aoMin,
+      aoMax,
     };
   }
   private getDrawingArray(slicedArray: CandleToDraw[]) {
-    const indexInTheOriginalArray = this.candlesToDraw.length - slicedArray.length;
+    const indexInTheOriginalArray =
+      this.candlesToDraw.length - slicedArray.length;
     const candles2D = slicedArray.map((candle, i) => {
       return new Candle2D(
         candle.open,
@@ -104,7 +105,7 @@ export class CandleCanvas {
         this,
         candle.trades ? candle.trades : [],
         i * (this.candleWidth + this.gap),
-        i + indexInTheOriginalArray,
+        i + indexInTheOriginalArray
       );
     });
     return candles2D;
@@ -124,26 +125,30 @@ export class CandleCanvas {
     });
     return { jaw, teeth, lips };
   }
-  private getAOArray(
-    candles: CandleToDraw[],
-    minMax: MinMax
-  ) {
+  private getAOArray(candles: CandleToDraw[], minMax: MinMax) {
     const aoArray: AoCandle[] = [];
 
-    const minMaxRange = minMax.aoMax - minMax.aoMin;
+    const allHeight = this.height / 5;
+    const maxPercentOfMin =
+      minMax.aoMax / (Math.abs(minMax.aoMin) + minMax.aoMax);
 
-    const midLine = this.height / 10;
+    const newMidLine = allHeight * maxPercentOfMin;
 
     candles.forEach((candle, index) => {
-      const newValue = candle.indicators.ao.value / minMaxRange;
+      const newValue =
+        candle.indicators.ao.value > 0
+          ? candle.indicators.ao.value / minMax.aoMax
+          : candle.indicators.ao.value / minMax.aoMin;
 
       const aboveLine = candle.indicators.ao.value > 0;
 
       aoArray.push({
         x: index * (this.candleWidth + this.gap),
-        y: aboveLine ? midLine - (newValue / 2) * (midLine * 2) : midLine,
+        y: aboveLine ? newMidLine - newValue * newMidLine : newMidLine,
         vertexValue: candle.indicators.ao.vertexValue,
-        height: (Math.abs(newValue) / 2) * (midLine * 2),
+        height: aboveLine
+          ? newValue * newMidLine
+          : newValue * (allHeight - newMidLine),
       });
     });
     return aoArray;
