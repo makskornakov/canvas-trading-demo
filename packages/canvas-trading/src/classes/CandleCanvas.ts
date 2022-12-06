@@ -1,15 +1,9 @@
 import { canvasSettings } from '../config';
-import type { CandleToDraw, Vector2 } from '../types';
+import type { AoCandle, CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
 
 type MinMax = { min: number; max: number; aoMin: number; aoMax: number };
 
-interface AoCandle {
-  x: number;
-  y: number;
-  vertexValue: number;
-  height: number;
-}
 export class CandleCanvas {
   width: number;
   height: number;
@@ -76,14 +70,14 @@ export class CandleCanvas {
     const aoMin = Math.min(
       ...candles.map((candle) =>
         candle.indicators.ao.value !== 0 ? candle.indicators.ao.value : Infinity
-      ) // if candle.low is 0, wont be used
+      ) // if candle.low is 0, wont be set
     );
     const aoMax = Math.max(
       ...candles.map((candle) =>
         candle.indicators.ao.value !== 0
           ? candle.indicators.ao.value
           : -Infinity
-      ) // if candle.high is 0, wont be used
+      ) // if candle.high is 0, wont be set
     );
     return {
       min,

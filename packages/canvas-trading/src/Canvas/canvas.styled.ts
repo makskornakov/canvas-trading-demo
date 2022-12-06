@@ -25,6 +25,14 @@ export const Wrap = styled.div<{
       overflow: hidden;
     `}
 `;
+
+const labelStyles = css`
+  pointer-events: none;
+  position: absolute;
+  margin: 0;
+  color: gray;
+`;
+
 const canvasStyles = css`
   margin: 0 auto;
   padding: 0;
@@ -32,6 +40,7 @@ const canvasStyles = css`
   cursor: crosshair;
   font-family: inherit;
 `;
+
 export const MainCanvas = styled.canvas<{
   width: number;
   height: number;
@@ -56,22 +65,22 @@ export const CursorCanvas = styled.canvas<{
   height: number;
 }>`
   ${canvasStyles}
+  ${labelStyles}
   width: ${(props) => props.width / canvasSettings.scaleForQuality}px;
   height: ${(props) => props.height / canvasSettings.scaleForQuality}px;
-  position: absolute;
-  pointer-events: none;
   top: 0;
   left: 0;
 `;
+
 export const AssetLabel = styled.p<{
   height: number;
   width: number;
   aoShown: boolean;
 }>`
+  ${labelStyles}
   height: ${(props) => props.height / 2}px;
   width: 100%;
-  position: absolute;
-  margin: 0;
+
   top: calc(
     50% -
       ${(props) =>
@@ -85,7 +94,6 @@ export const AssetLabel = styled.p<{
   letter-spacing: ${(props) => Math.sqrt(props.width) * 0.15}px;
   text-align: center;
   font-weight: 100;
-
   opacity: 0.065;
 `;
 
@@ -105,39 +113,35 @@ export const AoCanvas = styled.canvas<{
       pointer-events: none;
     `}
 `;
+
 export const PriceLabel = styled.p<{
   height: number;
   cursor: Vector2;
 }>`
-  pointer-events: none;
-  position: absolute;
-  margin: 0;
+  ${labelStyles}
   top: ${(props) => {
     const above = props.cursor.y < props.height / 2;
-
     const minimumTopPosition = props.height / 50;
-
     return Math.max(
       props.cursor.y - (above ? 0 : props.height / 16),
       minimumTopPosition
     );
   }}px;
+
   right: ${(props) => props.height / 50}px;
-  color: gray;
   font-size: ${(props) => props.height / 25}px;
   font-weight: 200;
 `;
+
 export const OclhLabel = styled.div<{
   canvasWidth: number;
   canvasHeight: number;
 }>`
-  pointer-events: none;
+  ${labelStyles}
   width: ${(props) => Math.sqrt(props.canvasWidth) * 2.5 * 5}px;
   justify-content: space-between;
   display: flex;
   align-items: center;
-  position: absolute;
-  margin: 0;
   left: ${(props) => props.canvasHeight / 30}px;
   top: ${(props) => props.canvasHeight / 40}px;
 
@@ -151,15 +155,14 @@ export const OclhLabel = styled.div<{
     font-size: ${(props) => Math.sqrt(props.canvasWidth) / 2}px;
   }
 `;
+
 export const DateLabel = styled.p<{
   height: number;
   width: number;
   cursor: Vector2;
   ao: boolean;
 }>`
-  pointer-events: none;
-  position: absolute;
-  margin: 0;
+  ${labelStyles}
   ${(props) => {
     const isOnTheRight = props.cursor.x < props.width / 2;
     const side = isOnTheRight ? 'left' : 'right';
@@ -171,7 +174,6 @@ export const DateLabel = styled.p<{
     `;
   }}
   bottom: ${(props) => props.height / 40 + (props.ao ? props.height / 5 : 0)}px;
-  color: gray;
   font-size: ${(props) => props.height / 30}px;
   font-weight: 200;
 `;

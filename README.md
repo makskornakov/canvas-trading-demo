@@ -31,12 +31,13 @@ interface AssignedTrade {
   tradeType: 'long' | 'short';
   buyPrice: number;
   sellPrice: number;
+  profit: number;
   isThisCandleStart: boolean;
   isThisCandleEnd: boolean;
 }
 ```
 
-### Indicators in candle.idicators
+### Indicators in candle.indicators
 
 ```typescript
 interface Indicators {
@@ -53,7 +54,7 @@ interface Indicators {
     vertexValue: number;
     // Starts with 0, goes through array;
     // +1 if green AO bar, -1 if red;
-    // Displays the strenfth of AO trend
+    // Displays the strength of AO trend
   };
 }
 ```
@@ -76,10 +77,10 @@ function App() {
         candleArray={candleArray} // CandleToDraw[]
         lastCandle={lastCandle} // CandleToDraw
 
-        // Optioanl
+        // Optional
         candlesShown={160}
         shift={0}
-        shownTrade={undefind}
+        shownTrade={undefined}
         otherSettings={{
           // all optional
           allTradesShown: false, // display all trades
@@ -89,7 +90,13 @@ function App() {
           shift: true;
           scroll: true;
           showAsset: false; // shows big asset label
+          showLastCandlePrice: false,
+          cursor: true,
+          resizable: false, // beta version to resize the canvas
         }}
+        styles={
+          // any styles are applied to the Main wrap of the canvas and fonts are used through the hole canvas
+        }
       ></Canvas>
    );
 }

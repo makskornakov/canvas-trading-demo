@@ -158,8 +158,26 @@ export const drawFunction = (
   canvas: CandleCanvas,
   otherSettings: CheckedOtherSettings
 ) => {
-  // clear ctx
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // alligator should be probably drawn first as it is at the back
+  if (otherSettings.alligator) {
+    const alligatorWidth = Math.sqrt(
+      canvas.candleWidth * alligatorLinesSettings.lineWeight
+    );
+    const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
+      keyof typeof canvas.alligatorArray
+    >;
+    alligatorKeys.forEach((key) => {
+      drawCurveLine(
+        ctx,
+        canvas.alligatorArray[key],
+        alligatorLinesSettings[key],
+        alligatorWidth,
+        'round'
+      );
+    });
+  }
 
   canvas.candleArray.forEach((candle) => {
     if (candle.noDraw) return;
@@ -204,24 +222,6 @@ export const drawFunction = (
     if (otherSettings.mountedIndicators)
       drawMountedIndicators(ctx, candle, x, canvas.candleWidth);
   });
-  if (otherSettings.alligator) {
-    // draw alligator
-    const alligatorWidth = Math.sqrt(
-      canvas.candleWidth * alligatorLinesSettings.lineWeight
-    );
-    const alligatorKeys = Object.keys(canvas.alligatorArray) as Array<
-      keyof typeof canvas.alligatorArray
-    >;
-    alligatorKeys.forEach((key) => {
-      drawCurveLine(
-        ctx,
-        canvas.alligatorArray[key],
-        alligatorLinesSettings[key],
-        alligatorWidth,
-        'round'
-      );
-    });
-  }
 
   drawLastCandlePrice(ctx, canvas, otherSettings);
 };

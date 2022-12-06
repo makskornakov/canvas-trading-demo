@@ -260,8 +260,6 @@ export const tradeLetter = function (
   candleAboveMidLine: boolean,
   yPoint: number
 ) {
-  // draw small letter above the arrow
-
   ctx.font = `${
     gap * 1.3
   }px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif`;
@@ -270,7 +268,7 @@ export const tradeLetter = function (
     : tradeColors.negativeArrow;
   ctx.textAlign = 'center';
 
-  ctx.shadowColor = 'rgba(255, 255, 255, 1)';
+  ctx.shadowColor = 'white';
   ctx.shadowBlur = 2;
 
   ctx.fillText(
@@ -280,11 +278,10 @@ export const tradeLetter = function (
   );
 
   //reset shadow
-  ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+  ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
 };
-
-export const arrowWithHead = function (
+export function arrowWithHead(
   ctx: CanvasRenderingContext2D,
   start: Vector2,
   end: Vector2,
@@ -313,4 +310,4 @@ export const arrowWithHead = function (
   ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
-};
+}

@@ -20,6 +20,12 @@ export interface FoundCandle<T extends Candle2D | CandleToDraw = Candle2D> {
   index: number;
   innerIndex: number;
 }
+export interface AoCandle {
+  x: number;
+  y: number;
+  vertexValue: number;
+  height: number;
+}
 export interface AssignedTrade {
   tradeID: number;
   tradeType: 'long' | 'short';

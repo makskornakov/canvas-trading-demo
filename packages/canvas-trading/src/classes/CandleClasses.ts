@@ -61,7 +61,7 @@ export class Candle2D {
       this.trades.push(tradeCopy);
     });
   }
-  // private arrow function with original point as an argument
+
   public static getPoint = (
     originalPoint: number,
     candleCanvas: CandleCanvas

@@ -74,7 +74,7 @@ const Canvas: React.FC<CanvasProps> = ({
     }),
     [props.otherSettings]
   );
-
+  // canvas settings
   const [width, setWidth] = usePropState(widthProp);
   const [height, setHeight] = usePropState(heightProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
@@ -208,7 +208,7 @@ const Canvas: React.FC<CanvasProps> = ({
         setShift,
         setCandlesShown
       );
-      return false; // Why does it return false?
+      // return false; // Why does it return false? = => doesn't any more... seems to work the same
     },
     canvasRef
   );
@@ -241,7 +241,6 @@ const Canvas: React.FC<CanvasProps> = ({
     () => {
       // reset cursor
       setCursor({ x: -5, y: -5 });
-
       mouseUpOrLeaveListener();
     },
     canvasRef

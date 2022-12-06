@@ -27,7 +27,6 @@ export class MountedTrade {
   }
 }
 export class CandleMountPoints {
-  // above type is [] of MountedIndicator or MountedTrade
   above: (MountedIndicator | MountedTrade | null)[];
   below: (MountedIndicator | MountedTrade | null)[];
   constructor(
@@ -63,23 +62,26 @@ export class CandleMountPoints {
     } else if (indicators.revBar === 'buy') {
       this.mountDown('revBar', 'buy', candleWidth, low);
     }
+
     // mount fractal
     if (indicators.fractal === 'up') {
       this.mountUp('fractal', 'up', candleWidth, high);
     } else if (indicators.fractal === 'down') {
       this.mountDown('fractal', 'down', candleWidth, low);
     }
+
     // mount trade if both start and end are in this candle
     trades.forEach((trade) => {
       const tradeID = trade.tradeID;
       const foundStart = !trade.isThisCandleEnd && trade.isThisCandleStart;
-      // find trade with the same id and which is the end of the trade
+
       const foundEnd = trades.find(
         (trade) =>
           trade.tradeID === tradeID &&
           trade.isThisCandleEnd &&
           !trade.isThisCandleStart
       );
+
       if (foundStart && foundEnd) {
         const profit = trade.profit;
 
@@ -114,6 +116,7 @@ export class CandleMountPoints {
         : retObj
     );
   }
+
   private mountDown(
     type: MountedIndicatorType,
     value: IndicatorValue,
