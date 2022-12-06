@@ -128,7 +128,7 @@ export class CandleMountPoints {
     const retObj = {
       type,
       value,
-      yPos: low + yGap * this.below.length,
+      yPos: low + yGap * (1 + this.above.length),
     };
     const isTrade = type === 'trade' && tradeType;
     this.below.push(
