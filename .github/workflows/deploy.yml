@@ -1,7 +1,9 @@
 name: Build and Deploy
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ['NPM Publish']
+    types:
+      - completed
 
   workflow_dispatch:
 jobs:
