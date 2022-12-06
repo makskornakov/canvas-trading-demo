@@ -299,8 +299,21 @@ const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     const currentlyRequiredLength = shift + candlesShown;
     if (candleArray.length < currentlyRequiredLength) {
-      setShift(0);
-      setCandlesShown(initialCandlesShown.current);
+      /**
+       * Intended logic example:
+       *
+       * The user has maximum zoom out on a long candle history, then he switches to a different asset with shorter candle history, so we need to show less candles.
+       * With this check, we can track that the user intended to have a large zoom out, and set maximum zoom out for the shorter candle history accordingly.
+       *
+       * Another situation is when the user has scrolled a long way left till the very end of candle history. With this check, we can also track that he intended to have a large scroll left, and not that large zoom.
+       *
+       * @todo maybe we should instead check that candlesShown is larger than the new candle history length, and set maximum zoom in that case, or maximum shift and default zoom otherwise. Anyway, the edge case being when zoom (candlesShown) and scroll (shift) are at the same level.
+       */
+      const shiftIsGreaterThanCandlesShown = shift > candlesShown;
+      const mysteriousOffset = 3; // If you set it to 2 — it would break the scroll and zoom for the new candleArray. If you set it to 4 — it would not be the maximum scroll/zoom. But I don't know why this offset is even needed to not break anything, hence it is called "mysterious".
+      const safeCandleArrayLength = candleArray.length - mysteriousOffset;
+      setShift(shiftIsGreaterThanCandlesShown ? safeCandleArrayLength - initialCandlesShown.current : 0);
+      setCandlesShown(shiftIsGreaterThanCandlesShown ? initialCandlesShown.current : safeCandleArrayLength);
     }
   }, [candleArray, candlesShown, setCandlesShown, setShift, shift]);
 
