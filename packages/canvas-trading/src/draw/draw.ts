@@ -38,7 +38,10 @@ export function displayTrade(
   const { startCandle, endCandle } = tradeCandles;
 
   // draw line from buy to sell
-  if (startCandle.candle && endCandle.candle) {
+  if (
+    startCandle.candle && endCandle.candle
+    && candleCanvas.candleArray.length // candleArray is an empty array ([]) for a quick moment right after the first render when: User switches to a shorter (new) candle history and the current scroll and zoom make it so that the user's view zone catches any candles from `the short (old) candle history length` to `candlesShown (zoom) + the short (old) candle history length`. In other words, for a test, you can comment out this length check, go to the 2nd example in the demo, scroll to the maximum left (don't zoom, it's not relevant for this test), switch to the 1st example, scroll ~1-10 candles further left, and switch back to the 2nd example. If the page crashes — then this length check is still relevant. P.S. the page crash reason will be the `candleCanvas.candleArray[0]` evaluating to `undefined`, thus making `.originalIndex` access critically invalid. The `candlesShown (zoom)` on demo for the moment of this test was 160.
+  ) {
     const originalIndexOfFirstVisibleCandle =
       candleCanvas.candleArray[0].originalIndex;
     const startCandleIndex =
