@@ -8,11 +8,17 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: cd packages/canvas-trading && npm install
+          cache: 'pnpm'
+          cache-dependency-path: packages/canvas-trading/pnpm-lock.yaml
+      - run: cd packages/canvas-trading && pnpm install --frozen-lockfile
       - uses: JS-DevTools/npm-publish@v1
         with:
           package: ./packages/canvas-trading/package.json
