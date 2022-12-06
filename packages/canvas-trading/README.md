@@ -4,7 +4,7 @@
 
 Initially was made for an existing trading bot that provides an analyzed array of candles.
 
-[GitHub repository](https://github.com/makskornakov/canvas-trading-demo)
+[GitHub repository](https://github.com/makskornakov/canvas-trading-demo)\
 [Demo application](https://makskornakov.github.io/canvas-trading-demo/)
 
 ## Candle type
