@@ -195,7 +195,8 @@ const Canvas: React.FC<CanvasProps> = ({
     'wheel',
     (e: WheelEvent) => {
       e.preventDefault();
-
+      // prevent other events happening on the parent page
+      e.stopPropagation();
       if (!(otherSettings.scroll || otherSettings.zoom)) return;
       scrollZoom(
         {
