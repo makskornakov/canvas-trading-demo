@@ -298,7 +298,10 @@ const Canvas: React.FC<CanvasProps> = ({
   // useEffect to reset shift and zoom when candleArray shrinks in size (e.g. switching to a smaller data example, or setting smaller history length)
   useEffect(() => {
     const currentlyRequiredLength = shift + candlesShown;
-    if (candleArray.length < currentlyRequiredLength) {
+    if (
+      candleArray.length < currentlyRequiredLength &&
+      candleArray.length >= canvasSettings.minCandlesShown
+    ) {
       /**
        * Intended logic example:
        *
