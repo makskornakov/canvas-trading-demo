@@ -309,11 +309,22 @@ const Canvas: React.FC<CanvasProps> = ({
        *
        * @todo maybe we should instead check that candlesShown is larger than the new candle history length, and set maximum zoom in that case, or maximum shift and default zoom otherwise. Anyway, the edge case being when zoom (candlesShown) and scroll (shift) are at the same level.
        */
-      const shiftIsGreaterThanCandlesShown = shift > candlesShown;
-      const mysteriousOffset = 3; // If you set it to 2 — it would break the scroll and zoom for the new candleArray. If you set it to 4 — it would not be the maximum scroll/zoom. But I don't know why this offset is even needed to not break anything, hence it is called "mysterious".
-      const safeCandleArrayLength = candleArray.length - mysteriousOffset;
-      setShift(shiftIsGreaterThanCandlesShown ? safeCandleArrayLength - initialCandlesShown.current : 0);
-      setCandlesShown(shiftIsGreaterThanCandlesShown ? initialCandlesShown.current : safeCandleArrayLength);
+
+      /**
+       * works simpler logic:
+       * if somehow the settings that user has set for the previous graph are not possible for the new graph, we just reset them to default.
+       * I would even reset them to default every time the candleArray changes, but it will effect when the new candle appears, so we are good for now.
+       * the settings that were set for one graph are not convenient either way for any new graph, as you don't want to appear in the middle of the graph unknown to you.
+       */
+
+      // const shiftIsGreaterThanCandlesShown = shift > candlesShown;
+      // const mysteriousOffset = 3; // If you set it to 2 — it would break the scroll and zoom for the new candleArray. If you set it to 4 — it would not be the maximum scroll/zoom. But I don't know why this offset is even needed to not break anything, hence it is called "mysterious".
+      // const safeCandleArrayLength = candleArray.length - mysteriousOffset;
+
+      setShift(0);
+      setCandlesShown(
+        Math.min(initialCandlesShown.current, candleArray.length)
+      );
     }
   }, [candleArray, candlesShown, setCandlesShown, setShift, shift]);
 
