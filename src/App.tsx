@@ -116,10 +116,18 @@ function App() {
       <Header>Trading Canvases</Header>
       <Description>Resizable canvas with Zoom/Scroll functionality</Description>
       <LinksContainer>
-        <ReadmeLink href="/canvas-trading-demo/readme.html" target="_blank" rel="noreferrer">
+        <ReadmeLink
+          href="/canvas-trading-demo/readme.html"
+          target="_blank"
+          rel="noreferrer"
+        >
           Read Me
         </ReadmeLink>
-        <ReadmeLink href="https://github.com/makskornakov/canvas-trading-demo" target="_blank" rel="noreferrer">
+        <ReadmeLink
+          href="https://github.com/makskornakov/canvas-trading-demo"
+          target="_blank"
+          rel="noreferrer"
+        >
           GitHub
         </ReadmeLink>
       </LinksContainer>
@@ -214,7 +222,7 @@ function App() {
         </ControlButton>
 
         <label style={{ color: 'white' }}>
-          Selected trade: {selectedTrade}
+          Selected trade: {selectedTrade ?? '-'}
         </label>
       </ControlWrap>
     </>
