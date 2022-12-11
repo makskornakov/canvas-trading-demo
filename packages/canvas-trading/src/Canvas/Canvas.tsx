@@ -191,70 +191,6 @@ const Canvas: React.FC<CanvasProps> = ({
     return result;
   }, [maxTradeId, candleArray]);
 
-  useEventListener(
-    'wheel',
-    (e: WheelEvent) => {
-      e.preventDefault();
-      // prevent other events happening on the parent page
-      e.stopPropagation();
-      if (!(otherSettings.scroll || otherSettings.zoom)) return;
-      scrollZoom(
-        {
-          x: otherSettings.scroll ? e.deltaX : 0,
-          y: otherSettings.zoom ? e.deltaY : 0,
-        },
-        shift,
-        candlesShown,
-        candleArray.length,
-        setShift,
-        setCandlesShown
-      );
-      // return false; // Why does it return false? = => doesn't any more... seems to work the same
-    },
-    canvasRef
-  );
-  useEventListener(
-    'mousemove',
-    (e: MouseEvent) => {
-      if (isDragging) {
-        scrollZoom(
-          {
-            x: -Math.round(e.movementX) * 2,
-            y: 0,
-          },
-          shift,
-          candlesShown,
-          candleArray.length,
-          setShift,
-          setCandlesShown
-        );
-      }
-      if (!otherSettings.cursor) return;
-      cursorFunction({ x: e.clientX, y: e.clientY });
-    },
-    canvasRef
-  );
-  const mouseUpOrLeaveListener = () => {
-    setIsDragging(false);
-  };
-  useEventListener(
-    'mouseleave',
-    () => {
-      // reset cursor
-      setCursor({ x: -5, y: -5 });
-      mouseUpOrLeaveListener();
-    },
-    canvasRef
-  );
-  useEventListener(
-    'mousedown',
-    () => {
-      setIsDragging(true);
-    },
-    canvasRef
-  );
-  useEventListener('mouseup', mouseUpOrLeaveListener, canvasRef);
-
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -285,6 +221,76 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [candlesForAllTrades, maxTradeId, otherSettings, propsCanvas, shownTrade]);
 
+  useEventListener(
+    'wheel',
+    (e: WheelEvent) => {
+      e.preventDefault();
+      // prevent other events happening on the parent page
+      e.stopPropagation();
+      if (!(otherSettings.scroll || otherSettings.zoom)) return;
+      scrollZoom(
+        {
+          x: otherSettings.scroll ? e.deltaX : 0,
+          y: otherSettings.zoom ? e.deltaY : 0,
+        },
+        shift,
+        candlesShown,
+        candleArray.length,
+        setShift,
+        setCandlesShown
+      );
+    },
+    canvasRef
+  );
+
+  // Dragging canvas Effect to scroll
+  useEventListener(
+    'mousedown',
+    () => {
+      setIsDragging(true);
+    },
+    canvasRef
+  );
+
+  useEventListener(
+    'mousemove',
+    (e: MouseEvent) => {
+      if (isDragging) {
+        scrollZoom(
+          {
+            x: -Math.round(e.movementX) * 2,
+            y: 0,
+          },
+          shift,
+          candlesShown,
+          candleArray.length,
+          setShift,
+          setCandlesShown
+        );
+      }
+      if (!otherSettings.cursor) return;
+      cursorFunction({ x: e.clientX, y: e.clientY });
+    },
+    canvasRef
+  );
+
+  const mouseUpOrLeaveListener = () => {
+    setIsDragging(false);
+  };
+
+  useEventListener('mouseup', mouseUpOrLeaveListener, canvasRef);
+
+  // reset cursor when mouse leaves canvas
+  useEventListener(
+    'mouseleave',
+    () => {
+      // reset cursor
+      setCursor({ x: -5, y: -5 });
+      mouseUpOrLeaveListener();
+    },
+    canvasRef
+  );
+
   // useEffect for cursor
   useEffect(() => {
     if (!otherSettings.cursor) return;
@@ -304,26 +310,11 @@ const Canvas: React.FC<CanvasProps> = ({
       candleArray.length >= canvasSettings.minCandlesShown
     ) {
       /**
-       * Intended logic example:
-       *
-       * The user has maximum zoom out on a long candle history, then he switches to a different asset with shorter candle history, so we need to show less candles.
-       * With this check, we can track that the user intended to have a large zoom out, and set maximum zoom out for the shorter candle history accordingly.
-       *
-       * Another situation is when the user has scrolled a long way left till the very end of candle history. With this check, we can also track that he intended to have a large scroll left, and not that large zoom.
-       *
-       * @todo maybe we should instead check that candlesShown is larger than the new candle history length, and set maximum zoom in that case, or maximum shift and default zoom otherwise. Anyway, the edge case being when zoom (candlesShown) and scroll (shift) are at the same level.
-       */
-
-      /**
        * works simpler logic:
        * if somehow the settings that user has set for the previous graph are not possible for the new graph, we just reset them to default.
        * I would even reset them to default every time the candleArray changes, but it will effect when the new candle appears, so we are good for now.
        * the settings that were set for one graph are not convenient either way for any new graph, as you don't want to appear in the middle of the graph unknown to you.
        */
-
-      // const shiftIsGreaterThanCandlesShown = shift > candlesShown;
-      // const mysteriousOffset = 3; // If you set it to 2 — it would break the scroll and zoom for the new candleArray. If you set it to 4 — it would not be the maximum scroll/zoom. But I don't know why this offset is even needed to not break anything, hence it is called "mysterious".
-      // const safeCandleArrayLength = candleArray.length - mysteriousOffset;
 
       setShift(0);
       setCandlesShown(
@@ -341,7 +332,7 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [shownTrade, setShift, setCandlesShown]);
 
-  // useEffect for to shift graph when shownTrade changes
+  // useEffect to shift graph when shownTrade changes
   useEffect(() => {
     if (shownTrade === undefined) {
       return;
