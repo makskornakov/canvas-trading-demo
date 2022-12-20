@@ -280,6 +280,8 @@ export const tradeLetter = function (
   //reset shadow
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
+  // reset text center
+  ctx.textAlign = 'left';
 };
 export function arrowWithHead(
   ctx: CanvasRenderingContext2D,
