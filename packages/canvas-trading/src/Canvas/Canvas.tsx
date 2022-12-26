@@ -24,6 +24,7 @@ import type {
   Vector2,
 } from '../types';
 import { findCandleWithTrade } from '../draw/drawFunctions';
+import { touchEventHasScale } from '../utils/scalingMobileLike';
 
 type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
@@ -221,9 +222,12 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   }, [candlesForAllTrades, maxTradeId, otherSettings, propsCanvas, shownTrade]);
 
+  const [isPinching, setIsPinching] = useState(false);
+
   useEventListener(
     'wheel',
     (e: WheelEvent) => {
+      if (isPinching) return;
       e.preventDefault();
       // prevent other events happening on the parent page
       e.stopPropagation();
@@ -290,6 +294,51 @@ const Canvas: React.FC<CanvasProps> = ({
     },
     canvasRef
   );
+
+  //#region Pinching for Desktop
+  // Does not work in Chrome. Tested in Safari.
+  // TODO implement GestureEvent type
+  const [lastPinchScale, setLastPinchScale] = useState(0);
+  // @ts-expect-error 'gesturechange' exists
+  useEventListener('gesturestart', (event) => {
+    if (!(otherSettings.zoom)) return;
+    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+
+    event.preventDefault();
+    setIsPinching(true);
+  }, canvasRef);
+  // @ts-expect-error 'gesturechange' exists
+  useEventListener('gesturechange', (event) => {
+    if (!(otherSettings.zoom)) return;
+    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+
+    // @ts-expect-error .scale exists
+    const pinchScale = (event.scale - 1);
+    const differenceInPinchScale = pinchScale - lastPinchScale;
+
+    scrollZoom(
+      {
+        x: 0,
+        y: Math.round(-differenceInPinchScale * 1000),
+      },
+      shift,
+      candlesShown,
+      candleArray.length,
+      setShift,
+      setCandlesShown
+    );
+
+    setLastPinchScale(pinchScale);
+  }, canvasRef);
+  // @ts-expect-error 'gesturechange' exists
+  useEventListener('gestureend', (event) => {
+    if (!(otherSettings.zoom)) return;
+    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+
+    setLastPinchScale(0);
+    setIsPinching(false);
+  }, canvasRef);
+  //#endregion
 
   // useEffect for cursor
   useEffect(() => {
