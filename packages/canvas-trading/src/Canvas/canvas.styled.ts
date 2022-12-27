@@ -8,6 +8,7 @@ export const Wrap = styled.div<{
   height: number;
   ao: boolean;
   resizable: boolean;
+  fullscreen: boolean;
 }>`
   width: ${(props) => props.width}px;
   height: ${(props) => props.height + (props.ao ? props.height / 5 + 5 : 0)}px;
@@ -24,6 +25,16 @@ export const Wrap = styled.div<{
       /* The property below is needed so that the resize icon is visible. */
       overflow: hidden;
     `}
+
+  ${({ fullscreen }) => fullscreen && css`
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: #111;
+    height: 100%;
+    width: 100%;
+  `}
 `;
 
 const labelStyles = css`

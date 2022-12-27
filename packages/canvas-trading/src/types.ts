@@ -50,6 +50,8 @@ export interface OtherSettings {
   cursor?: boolean;
   /** @default false */
   resizable?: boolean;
+  /** @default false */
+  fullscreen?: boolean;
 }
 export type CheckedOtherSettings = Required<OtherSettings>;
 export interface Indicators {

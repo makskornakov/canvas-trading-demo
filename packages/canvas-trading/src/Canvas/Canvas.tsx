@@ -72,6 +72,7 @@ const Canvas: React.FC<CanvasProps> = ({
       showLastCandlePrice: props.otherSettings?.showLastCandlePrice ?? false,
       cursor: props.otherSettings?.cursor ?? true,
       resizable: props.otherSettings?.resizable ?? false,
+      fullscreen: props.otherSettings?.fullscreen ?? false,
     }),
     [props.otherSettings]
   );
@@ -80,6 +81,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [height, setHeight] = usePropState(heightProp);
   const [shift, setShift] = usePropState(shiftProp ?? 0);
   const [candlesShown, setCandlesShown] = usePropState(candlesShownProp ?? 100);
+  const [fullscreen, setFullscreen] = usePropState(otherSettings.fullscreen);
 
   // canvas elements
   const [displayedPrice, setDisplayedPrice] = useState<number>();
@@ -340,6 +342,13 @@ const Canvas: React.FC<CanvasProps> = ({
   }, canvasRef);
   //#endregion
 
+  useEventListener('resize', () => {
+    if (!fullscreen) return;
+
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight - (otherSettings.ao ? window.innerHeight / 5 : 0));
+  });
+
   // useEffect for cursor
   useEffect(() => {
     if (!otherSettings.cursor) return;
@@ -435,6 +444,14 @@ const Canvas: React.FC<CanvasProps> = ({
       height={Number(height)}
       style={style}
       ao={otherSettings.ao}
+      fullscreen={fullscreen}
+      onDoubleClick={() => {
+        setFullscreen(prev => {
+          setWidth(prev ? widthProp : window.innerWidth);
+          setHeight(prev ? heightProp : window.innerHeight - (otherSettings.ao ? window.innerHeight / 5 : 0));
+          return !prev;
+        });
+      }}
     >
       {otherSettings.showAsset && lastCandle?.asset && (
         <AssetLabel
