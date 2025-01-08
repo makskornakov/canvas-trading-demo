@@ -44,7 +44,9 @@ export function drawMountedIndicators(
   ctx: CanvasRenderingContext2D,
   candle: Candle2D,
   x: number,
-  candleWidth: number
+  candleWidth: number,
+  drawRevBar: boolean,
+  drawFractal: boolean
 ) {
   const arr = [...candle.mountPoints.above, ...candle.mountPoints.below];
 
@@ -53,7 +55,7 @@ export function drawMountedIndicators(
       candle.mountPoints.above.includes(indicator);
     if (indicator === null) return;
 
-    if (indicator.type === 'revBar') {
+    if (indicator.type === 'revBar' && drawRevBar) {
       revBar(
         ctx,
         x,
@@ -63,7 +65,7 @@ export function drawMountedIndicators(
       );
       return;
     }
-    if (indicator.type === 'fractal') {
+    if (indicator.type === 'fractal' && drawFractal) {
       fractal(
         ctx,
         x,
@@ -122,7 +124,7 @@ export function revBar(
   candleWidth: number
 ) {
   ctx.beginPath();
-  ctx.arc(x + candleWidth / 2, y, candleWidth / 3, 0, 2 * Math.PI);
+  ctx.arc(x + candleWidth / 2, y, Math.max(candleWidth / 3, 3), 0, 2 * Math.PI);
   ctx.fillStyle = type === 'buy' ? candleColors.green : candleColors.red;
   ctx.fill();
   ctx.closePath();
@@ -142,16 +144,21 @@ export function fractal(
   const triangleWidthShrinker = 1 / triangleAdditionalWidthMultiplier;
 
   const triangleWidthMultiplier = 1 + triangleAdditionalWidthMultiplier;
-  const triangleWidth = candleWidth * triangleWidthMultiplier;
+  // const triangleWidth = candleWidth * triangleWidthMultiplier;
+  const triangleWidth = Math.max(candleWidth * triangleWidthMultiplier, 10);
 
-  ctx.moveTo(x - candleWidth / triangleWidthShrinker, y);
+  // ctx.moveTo(x - candleWidth / triangleWidthShrinker, y);
+  ctx.moveTo(x - triangleWidth / 2 + candleWidth / 2, y);
 
   const toY = type === 'up' ? y - triangleWidth : y + triangleWidth;
   ctx.lineTo(x + candleWidth / 2, toY);
-  ctx.lineTo(x + triangleWidth, y);
+  // ctx.lineTo(x + triangleWidth, y);
+  ctx.lineTo(x + triangleWidth / 2 + candleWidth / 2, y);
 
   ctx.fillStyle = type === 'up' ? candleColors.green : candleColors.red;
   ctx.fill();
+  // ctx.strokeStyle = type === 'up' ? candleColors.green : candleColors.red;
+  // ctx.stroke();
 
   ctx.closePath();
 }
@@ -251,6 +258,26 @@ export function findCandleWithTrade<T extends Candle2D | CandleToDraw>(
   return foundObj;
 }
 
+export function findCandleByDate<T extends CandleToDraw>(
+  candles: T[],
+  date: Date
+): FoundCandle<T> {
+  const foundObj: FoundCandle<T> = {
+    candle: false,
+    index: 0,
+    innerIndex: 0,
+  };
+  candles.forEach((candle, index) => {
+    const openDate = new Date(candle['openTime']);
+    if (openDate.getTime() === date.getTime()) {
+      foundObj.candle = candle;
+      foundObj.index = index;
+      return foundObj;
+    }
+  });
+  return foundObj;
+}
+
 export const tradeLetter = function (
   ctx: CanvasRenderingContext2D,
   cords: Vector2,
@@ -313,3 +340,17 @@ export function arrowWithHead(
   ctx.fill();
   ctx.closePath();
 }
+
+export const fibonacciReference = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+export const fibonacciNumbers = function (priceA: number, priceB: number) {
+  const fibonacciPrices = [
+    priceA,
+    priceA + (priceB - priceA) * fibonacciReference[1],
+    priceA + (priceB - priceA) * fibonacciReference[2],
+    priceA + (priceB - priceA) * fibonacciReference[3],
+    priceA + (priceB - priceA) * fibonacciReference[4],
+    priceA + (priceB - priceA) * fibonacciReference[5],
+    priceB,
+  ];
+  return fibonacciPrices;
+};

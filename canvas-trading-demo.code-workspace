@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": ["Retracements", "Retracement"],
+    "prettier.printWidth": 80,
+    "prettier.trailingComma": "es5"
+  }
+}

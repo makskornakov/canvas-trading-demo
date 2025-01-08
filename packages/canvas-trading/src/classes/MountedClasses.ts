@@ -111,7 +111,8 @@ export class CandleMountPoints {
         ? ({
             ...retObj,
             tradeType,
-            profitable: value > 0,
+            //? when its a trade, value is a number
+            profitable: Number(value) > 0,
           } as MountedTrade)
         : retObj
     );
@@ -136,7 +137,8 @@ export class CandleMountPoints {
         ? ({
             ...retObj,
             tradeType,
-            profitable: value > 0,
+            //? when its a trade, value is a number
+            profitable: Number(value) > 0,
           } as MountedTrade)
         : retObj
     );

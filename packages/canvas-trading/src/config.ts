@@ -21,4 +21,5 @@ export const canvasSettings = {
   shiftStrength: 0.15,
   minCandlesShown: 30,
   scaleForQuality: 2,
+  assetOpacity: 0.1,
 } as const;

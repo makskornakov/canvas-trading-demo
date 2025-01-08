@@ -10,11 +10,21 @@ import {
   Wrap,
   OclhLabel,
   AssetLabel,
+  AOCanvasNameLabel,
+  StdevCanvasNameLabel,
 } from './canvas.styled';
 
 import { CandleCanvas } from '../classes/CandleCanvas';
-import { canvasSettings } from '../config';
-import { displayTrade, drawAo, drawCursor, drawFunction } from '../draw/draw';
+import { candleColors, canvasSettings } from '../config';
+import {
+  displayTrade,
+  drawAo,
+  drawCursor,
+  drawFibonacciRetracements,
+  drawFunction,
+  drawSimpleLine,
+  drawStdev,
+} from '../draw/draw';
 import scrollZoom from '../scrollZoom';
 import type {
   CandleToDraw,
@@ -22,17 +32,35 @@ import type {
   FoundCandle,
   OtherSettings,
   Vector2,
+  FibonacciRetracement,
 } from '../types';
-import { findCandleWithTrade } from '../draw/drawFunctions';
+import { findCandleByDate, findCandleWithTrade } from '../draw/drawFunctions';
 import { touchEventHasScale } from '../utils/scalingMobileLike';
+
+interface CandlePointer {
+  openTime: string;
+  param: 'open' | 'close' | 'high' | 'low';
+}
+
+interface SimpleLine {
+  start: CandlePointer;
+  end: CandlePointer;
+  color: string;
+  opacity?: number;
+  dash?: number[];
+}
 
 type CanvasProps = JSX.IntrinsicElements['canvas'] & {
   candleArray: CandleToDraw[];
   lastCandle: CandleToDraw | undefined;
+  resolution?: string;
   otherSettings?: OtherSettings;
   candlesShown?: number;
   shownTrade?: number;
+  shownFibonacci?: number;
   shift?: number;
+  initialFibonacciRetracement?: FibonacciRetracement[];
+  drawnLines?: SimpleLine[];
 };
 
 function usePropState<T>(prop: T) {
@@ -51,6 +79,9 @@ const Canvas: React.FC<CanvasProps> = ({
   lastCandle,
   candlesShown: candlesShownProp,
   shift: shiftProp,
+  initialFibonacciRetracement,
+  shownFibonacci = 0,
+  drawnLines,
   shownTrade,
   width: widthProp,
   height: heightProp,
@@ -59,12 +90,14 @@ const Canvas: React.FC<CanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorRef = useRef<HTMLCanvasElement>(null);
   const aoCanvasRef = useRef<HTMLCanvasElement>(null);
+  const stdevCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const otherSettings = useMemo<CheckedOtherSettings>(
     () => ({
       allTradesShown: props.otherSettings?.allTradesShown ?? false,
       alligator: props.otherSettings?.alligator ?? true,
       ao: props.otherSettings?.ao ?? true,
+      stdev: props.otherSettings?.stdev ?? false,
       mountedIndicators: props.otherSettings?.mountedIndicators ?? true,
       zoom: props.otherSettings?.zoom ?? true,
       scroll: props.otherSettings?.scroll ?? true,
@@ -73,8 +106,14 @@ const Canvas: React.FC<CanvasProps> = ({
       cursor: props.otherSettings?.cursor ?? true,
       resizable: props.otherSettings?.resizable ?? false,
       fullscreen: props.otherSettings?.fullscreen ?? false,
+      aoCanvasStyle: props.otherSettings?.aoCanvasStyle ?? {},
+      onlyShowSelectedFibonacci: props.otherSettings?.onlyShowSelectedFibonacci ?? false,
+      autoFocusOnSelectedFibonacci: props.otherSettings?.autoFocusOnSelectedFibonacci ?? false,
+      drawRevBar: props.otherSettings?.drawRevBar ?? true,
+      drawFractal: props.otherSettings?.drawFractal ?? true,
+      dateTimeZone: props.otherSettings?.dateTimeZone ?? 'UTC',
     }),
-    [props.otherSettings]
+    [props.otherSettings],
   );
   // canvas settings
   const [width, setWidth] = usePropState(widthProp);
@@ -95,6 +134,11 @@ const Canvas: React.FC<CanvasProps> = ({
   const [cursor, setCursor] = useState({ x: -5, y: -5 });
   const [isDragging, setIsDragging] = useState(false);
 
+  const [
+    fibonacciRetracement,
+    // setFiboRetracement //? can be set for drawing tools
+  ] = useState<FibonacciRetracement[]>(initialFibonacciRetracement ?? []);
+
   const propsCanvas = useMemo(() => {
     try {
       return new CandleCanvas(
@@ -103,7 +147,7 @@ const Canvas: React.FC<CanvasProps> = ({
         candlesShown,
         shift,
         candleArray,
-        lastCandle
+        lastCandle,
       );
     } catch (error) {
       console.error('Could not create new CandleCanvas()', error);
@@ -133,7 +177,7 @@ const Canvas: React.FC<CanvasProps> = ({
       //#region finding date for displayed date
       const zoomedAndShifted = candleArray.slice(
         candleArray.length - candlesShown - shift,
-        candleArray.length - shift
+        candleArray.length - shift,
       );
       const xPosInPercent = x / rect.width;
 
@@ -141,19 +185,24 @@ const Canvas: React.FC<CanvasProps> = ({
 
       const candle = zoomedAndShifted[index];
       if (candle) {
-        setDisplayedDate(new Date(candle.openTime).toLocaleString());
-        if (!candle.open || !candle.close || !candle.low || !candle.high)
-          return;
+        setDisplayedDate(
+          otherSettings.dateTimeZone === 'UTC'
+            ? new Date(candle.openTime).toLocaleString('en-US', {
+                timeZone: 'UTC',
+              })
+            : new Date(candle.openTime).toLocaleString(),
+        );
+        if (!candle.open || !candle.close || !candle.low || !candle.high) return;
         setDisplayedOclh({
           o: candle.open,
-          c: candle.close,
-          l: candle.low,
           h: candle.high,
+          l: candle.low,
+          c: candle.close,
         });
       }
       //#endregion
     },
-    [candleArray, candlesShown, propsCanvas, shift]
+    [candleArray, candlesShown, propsCanvas, shift, otherSettings.dateTimeZone],
   );
   const initialCandlesShown = useRef(candlesShown);
 
@@ -165,9 +214,9 @@ const Canvas: React.FC<CanvasProps> = ({
           .flat()
           .map((trade) => trade?.tradeID)
           .filter((tradeID) => tradeID !== undefined) as number[]),
-        0
+        0,
       ),
-    [candleArray]
+    [candleArray],
   );
 
   const candlesForAllTrades = useMemo(() => {
@@ -194,6 +243,80 @@ const Canvas: React.FC<CanvasProps> = ({
     return result;
   }, [maxTradeId, candleArray]);
 
+  // we have candlePointers, we need to draw lines between them
+  // we first go through all lines and find candles by date
+  // we can then use the candle class point properties to draw the lines
+  interface LineToDraw {
+    start: {
+      candle: FoundCandle<CandleToDraw>;
+      param: 'open' | 'close' | 'high' | 'low';
+    };
+    end: {
+      candle: FoundCandle<CandleToDraw>;
+      param: 'open' | 'close' | 'high' | 'low';
+    };
+    color: string;
+    opacity?: number;
+    dash?: number[];
+  }
+  const linesToDraw = useMemo(() => {
+    if (!drawnLines) return;
+    const result: LineToDraw[] = [];
+    drawnLines.forEach((line) => {
+      const startCandle = findCandleByDate(candleArray, new Date(line.start.openTime));
+      const endCandle = findCandleByDate(candleArray, new Date(line.end.openTime));
+
+      if (!startCandle.candle || !endCandle.candle) return;
+
+      result.push({
+        start: {
+          candle: startCandle,
+          param: line.start.param,
+        },
+        end: {
+          candle: endCandle,
+          param: line.end.param,
+        },
+        color: line.color,
+        opacity: line.opacity,
+        dash: line.dash,
+      });
+    });
+
+    return result;
+  }, [drawnLines, candleArray]);
+
+  const candlesForAllFibonacci = useMemo(() => {
+    if (!candleArray) return;
+    if (fibonacciRetracement.length === 0) return;
+
+    const result: {
+      startPrice: number;
+      endPrice: number;
+      startCandle: FoundCandle<CandleToDraw>;
+      endCandle: FoundCandle<CandleToDraw>;
+    }[] = [];
+    for (let fibonacciIndex = 0; fibonacciIndex < fibonacciRetracement.length; fibonacciIndex++) {
+      const startCandle = findCandleByDate(
+        candleArray,
+        new Date(fibonacciRetracement[fibonacciIndex].startDate),
+      );
+      const endCandle = findCandleByDate(
+        candleArray,
+        new Date(fibonacciRetracement[fibonacciIndex].endDate),
+      );
+
+      result.push({
+        startPrice: fibonacciRetracement[fibonacciIndex].priceA,
+        endPrice: fibonacciRetracement[fibonacciIndex].priceB,
+        startCandle,
+        endCandle,
+      });
+    }
+
+    return result;
+  }, [fibonacciRetracement, candleArray]);
+
   // main useEffect
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -203,11 +326,7 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!ctx) return;
     drawFunction(ctx, propsCanvas, otherSettings);
 
-    if (
-      otherSettings.allTradesShown &&
-      maxTradeId !== undefined &&
-      candlesForAllTrades
-    ) {
+    if (otherSettings.allTradesShown && maxTradeId !== undefined && candlesForAllTrades) {
       for (let i = 0; i <= maxTradeId; i++) {
         displayTrade(ctx, propsCanvas, candlesForAllTrades[i]);
       }
@@ -215,6 +334,7 @@ const Canvas: React.FC<CanvasProps> = ({
       displayTrade(ctx, propsCanvas, candlesForAllTrades[shownTrade]);
     }
 
+    // draw ao
     if (otherSettings.ao) {
       const aoCanvas = aoCanvasRef.current;
       if (!aoCanvas) return;
@@ -222,7 +342,62 @@ const Canvas: React.FC<CanvasProps> = ({
       if (!aoCtx) return;
       drawAo(aoCtx, propsCanvas);
     }
-  }, [candlesForAllTrades, maxTradeId, otherSettings, propsCanvas, shownTrade]);
+
+    //draw standard deviation
+    if (otherSettings.stdev) {
+      const stdevCanvas = stdevCanvasRef.current;
+      if (!stdevCanvas) return;
+      const stdevCtx = stdevCanvas.getContext('2d');
+      if (!stdevCtx) return;
+      drawStdev(stdevCtx, propsCanvas.standardDeviationArray);
+    }
+
+    // draw simple lines from drawnLines
+    linesToDraw?.forEach((line) => {
+      const startCandle = line.start.candle;
+      const endCandle = line.end.candle;
+      if (!startCandle.candle || !endCandle.candle) return;
+
+      drawSimpleLine(
+        ctx,
+        propsCanvas,
+        startCandle.candle[line.start.param],
+        endCandle.candle[line.end.param],
+        startCandle.index,
+        endCandle.index,
+        line.color,
+        line.opacity,
+        line.dash,
+      );
+    });
+
+    if (!candlesForAllFibonacci) return;
+    //? if onlyShowSelectedFibonacci is true, we only draw the selected fibonacci, not all of them (cuz they might overlap and look bad)
+    const fiboArray = otherSettings.onlyShowSelectedFibonacci
+      ? [candlesForAllFibonacci[shownFibonacci]]
+      : candlesForAllFibonacci;
+    fiboArray.forEach((fibo) => {
+      if (!fibo) return;
+      drawFibonacciRetracements(
+        ctx,
+        propsCanvas,
+        fibo.startPrice,
+        fibo.endPrice,
+        fibo.startCandle.index,
+        fibo.endCandle.index,
+      );
+    });
+  }, [
+    candlesForAllTrades,
+    candlesForAllFibonacci,
+    maxTradeId,
+    otherSettings,
+    propsCanvas,
+    linesToDraw,
+    shownTrade,
+    shownFibonacci,
+    candleArray,
+  ]);
 
   const [isPinching, setIsPinching] = useState(false);
 
@@ -243,10 +418,10 @@ const Canvas: React.FC<CanvasProps> = ({
         candlesShown,
         candleArray.length,
         setShift,
-        setCandlesShown
+        setCandlesShown,
       );
     },
-    canvasRef
+    canvasRef,
   );
 
   // Dragging canvas Effect to scroll
@@ -255,7 +430,7 @@ const Canvas: React.FC<CanvasProps> = ({
     () => {
       setIsDragging(true);
     },
-    canvasRef
+    canvasRef,
   );
 
   useEventListener(
@@ -271,13 +446,13 @@ const Canvas: React.FC<CanvasProps> = ({
           candlesShown,
           candleArray.length,
           setShift,
-          setCandlesShown
+          setCandlesShown,
         );
       }
       if (!otherSettings.cursor) return;
       cursorFunction({ x: e.clientX, y: e.clientY });
     },
-    canvasRef
+    canvasRef,
   );
 
   const mouseUpOrLeaveListener = () => {
@@ -294,52 +469,64 @@ const Canvas: React.FC<CanvasProps> = ({
       setCursor({ x: -5, y: -5 });
       mouseUpOrLeaveListener();
     },
-    canvasRef
+    canvasRef,
   );
 
   //#region Pinching for Desktop
   // Does not work in Chrome. Tested in Safari.
   // TODO implement GestureEvent type
   const [lastPinchScale, setLastPinchScale] = useState(0);
-  // @ts-expect-error 'gesturechange' exists
-  useEventListener('gesturestart', (event) => {
-    if (!(otherSettings.zoom)) return;
-    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+  useEventListener(
+    // @ts-expect-error 'gesturestart' exists
+    'gesturestart',
+    (event) => {
+      if (!otherSettings.zoom) return;
+      if (!touchEventHasScale(event as unknown as TouchEvent)) return;
 
-    event.preventDefault();
-    setIsPinching(true);
-  }, canvasRef);
-  // @ts-expect-error 'gesturechange' exists
-  useEventListener('gesturechange', (event) => {
-    if (!(otherSettings.zoom)) return;
-    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+      event.preventDefault();
+      setIsPinching(true);
+    },
+    canvasRef,
+  );
+  useEventListener(
+    // @ts-expect-error 'gesturechange' exists
+    'gesturechange',
+    (event) => {
+      if (!otherSettings.zoom) return;
+      if (!touchEventHasScale(event as unknown as TouchEvent)) return;
 
-    // @ts-expect-error .scale exists
-    const pinchScale = (event.scale - 1);
-    const differenceInPinchScale = pinchScale - lastPinchScale;
+      // @ts-expect-error .scale exists
+      const pinchScale = event.scale - 1;
+      const differenceInPinchScale = pinchScale - lastPinchScale;
 
-    scrollZoom(
-      {
-        x: 0,
-        y: Math.round(-differenceInPinchScale * 1000),
-      },
-      shift,
-      candlesShown,
-      candleArray.length,
-      setShift,
-      setCandlesShown
-    );
+      scrollZoom(
+        {
+          x: 0,
+          y: Math.round(-differenceInPinchScale * 1000),
+        },
+        shift,
+        candlesShown,
+        candleArray.length,
+        setShift,
+        setCandlesShown,
+      );
 
-    setLastPinchScale(pinchScale);
-  }, canvasRef);
-  // @ts-expect-error 'gesturechange' exists
-  useEventListener('gestureend', (event) => {
-    if (!(otherSettings.zoom)) return;
-    if (!touchEventHasScale(event as unknown as TouchEvent)) return;
+      setLastPinchScale(pinchScale);
+    },
+    canvasRef,
+  );
+  useEventListener(
+    // @ts-expect-error 'gestureend' exists
+    'gestureend',
+    (event) => {
+      if (!otherSettings.zoom) return;
+      if (!touchEventHasScale(event as unknown as TouchEvent)) return;
 
-    setLastPinchScale(0);
-    setIsPinching(false);
-  }, canvasRef);
+      setLastPinchScale(0);
+      setIsPinching(false);
+    },
+    canvasRef,
+  );
   //#endregion
 
   useEventListener('resize', () => {
@@ -375,9 +562,7 @@ const Canvas: React.FC<CanvasProps> = ({
        */
 
       setShift(0);
-      setCandlesShown(
-        Math.min(initialCandlesShown.current, candleArray.length)
-      );
+      setCandlesShown(Math.min(initialCandlesShown.current, candleArray.length));
     }
   }, [candleArray, candlesShown, setCandlesShown, setShift, shift]);
 
@@ -385,10 +570,11 @@ const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     if (shownTrade === undefined) {
       // reset shift and zoom on unselecting trade.
-      setShift(0);
+      console.log('resetting shift and zoom');
+      setShift(shiftProp ?? 0); //! idk if its actually correct, not working with trades for now
       setCandlesShown(initialCandlesShown.current);
     }
-  }, [shownTrade, setShift, setCandlesShown]);
+  }, [shownTrade, setShift, setCandlesShown, shiftProp]);
 
   // useEffect to shift graph when shownTrade changes
   useEffect(() => {
@@ -400,21 +586,48 @@ const Canvas: React.FC<CanvasProps> = ({
     if (!startCandle.candle || !endCandle.candle) return;
 
     const newShift = Math.min(
-      Math.max(
-        candleArray.length - candleArray.indexOf(endCandle.candle) - 10,
-        0
-      ),
-      candleArray.length - 40
+      Math.max(candleArray.length - candleArray.indexOf(endCandle.candle) - 10, 0),
+      candleArray.length - 40,
     );
 
     const newCandlesShown =
-      candleArray.indexOf(endCandle.candle) -
-      candleArray.indexOf(startCandle.candle) +
-      20;
+      candleArray.indexOf(endCandle.candle) - candleArray.indexOf(startCandle.candle) + 20;
 
     setShift(newShift);
     setCandlesShown(newCandlesShown);
   }, [candleArray, setCandlesShown, setShift, shownTrade]);
+
+  // use effect to apply zoom and shift when shownFibonacci changes
+  useEffect(() => {
+    if (
+      shownFibonacci === undefined ||
+      !candlesForAllFibonacci ||
+      !otherSettings.autoFocusOnSelectedFibonacci
+    ) {
+      return;
+    }
+    const fiboCandles = candlesForAllFibonacci[shownFibonacci];
+    if (!fiboCandles) return;
+
+    const newShift = Math.min(
+      Math.max(candleArray.length - fiboCandles.endCandle.index - 20, 0),
+      candleArray.length - 40,
+    );
+    const newCandlesShown = Math.min(
+      fiboCandles.endCandle.index - fiboCandles.startCandle.index + 40,
+      candleArray.length - newShift - 3,
+    );
+
+    setShift(newShift);
+    setCandlesShown(newCandlesShown);
+  }, [
+    candlesForAllFibonacci,
+    candleArray,
+    setCandlesShown,
+    setShift,
+    shownFibonacci,
+    otherSettings.autoFocusOnSelectedFibonacci,
+  ]);
 
   return (
     <Wrap
@@ -430,9 +643,7 @@ const Canvas: React.FC<CanvasProps> = ({
               }
 
               const aoHeight = otherSettings.ao ? Number(height) / 5 + 5 : 0;
-              const newHeight = Math.round(
-                event.currentTarget.clientHeight - aoHeight
-              );
+              const newHeight = Math.round(event.currentTarget.clientHeight - aoHeight);
               if (height !== newHeight) {
                 setHeight(newHeight);
               }
@@ -443,25 +654,32 @@ const Canvas: React.FC<CanvasProps> = ({
       width={Number(width)}
       height={Number(height)}
       style={style}
+      stdev={otherSettings.stdev}
       ao={otherSettings.ao}
       fullscreen={fullscreen}
       onDoubleClick={() => {
-        setFullscreen(prev => {
+        setFullscreen((prev) => {
           setWidth(prev ? widthProp : window.innerWidth);
-          setHeight(prev ? heightProp : window.innerHeight - (otherSettings.ao ? window.innerHeight / 5 : 0));
+          setHeight(
+            prev
+              ? heightProp
+              : window.innerHeight - (otherSettings.ao ? window.innerHeight / 5 : 0),
+          );
           return !prev;
         });
       }}
     >
-      {otherSettings.showAsset && lastCandle?.asset && (
-        <AssetLabel
-          height={Number(height)}
-          width={Number(width)}
-          aoShown={otherSettings.ao}
-        >
-          {lastCandle.asset}
-        </AssetLabel>
-      )}
+      {otherSettings.showAsset &&
+        (lastCandle?.asset || candleArray[candleArray.length - 1].asset) && (
+          <AssetLabel
+            height={Number(height)}
+            width={Number(width)}
+            aoShown={otherSettings.ao}
+            opacity={canvasSettings.assetOpacity}
+          >
+            {lastCandle?.asset || candleArray[candleArray.length - 1].asset}
+          </AssetLabel>
+        )}
       <PriceLabel height={Number(height)} cursor={cursor}>
         {displayedPrice}
       </PriceLabel>
@@ -470,15 +688,32 @@ const Canvas: React.FC<CanvasProps> = ({
         height={Number(height)}
         cursor={cursor}
         ao={otherSettings.ao}
+        stdev={otherSettings.stdev}
       >
         {displayedDate}
       </DateLabel>
       <OclhLabel canvasWidth={Number(width)} canvasHeight={Number(height)}>
+        {(lastCandle?.asset || candleArray[candleArray.length - 1].asset) && (
+          <span>
+            {lastCandle?.asset || candleArray[candleArray.length - 1].asset}{' '}
+            {props.resolution && `• ${props.resolution}`}
+          </span>
+        )}
+
         {displayedOclh &&
           Object.keys(displayedOclh).map((key) => (
             <p key={key}>
-              {key.toUpperCase()}:{' '}
-              {displayedOclh[key as keyof typeof displayedOclh].toFixed(2)}
+              {key.toUpperCase()}:
+              <label
+                style={
+                  displayedOclh.c > displayedOclh.o
+                    ? { color: candleColors.green }
+                    : { color: candleColors.red }
+                }
+              >
+                {/* {' '} */}
+                {displayedOclh[key as keyof typeof displayedOclh]}
+              </label>
             </p>
           ))}
       </OclhLabel>
@@ -495,13 +730,40 @@ const Canvas: React.FC<CanvasProps> = ({
         width={Number(width) * canvasSettings.scaleForQuality}
         height={Number(height) * canvasSettings.scaleForQuality}
       />
+
+      {/* standard deviation canvas */}
+      {otherSettings.stdev && (
+        <>
+          <StdevCanvasNameLabel
+            width={Number(width)}
+            height={Number(height)}
+            aoShown={otherSettings.ao}
+          >
+            Stdev
+          </StdevCanvasNameLabel>
+          <AoCanvas
+            style={otherSettings.aoCanvasStyle}
+            resizable={otherSettings.resizable}
+            width={Number(width) * canvasSettings.scaleForQuality}
+            height={(Number(height) * canvasSettings.scaleForQuality) / 5}
+            ref={stdevCanvasRef}
+          />
+        </>
+      )}
       {otherSettings.ao && (
-        <AoCanvas
-          resizable={otherSettings.resizable}
-          width={Number(width) * canvasSettings.scaleForQuality}
-          height={(Number(height) * canvasSettings.scaleForQuality) / 5}
-          ref={aoCanvasRef}
-        />
+        <>
+          <AOCanvasNameLabel width={Number(width)} height={Number(height)}>
+            AO
+          </AOCanvasNameLabel>
+
+          <AoCanvas
+            style={otherSettings.aoCanvasStyle}
+            resizable={otherSettings.resizable}
+            width={Number(width) * canvasSettings.scaleForQuality}
+            height={(Number(height) * canvasSettings.scaleForQuality) / 5}
+            ref={aoCanvasRef}
+          />
+        </>
       )}
     </Wrap>
   );

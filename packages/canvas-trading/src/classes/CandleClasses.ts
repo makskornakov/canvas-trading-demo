@@ -20,7 +20,7 @@ export class Candle2D {
     candleCanvas: CandleCanvas,
     originalTrades: AssignedTrade[],
     public xPosition: number,
-    public originalIndex: number
+    public originalIndex: number,
   ) {
     this.open = Candle2D.getPoint(originalOpen, candleCanvas);
     this.close = Candle2D.getPoint(originalClose, candleCanvas);
@@ -32,60 +32,48 @@ export class Candle2D {
       originalTrades,
       this.low,
       this.high,
-      (this.low + this.high) / 2 <=
-        (candleCanvas.height - candleCanvas.candleWidth * 4.5) / 2
+      (this.low + this.high) / 2 <= (candleCanvas.height - candleCanvas.candleWidth * 4.5) / 2,
     );
     this.open === 0 || this.close === 0 || this.low === 0 || this.high === 0
       ? (this.noDraw = true)
       : (this.noDraw = false);
-    this.alligator = this.getAlligatorPoints(
-      originalIndicators.alligator,
-      candleCanvas
-    );
+    this.alligator = this.getAlligatorPoints(originalIndicators.alligator, candleCanvas);
 
     this.trades = [] as AssignedTrade[];
     originalTrades.forEach((trade) => {
       const tradeCopy = { ...trade };
       if (tradeCopy.isThisCandleStart) {
-        tradeCopy.buyPrice = Candle2D.getPoint(
-          tradeCopy.buyPrice,
-          candleCanvas
-        );
+        tradeCopy.buyPrice = Candle2D.getPoint(tradeCopy.buyPrice, candleCanvas);
       }
       if (tradeCopy.isThisCandleEnd) {
-        tradeCopy.sellPrice = Candle2D.getPoint(
-          tradeCopy.sellPrice,
-          candleCanvas
-        );
+        tradeCopy.sellPrice = Candle2D.getPoint(tradeCopy.sellPrice, candleCanvas);
       }
       this.trades.push(tradeCopy);
     });
   }
 
-  public static getPoint = (
-    originalPoint: number,
-    candleCanvas: CandleCanvas
-  ) => {
+  public static getPoint = (originalPoint: number, candleCanvas: CandleCanvas) => {
     const gapSpace = candleCanvas.candleWidth * 4.5;
+    //? Usual point
+    // const point =
+    //   ((candleCanvas.minMax.max - originalPoint) /
+    //     (candleCanvas.minMax.max - candleCanvas.minMax.min)) *
+    //     (candleCanvas.height - gapSpace * 2) +
+    //   gapSpace;
+    //? leave more space for the top for Asset and OCLH labels
     const point =
       ((candleCanvas.minMax.max - originalPoint) /
         (candleCanvas.minMax.max - candleCanvas.minMax.min)) *
-        (candleCanvas.height - gapSpace * 2) +
-      gapSpace;
+        (candleCanvas.height - candleCanvas.height / 5) +
+      candleCanvas.height / 10;
     return point;
   };
 
-  private getAlligatorPoints = (
-    alligator: Indicators['alligator'],
-    candleCanvas: CandleCanvas
-  ) => {
+  private getAlligatorPoints = (alligator: Indicators['alligator'], candleCanvas: CandleCanvas) => {
     const keys = Object.keys(alligator) as Array<keyof Indicators['alligator']>;
     const points = {} as Indicators['alligator'];
     keys.forEach((key) => {
-      points[key] =
-        alligator[key] !== 0
-          ? Candle2D.getPoint(alligator[key], candleCanvas)
-          : 0;
+      points[key] = alligator[key] !== 0 ? Candle2D.getPoint(alligator[key], candleCanvas) : 0;
     });
     return points;
   };
