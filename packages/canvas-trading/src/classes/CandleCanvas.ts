@@ -1,4 +1,3 @@
-// import { FibonacciRetracement } from '../types';
 import { canvasSettings } from '../config';
 import type { AoCandle, CandleToDraw, Vector2 } from '../types';
 import { Candle2D } from './CandleClasses';
